@@ -1,0 +1,34 @@
+version: "3.8"
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      SA_PASSWORD: "DockerSQL2022_" #My Linux SA Password I Think
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    networks:
+      - app-network
+    volumes:
+      - sqlserver-data-diary-portfolio:/var/opt/mssql
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5034:8080"
+    depends_on:
+      - sqlserver
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=diary_portfolio;User Id=sa;Password=DockerSQL2022_;TrustServerCertificate=true;
+    networks:
+      - app-network
+
+volumes:
+  sqlserver-data-diary-portfolio:
+
+networks:
+  app-network:
