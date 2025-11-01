@@ -1,0 +1,78 @@
+## Build artifacts
+bin/
+obj/
+
+## User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## Visual Studio Code
+.vscode/
+
+## Rider
+.idea/
+
+## ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+## DotNet CLI
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+## Logs
+*.log
+logs/
+*.tlog
+
+## Database
+*.mdf
+*.ldf
+
+## Environment & Secrets
+.env
+.env.*
+
+
+## Publish outputs
+publish/
+*.publish.xml
+
+## OS-specific
+.DS_Store
+Thumbs.db
+
+## Test results
+TestResults/
+*.coverage
+*.coveragexml
+
+## Resharper
+_ReSharper*/
+*.DotSettings.user
+
+## npm
+node_modules/
+
+## Auto-generated files
+Generated_Code/
+
+## NuGet
+*.nupkg
+.nuget/
+packages/
+*.snupkg
+*.nuspec
+*.psmdcp
+
+# JetBrains Rider
+.idea/
+
+# Backup files
+*.bak
+
+# Temporary files
+*.tmp
+*.temp
