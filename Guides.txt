@@ -1,0 +1,3 @@
+dotnet add DiaryPortfolio.Api/DiaryPortfolio.Api.csproj reference DiaryPortfolio.Infrastructure/DiaryPortfolio.Infrastructure.csproj
+
+First part is our location to add, the second part is what we want to add
