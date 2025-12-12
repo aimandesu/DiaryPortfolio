@@ -76,3 +76,4 @@ packages/
 # Temporary files
 *.tmp
 *.temp
+*.vs

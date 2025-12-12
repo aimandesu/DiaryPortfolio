@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DiaryPortfolio.Domain\DiaryPortfolio.Domain.csproj" />
+    <ProjectReference Include="..\DiaryPortfolio.Application\DiaryPortfolio.Application.csproj" />
   </ItemGroup>
 
 </Project>
