@@ -30,34 +30,21 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 .WithOne(m => m.CollectionModel)
                 .HasForeignKey(m => m.CollectionId);
         });
-        
-        // not needed as EF already enforce this
-        // modelBuilder.Entity<SpaceModel>(builder =>
-        // {
-        //     builder
-        //         .HasOne(m => m.User)
-        //         .WithMany(c => c.SpaceModels)
-        //         .HasForeignKey(m => m.UserId);
-        // });
-        
+
         modelBuilder.Entity<MediaModel>(builder =>
         {
             builder
                 .HasOne(m => m.ConditionModel)
                 .WithOne(c => c.MediaModel)
                 .HasForeignKey<ConditionModel>(m => m.MediaId);
-            
+
             builder
                 .HasOne(m => m.LocationModel)
                 .WithOne(c => c.MediaModel)
                 .HasForeignKey<LocationModel>(m => m.MediaId);
 
-            builder
-                .HasOne(m => m.TextModel)
-                .WithOne(c => c.MediaModel)
-                .HasForeignKey<TextModel>(m => m.MediaId);
         });
 
     }
-    
+
 }
