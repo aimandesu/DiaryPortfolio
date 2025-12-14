@@ -72,6 +72,7 @@
 //     }
 // }
 
+using Bogus;
 using DiaryPortfolio.Domain.Entities;
 using DiaryPortfolio.Infrastructure.Data;
 using DiaryPortfolio.Infrastructure.Faker;
@@ -79,176 +80,235 @@ using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 public static class DatabaseSeed
 {
     public static void Seed(ApplicationDbContext context)
     {
-        context.Database.SetCommandTimeout(3600); // 1 hour timeout
+        // increase timeout for long-running bulk operations
+        context.Database.SetCommandTimeout(3600); // 1 hour
+
+        // keep original behavior safe: remember and restore QueryTrackingBehavior
+        var originalQueryTracking = context.ChangeTracker.QueryTrackingBehavior;
+        var originalAutoDetect = context.ChangeTracker.AutoDetectChangesEnabled;
 
         try
         {
-            // Disable tracking for better performance
+            Console.WriteLine("Starting seed process...");
+
+            // Disable tracking for better performance during inserts
             context.ChangeTracker.AutoDetectChangesEnabled = false;
             context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
 
-            Console.WriteLine("Starting seed process...");
+            // -----------------------
+            // Configurable counts
+            // -----------------------
+            var usersTotal = 10_000;
+            var usersBatch = 10_000;
 
-            // =========================
-            // USERS (100k)
-            // =========================
-            Console.WriteLine("Seeding Users...");
-            var users = new UserFaker().Generate(10_000);
-            context.BulkInsert(users, new BulkConfig
-            {
-                SetOutputIdentity = true,
-                BatchSize = 10_000
-            });
-            Console.WriteLine($"✓ Inserted {users.Count:N0} users");
+            var textTotal = 10;
 
-            // =========================
-            // TEXTS (1)
-            // =========================
-            // Create 10 text style presets
-            var texts = new TextFaker().Generate(10);
-            context.BulkInsert(texts, new BulkConfig { SetOutputIdentity = true });
-            var textIds = texts.Select(t => t.Id).ToList();
+            var spacesTotal = 50_000;      // adjust to desired total (e.g. 500_000)
+            var spacesBatch = 50_000;
 
-            // Each media picks one of the 10 styles
+            var collectionsTotal = 50_000; // adjust (e.g. 1_500_000)
+            var collectionsBatch = 100_000;
 
-            // =========================
-            // SPACES (500k)
-            // =========================
-            Console.WriteLine("Seeding Spaces...");
-            var spaceBatchSize = 50_000;
-            var totalSpaces = 50_000;
+            var mediasTotal = 50_000;      // adjust (e.g. 5_000_000)
+            var mediasBatch = 25_000;
 
-            for (int batch = 0; batch < totalSpaces / spaceBatchSize; batch++)
-            {
-                var spaces = new SpaceFaker().Generate(spaceBatchSize);
+            var locationsTotal = 20_000;
+            var conditionsTotal = 2_500;
 
-                for (int i = 0; i < spaces.Count; i++)
-                {
-                    spaces[i].UserId = users[(batch * spaceBatchSize + i) % users.Count].Id;
-                }
+            var photosTotal = 30_000;
+            var photosBatch = 50_000;
 
-                context.BulkInsert(spaces, new BulkConfig
-                {
-                    SetOutputIdentity = true,
-                    BatchSize = 10_000
-                });
-
-                Console.WriteLine($"  Batch {batch + 1}/{totalSpaces / spaceBatchSize}: {(batch + 1) * spaceBatchSize:N0} spaces inserted");
-            }
-
-            // Retrieve all space IDs for media assignment
-            var spaceIds = context.Set<SpaceModel>().Select(s => s.Id).ToList();
-            Console.WriteLine($"✓ Total spaces: {spaceIds.Count:N0}");
-
-            // =========================
-            // COLLECTIONS (1.5M)
-            // =========================
-            Console.WriteLine("Seeding Collections...");
-            var collectionBatchSize = 100_000;
-            var totalCollections = 50_000;
-
-            for (int batch = 0; batch < totalCollections / collectionBatchSize; batch++)
-            {
-                var collections = new CollectionFaker().Generate(collectionBatchSize);
-
-                context.BulkInsert(collections, new BulkConfig
-                {
-                    SetOutputIdentity = true,
-                    BatchSize = 20_000
-                });
-
-                Console.WriteLine($"  Batch {batch + 1}/{totalCollections / collectionBatchSize}: {(batch + 1) * collectionBatchSize:N0} collections inserted");
-            }
-
-            var collectionIds = context.Set<CollectionModel>().Select(c => c.Id).ToList();
-            Console.WriteLine($"✓ Total collections: {collectionIds.Count:N0}");
-
-            // =========================
-            // MEDIAS (5M) - CRITICAL: Process in smaller batches
-            // =========================
-            Console.WriteLine("Seeding Medias (this will take a while)...");
-            var mediaBatchSize = 25_000; // Smaller batches for large dataset
-            var totalMedias = 50_000;
             var random = new Random();
 
-            for (int batch = 0; batch < totalMedias / mediaBatchSize; batch++)
+            // =========================
+            // USERS
+            // =========================
+            Console.WriteLine("Seeding Users...");
+            var users = new List<UserModel>(usersTotal);
+            for (int offset = 0; offset < usersTotal; offset += usersBatch)
             {
-                var medias = new MediaFaker().Generate(mediaBatchSize);
-
-                // Assign foreign keys
-                for (int i = 0; i < medias.Count; i++)
+                var take = Math.Min(usersBatch, usersTotal - offset);
+                var batch = new UserFaker().Generate(take);
+                users.AddRange(batch);
+                context.BulkInsert(batch, new BulkConfig
                 {
-                    medias[i].SpaceId = spaceIds[random.Next(spaceIds.Count)];
-                    medias[i].CollectionId = collectionIds[random.Next(collectionIds.Count)];
-                    medias[i].TextId = textIds[random.Next(textIds.Count)];
+                    SetOutputIdentity = false,
+                    BatchSize = Math.Min(10_000, take)
+                });
+                Console.WriteLine($"  Inserted {users.Count:N0} / {usersTotal:N0} users");
+            }
+
+            // =========================
+            // TEXTS
+            // =========================
+            Console.WriteLine("Seeding Text styles...");
+            var texts = new TextFaker().Generate(textTotal);
+            context.BulkInsert(texts, new BulkConfig { SetOutputIdentity = false });
+            var textIds = texts.Select(t => t.Id).ToList();
+
+            // =========================
+            // SPACES
+            // =========================
+            Console.WriteLine("Seeding Spaces...");
+            var insertedSpaces = 0;
+            for (int offset = 0; offset < spacesTotal; offset += spacesBatch)
+            {
+                var take = Math.Min(spacesBatch, spacesTotal - offset);
+                var batch = new SpaceFaker().Generate(take);
+                for (int i = 0; i < batch.Count; i++)
+                {
+                    // assign user by round-robin to ensure valid FK
+                    batch[i].UserId = users[(insertedSpaces + i) % users.Count].Id;
                 }
 
-                context.BulkInsert(medias, new BulkConfig
+                context.BulkInsert(batch, new BulkConfig
                 {
-                    SetOutputIdentity = true,
-                    BatchSize = 5_000,
-                    PreserveInsertOrder = false // Faster without order preservation
+                    SetOutputIdentity = false,
+                    BatchSize = Math.Min(10_000, take)
                 });
 
-                // Progress update every 10 batches
-                if ((batch + 1) % 10 == 0 || batch == 0)
-                {
-                    var progress = (double)(batch + 1) / (totalMedias / mediaBatchSize) * 100;
-                    Console.WriteLine($"  Progress: {progress:F1}% - {(batch + 1) * mediaBatchSize:N0}/{totalMedias:N0} medias inserted");
-                }
+                insertedSpaces += batch.Count;
+                Console.WriteLine($"  Inserted {insertedSpaces:N0} / {spacesTotal:N0} spaces");
             }
 
-            var mediaIds = context.Set<MediaModel>().Select(m => m.Id).ToList();
-            Console.WriteLine($"✓ Total medias: {mediaIds.Count:N0}");
+            // get space ids from DB (no tracking)
+            var spaceIds = context.Set<SpaceModel>().AsNoTracking().Select(s => s.Id).ToList();
+            Console.WriteLine($"✓ Total spaces in DB: {spaceIds.Count:N0}");
 
             // =========================
-            // LOCATIONS (20k)
+            // COLLECTIONS
+            // =========================
+            Console.WriteLine("Seeding Collections...");
+            var insertedCollections = 0;
+            for (int offset = 0; offset < collectionsTotal; offset += collectionsBatch)
+            {
+                var take = Math.Min(collectionsBatch, collectionsTotal - offset);
+                var batch = new CollectionFaker().Generate(take);
+                context.BulkInsert(batch, new BulkConfig
+                {
+                    SetOutputIdentity = false,
+                    BatchSize = Math.Min(20_000, take)
+                });
+
+                insertedCollections += batch.Count;
+                Console.WriteLine($"  Inserted {insertedCollections:N0} / {collectionsTotal:N0} collections");
+            }
+
+            var collectionIds = context.Set<CollectionModel>().AsNoTracking().Select(c => c.Id).ToList();
+            Console.WriteLine($"✓ Total collections in DB: {collectionIds.Count:N0}");
+
+            // =========================
+            // MEDIAS
+            // =========================
+            Console.WriteLine("Seeding Medias...");
+            var insertedMedias = 0;
+            var mediaFaker = new MediaFaker();
+
+            for (int offset = 0; offset < mediasTotal; offset += mediasBatch)
+            {
+                var take = Math.Min(mediasBatch, mediasTotal - offset);
+                var batch = mediaFaker.Generate(take);
+
+                for (int i = 0; i < batch.Count; i++)
+                {
+                    batch[i].SpaceId = spaceIds[random.Next(spaceIds.Count)];
+                    batch[i].CollectionId = collectionIds[random.Next(collectionIds.Count)];
+                    batch[i].TextId = textIds[random.Next(textIds.Count)];
+                }
+
+                context.BulkInsert(batch, new BulkConfig
+                {
+                    SetOutputIdentity = false,
+                    BatchSize = Math.Min(5_000, take),
+                    PreserveInsertOrder = false
+                });
+
+                insertedMedias += batch.Count;
+                if ((insertedMedias % (mediasBatch * 1)) == 0 || insertedMedias == mediasTotal)
+                    Console.WriteLine($"  Inserted {insertedMedias:N0} / {mediasTotal:N0} medias");
+            }
+
+            // retrieve all media ids for dependent 1:1 relations
+            var mediaIds = context.Set<MediaModel>().AsNoTracking().Select(m => m.Id).ToList();
+            Console.WriteLine($"✓ Total medias in DB: {mediaIds.Count:N0}");
+
+            // =========================
+            // LOCATIONS (idempotent)
             // =========================
             Console.WriteLine("Seeding Locations...");
-            var locations = new LocationFaker().Generate(20_000);
+            // find media ids that do NOT already have a Location
+            var existingLocationMediaIds = context.Set<LocationModel>().AsNoTracking().Select(l => l.MediaId).ToHashSet();
+            var availableForLocation = mediaIds.Where(id => !existingLocationMediaIds.Contains(id)).ToList();
 
-            for (int i = 0; i < locations.Count; i++)
+            if (availableForLocation.Count == 0)
             {
-                locations[i].MediaId = mediaIds[i]; // First 20k medias
+                Console.WriteLine("  No media available for new locations (all medias already have a location).");
+            }
+            else
+            {
+                var toInsertCount = Math.Min(locationsTotal, availableForLocation.Count);
+                var locations = new LocationFaker().Generate(toInsertCount);
+
+                // assign unique MediaId values from available set
+                for (int i = 0; i < locations.Count; i++)
+                {
+                    locations[i].MediaId = availableForLocation[i];
+                }
+
+                context.BulkInsert(locations, new BulkConfig { BatchSize = 5_000 });
+                Console.WriteLine($"✓ Inserted {locations.Count:N0} locations (skipped existing)");
             }
 
-            context.BulkInsert(locations, new BulkConfig { BatchSize = 5_000 });
-            Console.WriteLine($"✓ Inserted {locations.Count:N0} locations");
-
             // =========================
-            // CONDITIONS (2.5k)
+            // CONDITIONS (idempotent)
             // =========================
             Console.WriteLine("Seeding Conditions...");
-            var conditions = new ConditionFaker().Generate(2_500);
+            var existingConditionMediaIds = context.Set<ConditionModel>().AsNoTracking().Select(c => c.MediaId).ToHashSet();
+            var availableForCondition = mediaIds.Where(id => !existingConditionMediaIds.Contains(id)).ToList();
 
-            for (int i = 0; i < conditions.Count; i++)
+            if (availableForCondition.Count == 0)
             {
-                conditions[i].MediaId = mediaIds[i]; // First 2.5k medias
+                Console.WriteLine("  No media available for new conditions (all medias already have a condition).");
+            }
+            else
+            {
+                var toInsertConditions = Math.Min(conditionsTotal, availableForCondition.Count);
+                var conditions = new ConditionFaker().Generate(toInsertConditions);
+
+                for (int i = 0; i < conditions.Count; i++)
+                {
+                    conditions[i].MediaId = availableForCondition[i];
+                }
+
+                context.BulkInsert(conditions, new BulkConfig { BatchSize = 1_000 });
+                Console.WriteLine($"✓ Inserted {conditions.Count:N0} conditions (skipped existing)");
             }
 
-            context.BulkInsert(conditions, new BulkConfig { BatchSize = 1_000 });
-            Console.WriteLine($"✓ Inserted {conditions.Count:N0} conditions");
-
             // =========================
-            // PHOTOS (300k)
+            // PHOTOS
             // =========================
             Console.WriteLine("Seeding Photos...");
-            var photoBatchSize = 50_000;
-            var totalPhotos = 30_000;
-
-            for (int batch = 0; batch < totalPhotos / photoBatchSize; batch++)
+            var insertedPhotos = 0;
+            for (int offset = 0; offset < photosTotal && offset < mediaIds.Count; offset += photosBatch)
             {
-                var photos = new PhotoFaker().Generate(photoBatchSize);
-                context.BulkInsert(photos, new BulkConfig { BatchSize = 10_000 });
-                Console.WriteLine($"  Batch {batch + 1}/{totalPhotos / photoBatchSize}: {(batch + 1) * photoBatchSize:N0} photos inserted");
+                var take = Math.Min(photosBatch, photosTotal - offset);
+                var batch = new PhotoFaker().Generate(take);
+
+                // assign MediaId for each photo; cycle through mediaIds
+                for (int i = 0; i < batch.Count; i++)
+                    batch[i].MediaId = mediaIds[(offset + i) % mediaIds.Count];
+
+                context.BulkInsert(batch, new BulkConfig { BatchSize = Math.Min(10_000, take) });
+                insertedPhotos += batch.Count;
+                Console.WriteLine($"  Inserted {insertedPhotos:N0} / {photosTotal:N0} photos");
             }
 
-            context.ChangeTracker.AutoDetectChangesEnabled = true;
             Console.WriteLine("✅ Seed completed successfully!");
         }
         catch (Exception ex)
@@ -256,6 +316,12 @@ public static class DatabaseSeed
             Console.WriteLine($"❌ Seed failed: {ex.Message}");
             Console.WriteLine($"Stack trace: {ex.StackTrace}");
             throw;
+        }
+        finally
+        {
+            // restore tracking behavior to original values
+            context.ChangeTracker.AutoDetectChangesEnabled = originalAutoDetect;
+            context.ChangeTracker.QueryTrackingBehavior = originalQueryTracking;
         }
     }
 }
