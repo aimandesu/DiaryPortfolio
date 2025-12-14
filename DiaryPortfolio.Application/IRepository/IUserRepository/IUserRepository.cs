@@ -10,5 +10,6 @@ namespace DiaryPortfolio.Application.IRepository.IUserRepository
     public interface IUserRepository
     {
         Task<UserModel?> GetUserByUsername(string username);
+        Task<UserModel?> SignUp(UserModel user, string password);
     }
 }

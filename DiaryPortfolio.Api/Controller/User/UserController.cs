@@ -1,7 +1,10 @@
 ﻿using DiaryPortfolio.Application.Common;
 using DiaryPortfolio.Application.DTOs.User;
+using DiaryPortfolio.Application.Features.User.Authentication.SignUp;
 using DiaryPortfolio.Application.Features.User.Get;
+using DiaryPortfolio.Domain.Entities;
 using Mediator;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DiaryPortfolio.Api.Controller.User
@@ -12,12 +15,15 @@ namespace DiaryPortfolio.Api.Controller.User
     {
 
         private readonly IMediator _mediator;
+        private readonly SignInManager<UserModel> _signInManager;
 
         public UserController(
-            IMediator mediator
+            IMediator mediator,
+            SignInManager<UserModel> signInManager
         )
         {
             _mediator = mediator;
+            _signInManager = signInManager;
         }
 
         [HttpGet("getUser")]
@@ -29,5 +35,21 @@ namespace DiaryPortfolio.Api.Controller.User
             return await _mediator.Send(request, cancellationToken);
         }
 
+        [HttpPost("signUp")]
+        public async Task<ActionResult<ResultResponse<SignUpResponse>>> SignUp(
+            [FromBody] SignUpRequest query,
+            CancellationToken cancellationToken
+        )
+        {
+            var request = new SignUpRequest(
+                query.Email,
+                query.Username,
+                query.Password,
+                query.PasswordConfirmation
+            );
+
+            return await _mediator.Send(request, cancellationToken);
+
+        }
     }
 }

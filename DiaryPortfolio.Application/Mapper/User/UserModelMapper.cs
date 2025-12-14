@@ -15,6 +15,8 @@ namespace DiaryPortfolio.Application.Mapper.User
             return new UserModelDto
             {
                 Name = userModel.Name,
+                Email = userModel?.Email ?? "",
+                UserName = userModel?.UserName ?? ""
             };
         }
     }
