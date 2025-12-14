@@ -9,7 +9,7 @@ namespace DiaryPortfolio.Application.Common
 {
     public class Pagination<T>
     {
-        public List<T> Data { get; set; } = new();
+        public List<T> Data { get; set; } = [];
         public int CurrentPage { get; set; }
         public int PerPage { get; set; }
         public int Total { get; set; }
