@@ -12,7 +12,11 @@ public static class ServiceExtensions
     public static void ConfigureInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         var connectionString = configuration.GetConnectionString("DefaultConnection");
-        services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
+        services.AddDbContext<ApplicationDbContext>(
+            options => options.UseSqlServer(
+                connectionString
+                )
+            );
         services.AddScoped<IUserRepository, UserRepository>();
     }
 }

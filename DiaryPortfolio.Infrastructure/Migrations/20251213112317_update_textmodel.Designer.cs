@@ -4,6 +4,7 @@ using DiaryPortfolio.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DiaryPortfolio.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251213112317_update_textmodel")]
+    partial class update_textmodel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -137,7 +140,8 @@ namespace DiaryPortfolio.Infrastructure.Migrations
 
                     b.HasIndex("SpaceModelId");
 
-                    b.HasIndex("TextId");
+                    b.HasIndex("TextId")
+                        .IsUnique();
 
                     b.ToTable("Medias");
                 });
@@ -485,7 +489,7 @@ namespace DiaryPortfolio.Infrastructure.Migrations
                     b.HasOne("DiaryPortfolio.Domain.Entities.TextModel", "TextModel")
                         .WithOne()
                         .HasForeignKey("DiaryPortfolio.Domain.Entities.MediaModel", "TextId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("CollectionModel");

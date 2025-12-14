@@ -43,6 +43,14 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 .WithOne(c => c.MediaModel)
                 .HasForeignKey<LocationModel>(m => m.MediaId);
 
+            builder
+                .HasOne(m => m.TextModel)
+                .WithOne() // no back-navigation on TextModel
+                .HasForeignKey<MediaModel>(m => m.TextId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasIndex(m => m.TextId)
+                 .IsUnique(false);
         });
 
     }
