@@ -77,3 +77,4 @@ packages/
 *.tmp
 *.temp
 *.vs
+*DiaryPortfolio.Api/uploads

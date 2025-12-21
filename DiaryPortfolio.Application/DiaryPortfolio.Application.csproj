@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Features\Media\Create\Short\" />
     <Folder Include="Features\Media\Get\" />
     <Folder Include="Features\User\Authentication\Login\" />
   </ItemGroup>
