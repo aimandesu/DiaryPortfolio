@@ -31,9 +31,9 @@ public class MediaModel
     //TextStyle Table
     public Guid TextId { get; set; }
     public TextModel? TextModel { get; set; }
-    
+
     //EF
-    public Guid CollectionId { get; set; }
+    public Guid? CollectionId { get; set; }
     public CollectionModel? CollectionModel { get; set; }
-    
+
 }
