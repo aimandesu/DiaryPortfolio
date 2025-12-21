@@ -23,13 +23,11 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<CollectionModel>(builder =>
-        {
-            builder
-                .HasMany(c => c.MediaModels)
-                .WithOne(m => m.CollectionModel)
-                .HasForeignKey(m => m.CollectionId);
-        });
+        modelBuilder.Entity<MediaModel>()
+            .HasOne(m => m.CollectionModel)
+            .WithMany(c => c.MediaModels)
+            .HasForeignKey(m => m.CollectionId)
+            .OnDelete(DeleteBehavior.SetNull);
 
         modelBuilder.Entity<MediaModel>(builder =>
         {
@@ -51,6 +49,24 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
             builder.HasIndex(m => m.TextId)
                  .IsUnique(false);
+        });
+
+        modelBuilder.Entity<PhotoModel>(builder =>
+        {
+            builder
+                .HasOne(p => p.MediaModel)
+                .WithMany(m => m.PhotoModels)
+                .HasForeignKey(p => p.MediaId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<VideoModel>(builder =>
+        {
+            builder
+                .HasOne(v => v.MediaModel)
+                .WithMany(m => m.VideoModels)
+                .HasForeignKey(v => v.MediaId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
     }

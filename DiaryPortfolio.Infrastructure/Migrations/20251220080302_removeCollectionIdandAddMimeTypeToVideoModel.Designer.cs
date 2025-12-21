@@ -4,6 +4,7 @@ using DiaryPortfolio.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DiaryPortfolio.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251220080302_removeCollectionIdandAddMimeTypeToVideoModel")]
+    partial class removeCollectionIdandAddMimeTypeToVideoModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -102,7 +105,7 @@ namespace DiaryPortfolio.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("CollectionId")
+                    b.Property<Guid?>("CollectionModelId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
@@ -133,7 +136,7 @@ namespace DiaryPortfolio.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CollectionId");
+                    b.HasIndex("CollectionModelId");
 
                     b.HasIndex("SpaceModelId");
 
@@ -154,6 +157,9 @@ namespace DiaryPortfolio.Infrastructure.Migrations
                     b.Property<Guid>("MediaId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("MediaModelId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Mime")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -170,7 +176,7 @@ namespace DiaryPortfolio.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MediaId");
+                    b.HasIndex("MediaModelId");
 
                     b.ToTable("Photos");
                 });
@@ -297,6 +303,9 @@ namespace DiaryPortfolio.Infrastructure.Migrations
                     b.Property<Guid>("MediaId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("MediaModelId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Mime")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -310,7 +319,7 @@ namespace DiaryPortfolio.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MediaId");
+                    b.HasIndex("MediaModelId");
 
                     b.ToTable("Videos");
                 });
@@ -472,8 +481,7 @@ namespace DiaryPortfolio.Infrastructure.Migrations
                 {
                     b.HasOne("DiaryPortfolio.Domain.Entities.CollectionModel", "CollectionModel")
                         .WithMany("MediaModels")
-                        .HasForeignKey("CollectionId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .HasForeignKey("CollectionModelId");
 
                     b.HasOne("DiaryPortfolio.Domain.Entities.SpaceModel", "SpaceModel")
                         .WithMany("MediaModels")
@@ -496,9 +504,7 @@ namespace DiaryPortfolio.Infrastructure.Migrations
                 {
                     b.HasOne("DiaryPortfolio.Domain.Entities.MediaModel", "MediaModel")
                         .WithMany("PhotoModels")
-                        .HasForeignKey("MediaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("MediaModelId");
 
                     b.Navigation("MediaModel");
                 });
@@ -518,9 +524,7 @@ namespace DiaryPortfolio.Infrastructure.Migrations
                 {
                     b.HasOne("DiaryPortfolio.Domain.Entities.MediaModel", "MediaModel")
                         .WithMany("VideoModels")
-                        .HasForeignKey("MediaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("MediaModelId");
 
                     b.Navigation("MediaModel");
                 });
