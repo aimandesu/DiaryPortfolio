@@ -1,8 +1,10 @@
+using DiaryPortfolio.Application.Helpers.Authentication;
+using DiaryPortfolio.Application.Helpers.Logger;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace DiaryPortfolio.Application
 {
@@ -14,6 +16,10 @@ namespace DiaryPortfolio.Application
             services.AddMediator(options =>
             {
                 options.ServiceLifetime = ServiceLifetime.Scoped;
+                options.PipelineBehaviors = [
+                    typeof(AuthBehavior<,>),
+                    typeof(LoggingBehavior<,>)
+                ];
             });
 
         }

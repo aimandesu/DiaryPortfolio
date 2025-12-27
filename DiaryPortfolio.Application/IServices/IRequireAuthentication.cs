@@ -6,11 +6,7 @@ using System.Threading.Tasks;
 
 namespace DiaryPortfolio.Application.IServices
 {
-    public interface IUserService
+    public interface IRequireAuthentication
     {
-        Guid? UserId { get; }
-        string? UserName { get; }
-        string? Email { get; }
-        public bool IsAuthenticated { get; }
     }
 }

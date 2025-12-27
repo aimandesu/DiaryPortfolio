@@ -1,3 +1,4 @@
+using DiaryPortfolio.Api;
 using DiaryPortfolio.Api.Environment;
 using DiaryPortfolio.Api.Extensions;
 using DiaryPortfolio.Application;
@@ -21,6 +22,7 @@ builder.Services.AddControllers()
 
 
 var app = builder.Build();
+app.ConfigureExceptionHandler();
 
 //app.EnsureSeed();
 app.MapIdentityApi<UserModel>();

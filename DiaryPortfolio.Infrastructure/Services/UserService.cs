@@ -19,7 +19,18 @@ namespace DiaryPortfolio.Infrastructure.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public string? UserId => _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        public Guid? UserId
+        {
+            get
+            {
+                var userIdString = _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (Guid.TryParse(userIdString, out var userId))
+                {
+                    return userId;
+                }
+                return null;
+            }
+        }
 
         public string? UserName => _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Name);
 
