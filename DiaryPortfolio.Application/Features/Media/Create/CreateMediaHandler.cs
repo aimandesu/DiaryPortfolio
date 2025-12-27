@@ -11,15 +11,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DiaryPortfolio.Application.Features.Media.Create.Post
+namespace DiaryPortfolio.Application.Features.Media.Create
 {
-    internal class PostHandler : IRequestHandler<PostRequest, ResultResponse<MediaModel>>
+    internal class CreateMediaHandler : IRequestHandler<CreateMediaRequest, ResultResponse<MediaModel>>
     {
         private readonly IFileHandlerRepository _fileHandlerRepository;
         private readonly IMediaHandlerRepository _mediaHandlerRepository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public PostHandler(
+        public CreateMediaHandler(
             IFileHandlerRepository fileHandlerRepository,
             IMediaHandlerRepository mediaHandlerRepository,
             IUnitOfWork unitOfWork
@@ -31,7 +31,7 @@ namespace DiaryPortfolio.Application.Features.Media.Create.Post
         }
 
         public async ValueTask<ResultResponse<MediaModel>> Handle(
-            PostRequest request, 
+            CreateMediaRequest request, 
             CancellationToken cancellationToken)
         {
             var uploadResult = await _fileHandlerRepository.DistributeFiles(
@@ -57,7 +57,7 @@ namespace DiaryPortfolio.Application.Features.Media.Create.Post
 
             if (uploadMediaResult.Error != Error.None)
             {
-                //remove pictures and videos from storage as media upload failed
+                //TODO remove pictures and videos from storage as media upload failed
                 return ResultResponse<MediaModel>.Failure(uploadMediaResult.Error);
             }
 

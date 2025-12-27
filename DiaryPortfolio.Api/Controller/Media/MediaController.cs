@@ -1,5 +1,5 @@
 ﻿using DiaryPortfolio.Application.Common;
-using DiaryPortfolio.Application.Features.Media.Create.Post;
+using DiaryPortfolio.Application.Features.Media.Create;
 using DiaryPortfolio.Application.Features.Media.GetAll;
 using DiaryPortfolio.Application.Helpers.Filter;
 using DiaryPortfolio.Domain.Entities;
@@ -57,7 +57,7 @@ namespace DiaryPortfolio.Api.Controller.Media
                     FileName = f.FileName
                 }).ToList(),
             };
-            var request = new PostRequest(mediaUpload);
+            var request = new CreateMediaRequest(mediaUpload);
             return await _mediator.Send(request, cancellationToken);
         }
 

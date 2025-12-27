@@ -25,7 +25,7 @@ namespace DiaryPortfolio.Infrastructure.Repository.FileHandler
             string fileName)
         {
             var date = DateTime.UtcNow;
-            var userId = _userService.UserId ?? "userIdHere";
+            var userId = _userService.UserId!.Value.ToString();
 
             var datePath = Path.Combine(
                 date.Year.ToString(),

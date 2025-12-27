@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Features\Media\Create\Short\**" />
+    <EmbeddedResource Remove="Features\Media\Create\Short\**" />
+    <None Remove="Features\Media\Create\Short\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Mediator.Abstractions" Version="3.0.1" />
     <PackageReference Include="Mediator.SourceGenerator" Version="3.0.1">
       <PrivateAssets>all</PrivateAssets>
@@ -19,8 +25,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\Media\Create\Short\" />
     <Folder Include="Features\Media\Get\" />
+    <Folder Include="Features\Space\Update\" />
     <Folder Include="Features\User\Authentication\Login\" />
   </ItemGroup>
 
