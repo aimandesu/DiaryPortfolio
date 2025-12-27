@@ -1,8 +1,6 @@
 ﻿using DiaryPortfolio.Application.Common;
-using DiaryPortfolio.Application.DTOs.User;
 using DiaryPortfolio.Application.IRepository.IAuthenticationRepository;
 using DiaryPortfolio.Application.IRepository.ITokenRepository;
-using DiaryPortfolio.Application.IRepository.IUserRepository;
 using DiaryPortfolio.Application.Mapper.User;
 using DiaryPortfolio.Domain.Entities;
 using Mediator;
@@ -12,58 +10,44 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DiaryPortfolio.Application.Features.User.Authentication.SignUp
+namespace DiaryPortfolio.Application.Features.User.Authentication.Login
 {
-    internal class SignUpHandler : IRequestHandler<SignUpRequest, ResultResponse<AuthenticationResponse>>
+    internal class LoginHandler : IRequestHandler<LoginRequest, ResultResponse<AuthenticationResponse>>
     {
         private readonly ITokenRepository _tokenRepository;
         private readonly IAuthenticationRepository _authenticationRepository;
 
-        public SignUpHandler(
+        public LoginHandler(
             ITokenRepository tokenRepository,
-            IAuthenticationRepository authenticationRepository
-        )
+            IAuthenticationRepository authenticationRepository)
         {
             _tokenRepository = tokenRepository;
             _authenticationRepository = authenticationRepository;
         }
 
         public async ValueTask<ResultResponse<AuthenticationResponse>> Handle(
-            SignUpRequest request, 
+            LoginRequest request, 
             CancellationToken cancellationToken)
         {
-            if (request.Password != request.PasswordConfirmation)
-            {
-                return ResultResponse<AuthenticationResponse>.Failure(
-                    new Error("PASSWORD_MISMATCH", "Password and confirmation do not match")
-                );
-            }
-
-            var signUpResult = await _authenticationRepository.SignUp(
-                user: new UserModel
-                {
-                    UserName = request.Username,
-                    Email = request.Email
-                },
+            var loginResult = await _authenticationRepository.Login(  
+                EmailOrUsername: request.EmailOrUsername,
                 password: request.Password
             );
 
-            if (signUpResult == null)
+            if (loginResult.Error != Error.None)
             {
-                return ResultResponse<AuthenticationResponse>.Failure(
-                    new Error("SIGN_UP_FAILED", "User sign up failed")
-                );
+                return ResultResponse<AuthenticationResponse>.Failure(loginResult.Error);
             }
 
             var token = _tokenRepository.GenerateToken(
-                Email: signUpResult.Email ?? "",
-                UserId: signUpResult?.Id ?? Guid.Empty
+                Email: loginResult.Result.Email ?? "",
+                UserId: loginResult.Result?.Id ?? Guid.Empty
             );
 
             return ResultResponse<AuthenticationResponse>.Success(
                 new AuthenticationResponse
                 {
-                    User = signUpResult?.ToUserModelDto(),
+                    User = loginResult.Result?.ToUserModelDto(),
                     JWTAccessToken = token.JWTAccessToken,
                     RefreshToken = token.RefreshToken,
                     ExpiresAt = token.ExpiresAt

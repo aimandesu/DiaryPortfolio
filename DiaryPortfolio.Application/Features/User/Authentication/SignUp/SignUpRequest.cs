@@ -12,5 +12,5 @@ namespace DiaryPortfolio.Application.Features.User.Authentication.SignUp
         string Email,
         string Username,
         string Password,
-        string PasswordConfirmation) : IRequest<ResultResponse<SignUpResponse>>;
+        string PasswordConfirmation) : IRequest<ResultResponse<AuthenticationResponse>>;
 }

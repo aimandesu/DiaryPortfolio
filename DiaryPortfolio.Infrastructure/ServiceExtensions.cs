@@ -1,3 +1,5 @@
+using DiaryPortfolio.Application.Helpers.Authentication;
+using DiaryPortfolio.Application.IRepository.IAuthenticationRepository;
 using DiaryPortfolio.Application.IRepository.IFileHandlerRepository;
 using DiaryPortfolio.Application.IRepository.IMediaHandlerRepository;
 using DiaryPortfolio.Application.IRepository.IMediaRepository;
@@ -40,5 +42,6 @@ public static class ServiceExtensions
         //Helper
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IAuthenticationRepository, AuthService>();
     }
 }

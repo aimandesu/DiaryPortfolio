@@ -6,9 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DiaryPortfolio.Application.Features.User.Authentication.SignUp
+namespace DiaryPortfolio.Application.Features.User.Authentication
 {
-    public class SignUpResponse : TokenModel
+    public class AuthenticationResponse : TokenModel
     {
         public UserModelDto? User { get; set; }
     }

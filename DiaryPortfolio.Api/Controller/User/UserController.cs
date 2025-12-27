@@ -1,5 +1,7 @@
 ﻿using DiaryPortfolio.Application.Common;
 using DiaryPortfolio.Application.DTOs.User;
+using DiaryPortfolio.Application.Features.User.Authentication;
+using DiaryPortfolio.Application.Features.User.Authentication.Login;
 using DiaryPortfolio.Application.Features.User.Authentication.SignUp;
 using DiaryPortfolio.Application.Features.User.Get;
 using DiaryPortfolio.Domain.Entities;
@@ -36,7 +38,7 @@ namespace DiaryPortfolio.Api.Controller.User
         }
 
         [HttpPost("signUp")]
-        public async Task<ActionResult<ResultResponse<SignUpResponse>>> SignUp(
+        public async Task<ActionResult<ResultResponse<AuthenticationResponse>>> SignUp(
             [FromBody] SignUpRequest query,
             CancellationToken cancellationToken
         )
@@ -50,6 +52,19 @@ namespace DiaryPortfolio.Api.Controller.User
 
             return await _mediator.Send(request, cancellationToken);
 
+        }
+
+        [HttpPost("login")]
+        public async Task<ActionResult<ResultResponse<AuthenticationResponse>>> Login(
+            [FromBody] LoginRequest query,
+            CancellationToken cancellationToken
+        )
+        {
+            var request = new LoginRequest(
+                query.EmailOrUsername,
+                query.Password
+            );
+            return await _mediator.Send(request, cancellationToken);
         }
     }
 }
