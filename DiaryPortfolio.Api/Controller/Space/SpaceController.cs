@@ -1,0 +1,33 @@
+﻿using DiaryPortfolio.Application.Common;
+using DiaryPortfolio.Application.Features.Space.Create;
+using DiaryPortfolio.Domain.Entities;
+using Mediator;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace DiaryPortfolio.Api.Controller.Space
+{
+    [Route("api/space")]
+    [ApiController]
+    public class SpaceController : ControllerBase
+    {
+        private readonly IMediator _mediator;
+        public SpaceController(
+            IMediator mediator
+        )
+        {
+            _mediator = mediator;
+        }
+
+        [HttpPost("addSpace")]
+        public async Task<ActionResult<ResultResponse<SpaceModel>>> AddSpace(
+            [FromForm] string Title,
+            CancellationToken cancellationToken
+        )
+        {
+            var request = new CreateSpaceRequest(Title);
+            return await _mediator.Send(request, cancellationToken);
+        }
+
+    }
+}
