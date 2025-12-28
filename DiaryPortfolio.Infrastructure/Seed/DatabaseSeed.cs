@@ -160,10 +160,10 @@ public static class DatabaseSeed
             for (int offset = 0; offset < spacesTotal; offset += spacesBatch)
             {
                 var take = Math.Min(spacesBatch, spacesTotal - offset);
-                var batch = new SpaceFaker().Generate(take);
+                var batch = new SpaceFaker(offset).Generate(take);
                 for (int i = 0; i < batch.Count; i++)
                 {
-                    // assign user by round-robin to ensure valid FK
+                    // Assign user by round-robin to ensure valid FK
                     batch[i].UserId = users[(insertedSpaces + i) % users.Count].Id;
                 }
 
@@ -177,8 +177,12 @@ public static class DatabaseSeed
                 Console.WriteLine($"  Inserted {insertedSpaces:N0} / {spacesTotal:N0} spaces");
             }
 
-            // get space ids from DB (no tracking)
-            var spaceIds = context.Set<SpaceModel>().AsNoTracking().Select(s => s.Id).ToList();
+            // Get space ids from DB (no tracking)
+            var spaceIds = context.Set<SpaceModel>()
+                .AsNoTracking()
+                .Select(s => s.Id)
+                .ToList();
+
             Console.WriteLine($"✓ Total spaces in DB: {spaceIds.Count:N0}");
 
             // =========================
