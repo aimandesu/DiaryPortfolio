@@ -78,3 +78,4 @@ packages/
 *.temp
 *.vs
 *DiaryPortfolio.Api/uploads
+*DiaryPortfolio.Api/ffprobe.exe
