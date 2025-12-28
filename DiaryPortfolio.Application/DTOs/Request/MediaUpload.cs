@@ -14,8 +14,8 @@ namespace DiaryPortfolio.Domain.Entities
         public string Description { get; set; } = string.Empty;
         public MediaStatus MediaStatus { get; set; } = MediaStatus.Public;
         public MediaType MediaType { get; set; } = MediaType.Post;
-        public Guid SpaceId { get; set; } = new Guid();
-        public Guid TextId { get; set; }
+        public required string SpaceTitle { get; set; }
+        public TextStyle TextTitle { get; set; } = TextStyle.TimesNewRoman;
         //actual files to be uploaded
         public List<MediaStream> FileStreams { get; set; } = [];
 

@@ -11,5 +11,5 @@ using System.Threading.Tasks;
 namespace DiaryPortfolio.Application.Features.Media.Create
 {
     public sealed record class CreateMediaRequest(
-        MediaUpload MediaUpload) : IRequest<ResultResponse<MediaModel>>, IRequireAuthentication;
+        MediaUpload MediaUpload) : IRequest<ResultResponse<MediaModel>>;
 }

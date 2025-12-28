@@ -20,6 +20,7 @@ namespace DiaryPortfolio.Api.Controller.Space
         }
 
         [HttpPost("addSpace")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<ActionResult<ResultResponse<SpaceModel>>> AddSpace(
             [FromForm] string Title,
             CancellationToken cancellationToken

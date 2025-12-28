@@ -9,10 +9,20 @@ namespace DiaryPortfolio.Infrastructure.Faker
 {
     public class SpaceFaker : Faker<SpaceModel>
     {
-        public SpaceFaker()
+        private int _counter;
+
+        public SpaceFaker(int startIndex = 0)
         {
+            _counter = startIndex;
+
             RuleFor(s => s.Id, f => Guid.NewGuid());
-            RuleFor(s => s.Title, f => f.Lorem.Word());
+
+            RuleFor(s => s.Title, f =>
+            {
+                var title = $"{f.Lorem.Word()}_{_counter++}";
+                return title;
+            });
+
             RuleFor(s => s.CreatedAt, f => f.Date.Past());
         }
     }

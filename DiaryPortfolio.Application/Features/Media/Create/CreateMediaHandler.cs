@@ -5,6 +5,9 @@ using DiaryPortfolio.Application.IServices;
 using DiaryPortfolio.Domain.Entities;
 using DiaryPortfolio.Domain.Enum;
 using Mediator;
+using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,6 +48,12 @@ namespace DiaryPortfolio.Application.Features.Media.Create
             }
 
             var uploadMediaResult = await _mediaHandlerRepository.UploadMedia(
+                title: request.MediaUpload.Title,
+                description: request.MediaUpload.Description,
+                mediaStatus: request.MediaUpload.MediaStatus,
+                mediaType: request.MediaUpload.MediaType,
+                textStyle: request.MediaUpload.TextTitle.ToString(),
+                spaceTitle: request.MediaUpload.SpaceTitle,
                 videos: uploadResult.Result
                     .Where(e => e.ContainsKey(MediaSubType.Video))
                     .Select(e => e[MediaSubType.Video].Videos)
@@ -55,15 +64,28 @@ namespace DiaryPortfolio.Application.Features.Media.Create
                     .ToList()!
             );
 
-            if (uploadMediaResult.Error != Error.None)
+            try
             {
-                //TODO remove pictures and videos from storage as media upload failed
-                return ResultResponse<MediaModel>.Failure(uploadMediaResult.Error);
+                await _unitOfWork.SaveChanges(cancellationToken);
+                return ResultResponse<MediaModel>.Success(uploadMediaResult.Result);
             }
+            catch (DbUpdateException ex)
+            {
+                // Rollback: delete uploaded files
+                _fileHandlerRepository.DeleteFiles(
+                    [
+                    .. uploadResult.Result
+                        .Where(e => e.ContainsKey(MediaSubType.Video))
+                        .Select(e => e[MediaSubType.Video].Videos?.Url ?? ""),
+                    .. uploadResult.Result
+                        .Where(e => e.ContainsKey(MediaSubType.Image))
+                        .Select(e => e[MediaSubType.Image].Photos?.Url ?? "")
+                    ]);
 
-            await _unitOfWork.SaveChanges(cancellationToken);
-
-            return uploadMediaResult;
+                return ResultResponse<MediaModel>.Failure(
+                    new Error("Database_Error", ex.InnerException?.Message ?? ex.Message)
+                );
+            }
 
         }
     }
