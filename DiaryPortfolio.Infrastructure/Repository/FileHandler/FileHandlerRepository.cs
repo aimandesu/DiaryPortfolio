@@ -23,6 +23,22 @@ namespace DiaryPortfolio.Infrastructure.Repository.FileHandler
             _filePathHandlerRepository = filePathHandlerRepository;
         }
 
+        public void DeleteFile(string filePath)
+        {
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
+        }
+
+        public void DeleteFiles(List<string> tempFilePaths)
+        {
+            foreach (var path in tempFilePaths)
+            {
+                DeleteFile(path);
+            }
+        }
+
         public async Task<ResultResponse<List<Dictionary<MediaSubType, MediaDistributor>>>> DistributeFiles(
             List<MediaStream> fileStreams,
             MediaType mediaType)
@@ -37,7 +53,7 @@ namespace DiaryPortfolio.Infrastructure.Repository.FileHandler
                 ".mp4", ".avi", ".mov", ".wmv", ".flv", ".mkv"
             };
 
-            List<Dictionary<MediaSubType, MediaDistributor>> distributedFiles = new();
+            List<Dictionary<MediaSubType, MediaDistributor>> distributedFiles = [];
 
             foreach (var media in fileStreams)
             {
@@ -140,16 +156,18 @@ namespace DiaryPortfolio.Infrastructure.Repository.FileHandler
                         }
                         break;
                     case MediaSubType.Video:
-                        //var inputFile = new MediaFile { Filename = filePath };
+                        var ffProbe = new NReco.VideoInfo.FFProbe();
+                        var videoInfo = ffProbe.GetMediaInfo(filePath);
 
-                        //using (var engine = new Engine())
-                        //{
-                        //    engine.GetMetadata(inputFile);
+                        // Find the video stream (in case there are multiple streams)
+                        var videoStream = videoInfo.Streams.FirstOrDefault(s => s.CodecType == "video");
 
-                        //    metadata.Width = inputFile.Metadata.VideoData.FrameSize.Split('x')[0];
-                        //    metadata.Height = inputFile.Metadata.VideoData.FrameSize.Split('x')[1];
-                        //    metadata.Duration = inputFile.Metadata.Duration.TotalSeconds;
-                        //}
+                        if (videoStream != null)
+                        {
+                            metadata.Width = videoStream.Width.ToString();
+                            metadata.Height = videoStream.Height.ToString();
+                            metadata.Duration = videoInfo.Duration.TotalSeconds;
+                        }
                         break;
                     default:
                         throw new ArgumentOutOfRangeException(nameof(mediaSubType), mediaSubType, null);

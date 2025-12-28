@@ -24,5 +24,13 @@ namespace DiaryPortfolio.Application.IRepository.IFileHandlerRepository
             string fileExtension
         );
 
+        void DeleteFiles(
+            List<string> tempFilePaths
+        );
+
+        void DeleteFile(
+            string filePath
+        );
+
     }
 }

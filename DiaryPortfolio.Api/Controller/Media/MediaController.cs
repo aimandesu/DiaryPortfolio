@@ -1,10 +1,12 @@
 ﻿using DiaryPortfolio.Application.Common;
 using DiaryPortfolio.Application.Features.Media.Create;
+using DiaryPortfolio.Application.Features.Media.Delete;
 using DiaryPortfolio.Application.Features.Media.GetAll;
 using DiaryPortfolio.Application.Helpers.Filter;
 using DiaryPortfolio.Domain.Entities;
 using DiaryPortfolio.Domain.Enum;
 using Mediator;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
@@ -35,13 +37,13 @@ namespace DiaryPortfolio.Api.Controller.Media
         }
 
         [HttpPost("uploadMedia")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<ActionResult<ResultResponse<MediaModel>>> UploadMedia(
             [FromForm] MediaUpload mediaUploadRequest,
             [FromForm] List<IFormFile> files,
             CancellationToken cancellationToken
         )
         {
-            var streams = files.Select(f => f.OpenReadStream()).ToList();
 
             var mediaUpload = new MediaUpload
             {
@@ -49,8 +51,8 @@ namespace DiaryPortfolio.Api.Controller.Media
                 Description = mediaUploadRequest.Description,
                 MediaStatus = mediaUploadRequest.MediaStatus,
                 MediaType = mediaUploadRequest.MediaType,
-                SpaceId = mediaUploadRequest.SpaceId,
-                //TextId = mediaUploadRequest.TextId,
+                SpaceTitle = mediaUploadRequest.SpaceTitle,
+                TextTitle = mediaUploadRequest.TextTitle,
                 FileStreams = files.Select(f => new MediaStream
                 {
                     Stream = f.OpenReadStream(),
@@ -58,6 +60,17 @@ namespace DiaryPortfolio.Api.Controller.Media
                 }).ToList(),
             };
             var request = new CreateMediaRequest(mediaUpload);
+            return await _mediator.Send(request, cancellationToken);
+        }
+
+        [HttpDelete("DeleteMedia")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<ActionResult<ResultResponse<MediaModel>>> DeleteMedia(
+            [FromQuery] string id,
+            CancellationToken cancellationToken
+        )
+        {
+            var request = new DeleteMediaRequest(id);
             return await _mediator.Send(request, cancellationToken);
         }
 
