@@ -42,4 +42,22 @@ namespace DiaryPortfolio.Application.Common
             };
         }
     }
+
+    public static class PaginationMapper
+    {
+        public static Pagination<TDestination> MapPagination<TSource, TDestination>(
+            this Pagination<TSource> source,
+            Func<TSource, TDestination> map)
+        {
+            return new Pagination<TDestination>
+            {
+                Data = source.Data.Select(map).ToList(),
+                CurrentPage = source.CurrentPage,
+                PerPage = source.PerPage,
+                Total = source.Total,
+                LastPage = source.LastPage
+            };
+        }
+    }
+
 }
