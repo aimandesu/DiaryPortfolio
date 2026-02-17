@@ -1,4 +1,6 @@
 ﻿using DiaryPortfolio.Application.Common;
+using DiaryPortfolio.Application.DTOs.Condition;
+using DiaryPortfolio.Application.DTOs.Location;
 using DiaryPortfolio.Application.IRepository.IMediaHandlerRepository;
 using DiaryPortfolio.Application.IServices;
 using DiaryPortfolio.Domain.Entities;
@@ -65,8 +67,10 @@ namespace DiaryPortfolio.Infrastructure.Repository.MediaHandler
             string description,
             MediaStatus mediaStatus,
             MediaType mediaType,
-            string spaceTitle,
+            string spaceId,
             string textStyle,
+            LocationModelDto? location,
+            ConditionModelDto? condition,
             List<VideoModel> videos,
             List<PhotoModel> photos
             )
@@ -75,15 +79,28 @@ namespace DiaryPortfolio.Infrastructure.Repository.MediaHandler
             try
             {
                
-                var textId = _context.TextStyle
+                var textLookup = _context.TextStyle
                     .Where(e => e.TextStyle.ToString() == textStyle)
                     .Select(e => e.Id)
                     .FirstOrDefault();
 
-                var spaceId = _context.Spaces
-                    .Where(e => e.Title == spaceTitle)
+                var spaceIdLookup = _context.Spaces
+                    .Where(e => e.Id == new Guid(spaceId))
                     .Select(e => e.Id)
                     .FirstOrDefault();
+
+                var locationLookup = new LocationModel
+                {
+                    Name = location?.Name ?? "",
+                    Latitude = location?.Latitude ?? "",
+                    Longitude = location?.Longitude ?? ""
+                };
+
+                var conditionLookup = new ConditionModel
+                {
+                    AvailableTime = condition?.AvailableTime ?? DateTime.UtcNow,
+                    DeletedTime = condition?.DeletedTime
+                };
 
                 var mediaUpload = new MediaModel
                 {
@@ -92,8 +109,10 @@ namespace DiaryPortfolio.Infrastructure.Repository.MediaHandler
                     MediaStatus = mediaStatus,
                     MediaType = mediaType,
                     CreatedAt = DateTime.UtcNow,
-                    TextId = textId,
-                    SpaceId = spaceId
+                    TextId = textLookup,
+                    SpaceId = spaceIdLookup,
+                    LocationModel = locationLookup,
+                    ConditionModel = conditionLookup,
                 };
 
                 foreach (var photo in photos)

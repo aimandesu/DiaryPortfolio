@@ -3,6 +3,7 @@ using DiaryPortfolio.Application.Helpers.Filter;
 using DiaryPortfolio.Application.IRepository.IMediaRepository;
 using DiaryPortfolio.Domain.Entities;
 using DiaryPortfolio.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -33,6 +34,13 @@ namespace DiaryPortfolio.Infrastructure.Repository.Media
            _logger.LogInformation("Fetching media for user with ID: {UserId}", userId);
 
             return await _context.Medias
+               .Include(m => m.SpaceModel)
+               .Include(m => m.LocationModel)
+               .Include(m => m.ConditionModel)
+               .Include(m => m.VideoModels)
+               .Include(m => m.PhotoModels)
+               .Include(m => m.TextModel)
+               .Include(m => m.CollectionModel)
                .Join(_context.Spaces,
                     m => m.SpaceId,
                     s => s.Id,

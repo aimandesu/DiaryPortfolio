@@ -79,7 +79,7 @@ namespace DiaryPortfolio.Infrastructure.Repository.FileHandler
                             {
                                 Photos = new PhotoModel
                                 {
-                                    Url = imagePath,
+                                    Url = "/" + imagePath.Replace("\\", "/"),
                                     Mime = metadata.Mime,
                                     Width = double.Parse(metadata.Width ?? "0"),
                                     Height = double.Parse(metadata.Height ?? "0"),
@@ -107,7 +107,7 @@ namespace DiaryPortfolio.Infrastructure.Repository.FileHandler
                             {
                                 Videos = new VideoModel
                                 {
-                                    Url = videoPath,
+                                    Url = "/" + videoPath.Replace("\\", "/"),
                                     Mime = metadata.Mime,
                                     Size = metadata.Size,
                                     Duration = (int)(metadata.Duration ?? 0)
