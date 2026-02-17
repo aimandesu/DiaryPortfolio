@@ -1,4 +1,5 @@
 ﻿using DiaryPortfolio.Application.Common;
+using DiaryPortfolio.Application.DTOs.Media;
 using DiaryPortfolio.Application.Features.Media.Create;
 using DiaryPortfolio.Application.Features.Media.Delete;
 using DiaryPortfolio.Application.Features.Media.GetAll;
@@ -8,6 +9,8 @@ using DiaryPortfolio.Domain.Enum;
 using Mediator;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace DiaryPortfolio.Api.Controller.Media
@@ -25,7 +28,7 @@ namespace DiaryPortfolio.Api.Controller.Media
         }
 
         [HttpGet("getAll")]
-        public async Task<ActionResult<ResultResponse<Pagination<MediaModel>>>> GetAllMediaByUsername(
+        public async Task<ActionResult<ResultResponse<Pagination<MediaModelDto>>>> GetAllMediaByUsername(
             [FromQuery] QuerySearchObject query,
             [FromQuery] string username,
             CancellationToken cancellationToken
@@ -38,21 +41,31 @@ namespace DiaryPortfolio.Api.Controller.Media
 
         [HttpPost("uploadMedia")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<ActionResult<ResultResponse<MediaModel>>> UploadMedia(
-            [FromForm] MediaUpload mediaUploadRequest,
+        public async Task<ActionResult<ResultResponse<MediaModelDto>>> UploadMedia(
+            [FromForm] string jsonMediaUploadRequest,
             [FromForm] List<IFormFile> files,
             CancellationToken cancellationToken
         )
         {
+            var mediaUploadRequest = JsonSerializer.Deserialize<MediaUpload>(
+                jsonMediaUploadRequest,
+                new JsonSerializerOptions
+                {
+                    Converters = { new JsonStringEnumConverter() },
+                    PropertyNameCaseInsensitive = true
+                }
+            );
 
             var mediaUpload = new MediaUpload
             {
-                Title = mediaUploadRequest.Title,
-                Description = mediaUploadRequest.Description,
-                MediaStatus = mediaUploadRequest.MediaStatus,
-                MediaType = mediaUploadRequest.MediaType,
-                SpaceTitle = mediaUploadRequest.SpaceTitle,
-                TextTitle = mediaUploadRequest.TextTitle,
+                Title = mediaUploadRequest?.Title ?? "",
+                Description = mediaUploadRequest?.Description ?? "",
+                MediaStatus = mediaUploadRequest?.MediaStatus ?? MediaStatus.Public,
+                MediaType = mediaUploadRequest?.MediaType ?? MediaType.Post,
+                SpaceId = mediaUploadRequest?.SpaceId ?? "",
+                TextTitle = mediaUploadRequest?.TextTitle ?? TextStyle.TimesNewRoman,
+                Location = mediaUploadRequest?.Location,
+                Condition = mediaUploadRequest?.Condition,
                 FileStreams = files.Select(f => new MediaStream
                 {
                     Stream = f.OpenReadStream(),

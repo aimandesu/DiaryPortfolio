@@ -1,7 +1,9 @@
 ﻿using DiaryPortfolio.Application.Common;
+using DiaryPortfolio.Application.DTOs.Media;
 using DiaryPortfolio.Application.IRepository.IFileHandlerRepository;
 using DiaryPortfolio.Application.IRepository.IMediaHandlerRepository;
 using DiaryPortfolio.Application.IServices;
+using DiaryPortfolio.Application.Mapper.Media;
 using DiaryPortfolio.Domain.Entities;
 using DiaryPortfolio.Domain.Enum;
 using Mediator;
@@ -16,7 +18,7 @@ using System.Threading.Tasks;
 
 namespace DiaryPortfolio.Application.Features.Media.Create
 {
-    internal class CreateMediaHandler : IRequestHandler<CreateMediaRequest, ResultResponse<MediaModel>>
+    internal class CreateMediaHandler : IRequestHandler<CreateMediaRequest, ResultResponse<MediaModelDto>>
     {
         private readonly IFileHandlerRepository _fileHandlerRepository;
         private readonly IMediaHandlerRepository _mediaHandlerRepository;
@@ -33,7 +35,7 @@ namespace DiaryPortfolio.Application.Features.Media.Create
             _unitOfWork = unitOfWork;
         }
 
-        public async ValueTask<ResultResponse<MediaModel>> Handle(
+        public async ValueTask<ResultResponse<MediaModelDto>> Handle(
             CreateMediaRequest request, 
             CancellationToken cancellationToken)
         {
@@ -44,7 +46,7 @@ namespace DiaryPortfolio.Application.Features.Media.Create
 
             if (uploadResult.Error != Error.None)
             {
-                return ResultResponse<MediaModel>.Failure(uploadResult.Error);
+                return ResultResponse<MediaModelDto>.Failure(uploadResult.Error);
             }
 
             var uploadMediaResult = await _mediaHandlerRepository.UploadMedia(
@@ -53,7 +55,9 @@ namespace DiaryPortfolio.Application.Features.Media.Create
                 mediaStatus: request.MediaUpload.MediaStatus,
                 mediaType: request.MediaUpload.MediaType,
                 textStyle: request.MediaUpload.TextTitle.ToString(),
-                spaceTitle: request.MediaUpload.SpaceTitle,
+                spaceId: request.MediaUpload.SpaceId,
+                location: request.MediaUpload.Location,
+                condition: request.MediaUpload.Condition,
                 videos: uploadResult.Result
                     .Where(e => e.ContainsKey(MediaSubType.Video))
                     .Select(e => e[MediaSubType.Video].Videos)
@@ -67,7 +71,7 @@ namespace DiaryPortfolio.Application.Features.Media.Create
             try
             {
                 await _unitOfWork.SaveChanges(cancellationToken);
-                return ResultResponse<MediaModel>.Success(uploadMediaResult.Result);
+                return ResultResponse<MediaModelDto>.Success(uploadMediaResult.Result.ToMediaModelDto());
             }
             catch (DbUpdateException ex)
             {
@@ -82,7 +86,7 @@ namespace DiaryPortfolio.Application.Features.Media.Create
                         .Select(e => e[MediaSubType.Image].Photos?.Url ?? "")
                     ]);
 
-                return ResultResponse<MediaModel>.Failure(
+                return ResultResponse<MediaModelDto>.Failure(
                     new Error("Database_Error", ex.InnerException?.Message ?? ex.Message)
                 );
             }

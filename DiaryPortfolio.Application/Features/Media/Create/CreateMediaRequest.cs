@@ -1,4 +1,5 @@
 ﻿using DiaryPortfolio.Application.Common;
+using DiaryPortfolio.Application.DTOs.Media;
 using DiaryPortfolio.Application.IServices;
 using DiaryPortfolio.Domain.Entities;
 using Mediator;
@@ -11,5 +12,5 @@ using System.Threading.Tasks;
 namespace DiaryPortfolio.Application.Features.Media.Create
 {
     public sealed record class CreateMediaRequest(
-        MediaUpload MediaUpload) : IRequest<ResultResponse<MediaModel>>;
+        MediaUpload MediaUpload) : IRequest<ResultResponse<MediaModelDto>>;
 }

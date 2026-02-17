@@ -1,4 +1,6 @@
 ﻿using DiaryPortfolio.Application.Common;
+using DiaryPortfolio.Application.DTOs.Condition;
+using DiaryPortfolio.Application.DTOs.Location;
 using DiaryPortfolio.Domain.Entities;
 using DiaryPortfolio.Domain.Enum;
 using System;
@@ -16,8 +18,10 @@ namespace DiaryPortfolio.Application.IRepository.IMediaHandlerRepository
             string description,
             MediaStatus mediaStatus,
             MediaType mediaType,
-            string spaceTitle,
+            string spaceId,
             string textStyle,
+            LocationModelDto? location,
+            ConditionModelDto? condition,
             List<VideoModel> videos,
             List<PhotoModel> photos
         );

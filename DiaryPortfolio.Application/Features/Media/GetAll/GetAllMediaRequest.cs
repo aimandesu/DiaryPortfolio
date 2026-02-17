@@ -1,4 +1,5 @@
 ﻿using DiaryPortfolio.Application.Common;
+using DiaryPortfolio.Application.DTOs.Media;
 using DiaryPortfolio.Application.Helpers.Filter;
 using DiaryPortfolio.Domain.Entities;
 using Mediator;
@@ -12,5 +13,5 @@ namespace DiaryPortfolio.Application.Features.Media.GetAll
 {
     public sealed record class GetAllMediaRequest(
         QuerySearchObject QuerySearchObject,
-        String Username) : IRequest<ResultResponse<Pagination<MediaModel>>>;
+        String Username) : IRequest<ResultResponse<Pagination<MediaModelDto>>>;
 }
