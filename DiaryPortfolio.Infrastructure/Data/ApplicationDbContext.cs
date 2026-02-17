@@ -53,8 +53,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
             builder
                 .HasOne(m => m.TextModel)
-                .WithOne() // no back-navigation on TextModel
-                .HasForeignKey<MediaModel>(m => m.TextId)
+                .WithMany()
+                .HasForeignKey(m => m.TextId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasIndex(m => m.TextId)
