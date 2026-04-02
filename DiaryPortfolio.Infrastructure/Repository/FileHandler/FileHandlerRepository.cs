@@ -25,9 +25,14 @@ namespace DiaryPortfolio.Infrastructure.Repository.FileHandler
 
         public void DeleteFile(string filePath)
         {
-            if (File.Exists(filePath))
+            var fullPath = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                filePath.TrimStart('/')
+            );
+
+            if (File.Exists(fullPath))
             {
-                File.Delete(filePath);
+                File.Delete(fullPath);
             }
         }
 

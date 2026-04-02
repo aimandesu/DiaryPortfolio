@@ -11,7 +11,7 @@ namespace DiaryPortfolio.Domain.Entities
 {
     public class MediaUpload
     {
-
+        public Guid? Id { get; set; } = null;
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public MediaStatus MediaStatus { get; set; } = MediaStatus.Public;

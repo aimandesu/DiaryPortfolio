@@ -3,6 +3,7 @@ using DiaryPortfolio.Application.DTOs.Media;
 using DiaryPortfolio.Application.Features.Media.Create;
 using DiaryPortfolio.Application.Features.Media.Delete;
 using DiaryPortfolio.Application.Features.Media.GetAll;
+using DiaryPortfolio.Application.Features.Media.Update;
 using DiaryPortfolio.Application.Helpers.Filter;
 using DiaryPortfolio.Domain.Entities;
 using DiaryPortfolio.Domain.Enum;
@@ -73,6 +74,45 @@ namespace DiaryPortfolio.Api.Controller.Media
                 }).ToList(),
             };
             var request = new CreateMediaRequest(mediaUpload);
+            return await _mediator.Send(request, cancellationToken);
+        }
+
+        [HttpPost("updateMedia/{id}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<ActionResult<ResultResponse<MediaModelDto>>> UpdateMedia(
+            [FromRoute] string id,
+            [FromForm] string jsonMediaUploadRequest,
+            [FromForm] List<IFormFile> files,
+            CancellationToken cancellationToken
+        )
+        {
+            var mediaUploadRequest = JsonSerializer.Deserialize<MediaUpload>(
+                jsonMediaUploadRequest,
+                new JsonSerializerOptions
+                {
+                    Converters = { new JsonStringEnumConverter() },
+                    PropertyNameCaseInsensitive = true
+                }
+            );
+
+            var mediaUpload = new MediaUpload
+            {
+                Title = mediaUploadRequest?.Title ?? "",
+                Description = mediaUploadRequest?.Description ?? "",
+                MediaStatus = mediaUploadRequest?.MediaStatus ?? MediaStatus.Public,
+                MediaType = mediaUploadRequest?.MediaType ?? MediaType.Post,
+                SpaceId = mediaUploadRequest?.SpaceId ?? "",
+                TextTitle = mediaUploadRequest?.TextTitle ?? TextStyle.TimesNewRoman,
+                Location = mediaUploadRequest?.Location,
+                Condition = mediaUploadRequest?.Condition,
+                FileStreams = files.Select(f => new MediaStream
+                {
+                    Stream = f.OpenReadStream(),
+                    FileName = f.FileName
+                }).ToList(),
+            };
+
+            var request = new UpdateMediaRequest(id, mediaUpload);
             return await _mediator.Send(request, cancellationToken);
         }
 

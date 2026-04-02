@@ -41,6 +41,8 @@ namespace DiaryPortfolio.Infrastructure.Repository.Media
                .Include(m => m.PhotoModels)
                .Include(m => m.TextModel)
                .Include(m => m.CollectionModel)
+               .Include(m => m.SelectionMediaStatusModel)
+               .Include(m => m.SelectionMediaTypeModel)
                .Join(_context.Spaces,
                     m => m.SpaceId,
                     s => s.Id,

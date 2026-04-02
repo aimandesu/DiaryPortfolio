@@ -18,8 +18,8 @@ namespace DiaryPortfolio.Application.DTOs.Media
         public Guid Id { get; set; } = Guid.NewGuid();
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
-        public MediaStatus MediaStatus { get; set; } = MediaStatus.Public;
-        public MediaType MediaType { get; set; } = MediaType.Post;
+        public string MediaStatus { get; set; } = string.Empty;
+        public string MediaType { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         //FK, EF 

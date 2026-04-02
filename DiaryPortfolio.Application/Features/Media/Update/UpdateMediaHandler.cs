@@ -5,10 +5,8 @@ using DiaryPortfolio.Application.IRepository.IFileHandlerRepository;
 using DiaryPortfolio.Application.IRepository.IMediaHandlerRepository;
 using DiaryPortfolio.Application.IServices;
 using DiaryPortfolio.Application.Mapper.Media;
-using DiaryPortfolio.Domain.Entities;
 using DiaryPortfolio.Domain.Enum;
 using Mediator;
-using Microsoft.AspNetCore.Components.Web;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -16,19 +14,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DiaryPortfolio.Application.Features.Media.Create
+namespace DiaryPortfolio.Application.Features.Media.Update
 {
-    internal class CreateMediaHandler : IRequestHandler<CreateMediaRequest, ResultResponse<MediaModelDto>>
+    internal class UpdateMediaHandler : IRequestHandler<UpdateMediaRequest, ResultResponse<MediaModelDto>>
     {
         private readonly IFileHandlerRepository _fileHandlerRepository;
         private readonly IMediaHandlerRepository _mediaHandlerRepository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public CreateMediaHandler(
-            IFileHandlerRepository fileHandlerRepository,
-            IMediaHandlerRepository mediaHandlerRepository,
-            IUnitOfWork unitOfWork
-        )
+        public UpdateMediaHandler(
+            IFileHandlerRepository fileHandlerRepository, 
+            IMediaHandlerRepository mediaHandlerRepository, 
+            IUnitOfWork unitOfWork)
         {
             _fileHandlerRepository = fileHandlerRepository;
             _mediaHandlerRepository = mediaHandlerRepository;
@@ -36,16 +33,12 @@ namespace DiaryPortfolio.Application.Features.Media.Create
         }
 
         public async ValueTask<ResultResponse<MediaModelDto>> Handle(
-            CreateMediaRequest request, 
+            UpdateMediaRequest request, 
             CancellationToken cancellationToken)
         {
             var mediaType = EnumHelper.ParseEnumOrThrow<MediaType>(
                 request.MediaUpload.MediaType.ToString()
             );
-
-            //var mediaStatus = EnumHelper.ParseEnumOrThrow<MediaStatus>(
-            //   request.MediaUpload.MediaStatus.ToString()
-            //);
 
             var uploadResult = await _fileHandlerRepository.DistributeFiles(
                 request.MediaUpload.FileStreams,
@@ -57,8 +50,16 @@ namespace DiaryPortfolio.Application.Features.Media.Create
                 return ResultResponse<MediaModelDto>.Failure(uploadResult.Error);
             }
 
-            var uploadMediaResult = await _mediaHandlerRepository.UploadMedia(
-                mediaUpload: request.MediaUpload,
+            var existingMedia = await _mediaHandlerRepository.GetMediaWithFiles(new Guid(request.mediaId));
+
+            var oldFilePaths = existingMedia?.Result?.PhotoModels
+                .Select(p => p.Url)
+                .Concat(existingMedia.Result.VideoModels.Select(v => v.Url))
+                .ToList();
+
+            var updateMediaResult = await _mediaHandlerRepository.UpdateMedia(
+                id: new Guid(request.mediaId),
+                media: request.MediaUpload,
                 videos: uploadResult.Result
                     .Where(e => e.ContainsKey(MediaSubType.Video))
                     .Select(e => e[MediaSubType.Video].Videos)
@@ -72,7 +73,10 @@ namespace DiaryPortfolio.Application.Features.Media.Create
             try
             {
                 await _unitOfWork.SaveChanges(cancellationToken);
-                return ResultResponse<MediaModelDto>.Success(uploadMediaResult.Result.ToMediaModelDto());
+
+                _fileHandlerRepository.DeleteFiles(oldFilePaths ?? []);
+
+                return ResultResponse<MediaModelDto>.Success(updateMediaResult.Result.ToMediaModelDto());
             }
             catch (DbUpdateException ex)
             {

@@ -17,20 +17,16 @@ namespace DiaryPortfolio.Application.IRepository.IFileHandlerRepository
             List<MediaStream> fileStreams,
             MediaType mediaType
         );
-
         MediaMetadata ReadMediaMetadata(
             string filePath, 
             MediaSubType mediaSubType,
             string fileExtension
         );
-
         void DeleteFiles(
             List<string> tempFilePaths
         );
-
         void DeleteFile(
             string filePath
         );
-
     }
 }
