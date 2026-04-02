@@ -247,27 +247,27 @@ public static class DatabaseSeed
             // =========================
             Console.WriteLine("Seeding Locations...");
             // find media ids that do NOT already have a Location
-            var existingLocationMediaIds = context.Set<LocationModel>().AsNoTracking().Select(l => l.MediaId).ToHashSet();
-            var availableForLocation = mediaIds.Where(id => !existingLocationMediaIds.Contains(id)).ToList();
+            //var existingLocationMediaIds = context.Set<LocationModel>().AsNoTracking().Select(l => l.MediaId).ToHashSet();
+            //var availableForLocation = mediaIds.Where(id => !existingLocationMediaIds.Contains(id)).ToList();
 
-            if (availableForLocation.Count == 0)
-            {
-                Console.WriteLine("  No media available for new locations (all medias already have a location).");
-            }
-            else
-            {
-                var toInsertCount = Math.Min(locationsTotal, availableForLocation.Count);
-                var locations = new LocationFaker().Generate(toInsertCount);
+            //if (availableForLocation.Count == 0)
+            //{
+            //    Console.WriteLine("  No media available for new locations (all medias already have a location).");
+            //}
+            //else
+            //{
+            //    var toInsertCount = Math.Min(locationsTotal, availableForLocation.Count);
+            //    var locations = new LocationFaker().Generate(toInsertCount);
 
-                // assign unique MediaId values from available set
-                for (int i = 0; i < locations.Count; i++)
-                {
-                    locations[i].MediaId = availableForLocation[i];
-                }
+            //    // assign unique MediaId values from available set
+            //    for (int i = 0; i < locations.Count; i++)
+            //    {
+            //        locations[i].MediaId = availableForLocation[i];
+            //    }
 
-                context.BulkInsert(locations, new BulkConfig { BatchSize = 5_000 });
-                Console.WriteLine($"✓ Inserted {locations.Count:N0} locations (skipped existing)");
-            }
+            //    context.BulkInsert(locations, new BulkConfig { BatchSize = 5_000 });
+            //    Console.WriteLine($"✓ Inserted {locations.Count:N0} locations (skipped existing)");
+            //}
 
             // =========================
             // CONDITIONS (idempotent)

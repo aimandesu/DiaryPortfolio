@@ -6,8 +6,4 @@ public class LocationModel
     public string Name { get; set; } = string.Empty;
     public string Latitude { get; set; } = string.Empty;
     public string Longitude { get; set; } = string.Empty;
-    
-    //EF Relationship
-    public Guid MediaId { get; set; }
-    public MediaModel? MediaModel { get; set; }
 }

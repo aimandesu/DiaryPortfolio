@@ -18,6 +18,18 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<PhotoModel> Photos { get; set; }
     public DbSet<VideoModel> Videos { get; set; }
     public DbSet<TextModel> TextStyle { get; set; }
+    //latest
+    public DbSet<ResumeModel> Resume { get; set; }
+    public DbSet<ResumeTemplateModel> ResumeTemplate { get; set; }
+    public DbSet<CustomUrl> CustomUrls { get; set; }
+    public DbSet<ExperienceModel> Experiences { get; set; }
+    public DbSet<SkillModel> Skills { get; set; }
+    public DbSet<EducationModel> Educations { get; set; }
+    public DbSet<ProjectModel> Projects { get; set; }
+    public DbSet<FilesModel> Files { get; set; }
+    public DbSet<TypeModel> Types { get; set; }
+    public DbSet<SelectionModel> Selections { get; set; }
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -47,9 +59,9 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 .HasForeignKey<ConditionModel>(m => m.MediaId);
 
             builder
-                .HasOne(m => m.LocationModel)
-                .WithOne(c => c.MediaModel)
-                .HasForeignKey<LocationModel>(m => m.MediaId);
+                .HasOne(m => m.LocationModel);
+                //.WithOne(c => c.MediaModel)
+                //.HasForeignKey<LocationModel>(m => m.MediaId);
 
             builder
                 .HasOne(m => m.TextModel)
@@ -61,12 +73,24 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                  .IsUnique(false);
 
             //Conversion to string for Enum properties
-            builder.Property(m => m.MediaStatus)
-                .HasConversion<string>();
+            //builder.Property(m => m.MediaStatus)
+            //    .HasConversion<string>();
 
-            builder.Property(m => m.MediaType)
-                .HasConversion<string>();
+            //builder.Property(m => m.MediaType)
+            //    .HasConversion<string>();
 
+            //somehow these two to make when reading the data, it able to automatically convert it
+            //builder
+            //    .HasOne(m => m.SelectionMediaStatusModel)
+            //    .WithMany()
+            //    .HasForeignKey(m => m.MediaStatusSelectionId)
+            //    .OnDelete(DeleteBehavior.NoAction);
+
+            //builder
+            //    .HasOne(m => m.SelectionMediaTypeModel)
+            //    .WithMany()
+            //    .HasForeignKey(m => m.MediaTypeSelectionId)
+            //    .OnDelete(DeleteBehavior.NoAction);
         });
 
         modelBuilder.Entity<PhotoModel>(builder =>
