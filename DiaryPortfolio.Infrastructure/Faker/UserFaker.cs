@@ -13,7 +13,7 @@ namespace DiaryPortfolio.Infrastructure.Faker
         {
             RuleFor(u => u.Id, f => Guid.NewGuid());
             RuleFor(u => u.UserName, f => f.Internet.UserName());
-            RuleFor(u => u.Name, f => f.Name.FullName());
+            //RuleFor(u => u.Name, f => f.Name.FullName());
             RuleFor(u => u.Email, f => f.Internet.Email());
             RuleFor(u => u.PasswordHash, f => f.Internet.Password());
         }

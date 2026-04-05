@@ -145,14 +145,6 @@ public static class DatabaseSeed
             }
 
             // =========================
-            // TEXTS
-            // =========================
-            Console.WriteLine("Seeding Text styles...");
-            var texts = new TextFaker().Generate(textTotal);
-            context.BulkInsert(texts, new BulkConfig { SetOutputIdentity = false });
-            var textIds = texts.Select(t => t.Id).ToList();
-
-            // =========================
             // SPACES
             // =========================
             Console.WriteLine("Seeding Spaces...");
@@ -164,7 +156,7 @@ public static class DatabaseSeed
                 for (int i = 0; i < batch.Count; i++)
                 {
                     // Assign user by round-robin to ensure valid FK
-                    batch[i].UserId = users[(insertedSpaces + i) % users.Count].Id;
+                    batch[i].DiaryProfile.UserId = users[(insertedSpaces + i) % users.Count].Id;
                 }
 
                 context.BulkInsert(batch, new BulkConfig
@@ -223,7 +215,6 @@ public static class DatabaseSeed
                 {
                     batch[i].SpaceId = spaceIds[random.Next(spaceIds.Count)];
                     batch[i].CollectionId = collectionIds[random.Next(collectionIds.Count)];
-                    batch[i].TextId = textIds[random.Next(textIds.Count)];
                 }
 
                 context.BulkInsert(batch, new BulkConfig
@@ -306,7 +297,7 @@ public static class DatabaseSeed
 
                 // assign MediaId for each photo; cycle through mediaIds
                 for (int i = 0; i < batch.Count; i++)
-                    batch[i].MediaId = mediaIds[(offset + i) % mediaIds.Count];
+                    //batch[i].MediaId = mediaIds[(offset + i) % mediaIds.Count];
 
                 context.BulkInsert(batch, new BulkConfig { BatchSize = Math.Min(10_000, take) });
                 insertedPhotos += batch.Count;

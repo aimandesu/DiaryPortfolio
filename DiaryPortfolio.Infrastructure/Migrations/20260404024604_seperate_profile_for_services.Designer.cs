@@ -4,6 +4,7 @@ using DiaryPortfolio.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DiaryPortfolio.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260404024604_seperate_profile_for_services")]
+    partial class seperate_profile_for_services
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -77,33 +80,29 @@ namespace DiaryPortfolio.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("PortfolioProfileId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("Url")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PortfolioProfileId");
-
-                    b.ToTable("CustomUrls");
-                });
-
-            modelBuilder.Entity("DiaryPortfolio.Domain.Entities.DiaryProfile", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasIndex("UserId");
+
+                    b.ToTable("CustomUrls");
+                });
+
+            modelBuilder.Entity("DiaryPortfolio.Domain.Entities.DiaryProfile", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("UserId");
 
                     b.ToTable("DiaryProfile");
                 });
@@ -137,14 +136,14 @@ namespace DiaryPortfolio.Infrastructure.Migrations
                     b.Property<Guid>("LocationId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("PortfolioProfileId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("SelectionId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("StartDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -154,7 +153,7 @@ namespace DiaryPortfolio.Infrastructure.Migrations
 
                     b.HasIndex("LocationId");
 
-                    b.HasIndex("PortfolioProfileId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Educations");
                 });
@@ -179,9 +178,6 @@ namespace DiaryPortfolio.Infrastructure.Migrations
                     b.Property<Guid>("LocationId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("PortfolioProfileId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("Role")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -189,11 +185,14 @@ namespace DiaryPortfolio.Infrastructure.Migrations
                     b.Property<DateTime?>("StartDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
                     b.HasIndex("LocationId");
 
-                    b.HasIndex("PortfolioProfileId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Experiences");
                 });
@@ -208,7 +207,7 @@ namespace DiaryPortfolio.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("SelectionId")
+                    b.Property<Guid>("SelectionId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Url")
@@ -273,7 +272,16 @@ namespace DiaryPortfolio.Infrastructure.Migrations
                     b.Property<Guid>("MediaTypeSelectionId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("SelectionMediaStatusModelId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("SelectionMediaTypeModelId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("SpaceId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("TextId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Title")
@@ -286,43 +294,15 @@ namespace DiaryPortfolio.Infrastructure.Migrations
 
                     b.HasIndex("LocationModelId");
 
-                    b.HasIndex("MediaStatusSelectionId");
+                    b.HasIndex("SelectionMediaStatusModelId");
 
-                    b.HasIndex("MediaTypeSelectionId");
+                    b.HasIndex("SelectionMediaTypeModelId");
 
                     b.HasIndex("SpaceId");
 
+                    b.HasIndex("TextId");
+
                     b.ToTable("Medias");
-                });
-
-            modelBuilder.Entity("DiaryPortfolio.Domain.Entities.MediaPhotoModel", b =>
-                {
-                    b.Property<Guid>("MediaModelId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("PhotoModelId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("MediaModelId", "PhotoModelId");
-
-                    b.HasIndex("PhotoModelId");
-
-                    b.ToTable("MediaPhotoModel");
-                });
-
-            modelBuilder.Entity("DiaryPortfolio.Domain.Entities.MediaVideoModel", b =>
-                {
-                    b.Property<Guid>("MediaModelId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("VideoModelId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("MediaModelId", "VideoModelId");
-
-                    b.HasIndex("VideoModelId");
-
-                    b.ToTable("MediaVideoModel");
                 });
 
             modelBuilder.Entity("DiaryPortfolio.Domain.Entities.PhotoModel", b =>
@@ -333,6 +313,9 @@ namespace DiaryPortfolio.Infrastructure.Migrations
 
                     b.Property<double>("Height")
                         .HasColumnType("float");
+
+                    b.Property<Guid>("MediaId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Mime")
                         .IsRequired()
@@ -350,13 +333,14 @@ namespace DiaryPortfolio.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("MediaId");
+
                     b.ToTable("Photos");
                 });
 
             modelBuilder.Entity("DiaryPortfolio.Domain.Entities.PortfolioProfile", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("About")
@@ -369,6 +353,9 @@ namespace DiaryPortfolio.Infrastructure.Migrations
 
                     b.Property<int?>("Age")
                         .HasColumnType("int");
+
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("LocationId")
                         .HasColumnType("uniqueidentifier");
@@ -387,25 +374,13 @@ namespace DiaryPortfolio.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                    b.HasKey("UserId");
 
-                    b.HasKey("Id");
+                    b.HasIndex("LocationId");
 
-                    b.HasIndex("LocationId")
-                        .IsUnique()
-                        .HasFilter("[LocationId] IS NOT NULL");
+                    b.HasIndex("ProfilePhotoId");
 
-                    b.HasIndex("ProfilePhotoId")
-                        .IsUnique()
-                        .HasFilter("[ProfilePhotoId] IS NOT NULL");
-
-                    b.HasIndex("ResumeId")
-                        .IsUnique()
-                        .HasFilter("[ResumeId] IS NOT NULL");
-
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasIndex("ResumeId");
 
                     b.ToTable("PortfolioProfile");
                 });
@@ -423,53 +398,31 @@ namespace DiaryPortfolio.Infrastructure.Migrations
                     b.Property<Guid?>("FileId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("PortfolioProfileId")
+                    b.Property<Guid?>("ProjectFileId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("ProjectFileId")
+                    b.Property<Guid?>("ProjectTypeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("SelectionId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.HasIndex("PortfolioProfileId");
+                    b.HasKey("Id");
 
                     b.HasIndex("ProjectFileId");
 
+                    b.HasIndex("ProjectTypeId");
+
+                    b.HasIndex("UserId");
+
                     b.ToTable("Projects");
-                });
-
-            modelBuilder.Entity("DiaryPortfolio.Domain.Entities.ProjectPhotoModel", b =>
-                {
-                    b.Property<Guid>("ProjectModelId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("PhotoModelId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("ProjectModelId", "PhotoModelId");
-
-                    b.HasIndex("PhotoModelId");
-
-                    b.ToTable("ProjectPhotoModel");
-                });
-
-            modelBuilder.Entity("DiaryPortfolio.Domain.Entities.ProjectVideoModel", b =>
-                {
-                    b.Property<Guid>("ProjectModelId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("VideoModelId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("ProjectModelId", "VideoModelId");
-
-                    b.HasIndex("VideoModelId");
-
-                    b.ToTable("ProjectVideoModel");
                 });
 
             modelBuilder.Entity("DiaryPortfolio.Domain.Entities.ResumeModel", b =>
@@ -481,18 +434,20 @@ namespace DiaryPortfolio.Infrastructure.Migrations
                     b.Property<Guid?>("FileId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("ResumeFileId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ResumeTemplateId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid?>("TemplateId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FileId")
-                        .IsUnique()
-                        .HasFilter("[FileId] IS NOT NULL");
+                    b.HasIndex("ResumeFileId");
 
-                    b.HasIndex("TemplateId")
-                        .IsUnique()
-                        .HasFilter("[TemplateId] IS NOT NULL");
+                    b.HasIndex("ResumeTemplateId");
 
                     b.ToTable("Resume");
                 });
@@ -550,20 +505,20 @@ namespace DiaryPortfolio.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("PortfolioProfileId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("SelectionId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("SkillLevelId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("PortfolioProfileId");
-
                     b.HasIndex("SkillLevelId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Skills");
                 });
@@ -577,19 +532,44 @@ namespace DiaryPortfolio.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("DiaryProfileId")
+                    b.Property<Guid?>("DiaryProfileUserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("DiaryProfileId", "Title")
+                    b.HasIndex("DiaryProfileUserId");
+
+                    b.HasIndex("Title")
                         .IsUnique();
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("Spaces");
+                });
+
+            modelBuilder.Entity("DiaryPortfolio.Domain.Entities.TextModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("FontSize")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TextStyle")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TextStyle");
                 });
 
             modelBuilder.Entity("DiaryPortfolio.Domain.Entities.TypeModel", b =>
@@ -624,6 +604,9 @@ namespace DiaryPortfolio.Infrastructure.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("DiaryProfileId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -653,6 +636,9 @@ namespace DiaryPortfolio.Infrastructure.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<Guid?>("PortfolioProfileId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
@@ -686,6 +672,9 @@ namespace DiaryPortfolio.Infrastructure.Migrations
                     b.Property<int>("Duration")
                         .HasColumnType("int");
 
+                    b.Property<Guid>("MediaId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Mime")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -698,6 +687,8 @@ namespace DiaryPortfolio.Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("MediaId");
 
                     b.ToTable("Videos");
                 });
@@ -846,13 +837,13 @@ namespace DiaryPortfolio.Infrastructure.Migrations
 
             modelBuilder.Entity("DiaryPortfolio.Domain.Entities.CustomUrl", b =>
                 {
-                    b.HasOne("DiaryPortfolio.Domain.Entities.PortfolioProfile", "PortfolioProfile")
+                    b.HasOne("DiaryPortfolio.Domain.Entities.UserModel", "User")
                         .WithMany()
-                        .HasForeignKey("PortfolioProfileId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("PortfolioProfile");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("DiaryPortfolio.Domain.Entities.DiaryProfile", b =>
@@ -882,9 +873,9 @@ namespace DiaryPortfolio.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DiaryPortfolio.Domain.Entities.PortfolioProfile", "PortfolioProfile")
+                    b.HasOne("DiaryPortfolio.Domain.Entities.UserModel", "User")
                         .WithMany()
-                        .HasForeignKey("PortfolioProfileId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -894,7 +885,7 @@ namespace DiaryPortfolio.Infrastructure.Migrations
 
                     b.Navigation("Location");
 
-                    b.Navigation("PortfolioProfile");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("DiaryPortfolio.Domain.Entities.ExperienceModel", b =>
@@ -905,15 +896,15 @@ namespace DiaryPortfolio.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DiaryPortfolio.Domain.Entities.PortfolioProfile", "PortfolioProfile")
+                    b.HasOne("DiaryPortfolio.Domain.Entities.UserModel", "User")
                         .WithMany()
-                        .HasForeignKey("PortfolioProfileId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Location");
 
-                    b.Navigation("PortfolioProfile");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("DiaryPortfolio.Domain.Entities.FileModel", b =>
@@ -921,7 +912,8 @@ namespace DiaryPortfolio.Infrastructure.Migrations
                     b.HasOne("DiaryPortfolio.Domain.Entities.SelectionModel", "Selection")
                         .WithMany()
                         .HasForeignKey("SelectionId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Selection");
                 });
@@ -939,20 +931,22 @@ namespace DiaryPortfolio.Infrastructure.Migrations
 
                     b.HasOne("DiaryPortfolio.Domain.Entities.SelectionModel", "SelectionMediaStatusModel")
                         .WithMany()
-                        .HasForeignKey("MediaStatusSelectionId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .HasForeignKey("SelectionMediaStatusModelId");
 
                     b.HasOne("DiaryPortfolio.Domain.Entities.SelectionModel", "SelectionMediaTypeModel")
                         .WithMany()
-                        .HasForeignKey("MediaTypeSelectionId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .HasForeignKey("SelectionMediaTypeModelId");
 
                     b.HasOne("DiaryPortfolio.Domain.Entities.SpaceModel", "SpaceModel")
                         .WithMany("MediaModels")
                         .HasForeignKey("SpaceId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DiaryPortfolio.Domain.Entities.TextModel", "TextModel")
+                        .WithMany()
+                        .HasForeignKey("TextId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("CollectionModel");
@@ -964,62 +958,34 @@ namespace DiaryPortfolio.Infrastructure.Migrations
                     b.Navigation("SelectionMediaTypeModel");
 
                     b.Navigation("SpaceModel");
+
+                    b.Navigation("TextModel");
                 });
 
-            modelBuilder.Entity("DiaryPortfolio.Domain.Entities.MediaPhotoModel", b =>
+            modelBuilder.Entity("DiaryPortfolio.Domain.Entities.PhotoModel", b =>
                 {
-                    b.HasOne("DiaryPortfolio.Domain.Entities.MediaModel", "Media")
-                        .WithMany("MediaPhotos")
-                        .HasForeignKey("MediaModelId")
+                    b.HasOne("DiaryPortfolio.Domain.Entities.MediaModel", "MediaModel")
+                        .WithMany("PhotoModels")
+                        .HasForeignKey("MediaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DiaryPortfolio.Domain.Entities.PhotoModel", "Photo")
-                        .WithMany()
-                        .HasForeignKey("PhotoModelId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Media");
-
-                    b.Navigation("Photo");
-                });
-
-            modelBuilder.Entity("DiaryPortfolio.Domain.Entities.MediaVideoModel", b =>
-                {
-                    b.HasOne("DiaryPortfolio.Domain.Entities.MediaModel", "Media")
-                        .WithMany("MediaVideos")
-                        .HasForeignKey("MediaModelId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DiaryPortfolio.Domain.Entities.VideoModel", "Video")
-                        .WithMany()
-                        .HasForeignKey("VideoModelId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Media");
-
-                    b.Navigation("Video");
+                    b.Navigation("MediaModel");
                 });
 
             modelBuilder.Entity("DiaryPortfolio.Domain.Entities.PortfolioProfile", b =>
                 {
                     b.HasOne("DiaryPortfolio.Domain.Entities.LocationModel", "Location")
-                        .WithOne()
-                        .HasForeignKey("DiaryPortfolio.Domain.Entities.PortfolioProfile", "LocationId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .WithMany()
+                        .HasForeignKey("LocationId");
 
                     b.HasOne("DiaryPortfolio.Domain.Entities.PhotoModel", "ProfilePhoto")
-                        .WithOne()
-                        .HasForeignKey("DiaryPortfolio.Domain.Entities.PortfolioProfile", "ProfilePhotoId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .WithMany()
+                        .HasForeignKey("ProfilePhotoId");
 
                     b.HasOne("DiaryPortfolio.Domain.Entities.ResumeModel", "Resume")
-                        .WithOne()
-                        .HasForeignKey("DiaryPortfolio.Domain.Entities.PortfolioProfile", "ResumeId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .WithMany()
+                        .HasForeignKey("ResumeId");
 
                     b.HasOne("DiaryPortfolio.Domain.Entities.UserModel", "User")
                         .WithOne("PortfolioProfile")
@@ -1038,70 +1004,36 @@ namespace DiaryPortfolio.Infrastructure.Migrations
 
             modelBuilder.Entity("DiaryPortfolio.Domain.Entities.ProjectModel", b =>
                 {
-                    b.HasOne("DiaryPortfolio.Domain.Entities.PortfolioProfile", "PortfolioProfile")
-                        .WithMany()
-                        .HasForeignKey("PortfolioProfileId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("DiaryPortfolio.Domain.Entities.FileModel", "ProjectFile")
                         .WithMany()
                         .HasForeignKey("ProjectFileId");
 
-                    b.Navigation("PortfolioProfile");
+                    b.HasOne("DiaryPortfolio.Domain.Entities.SelectionModel", "ProjectType")
+                        .WithMany()
+                        .HasForeignKey("ProjectTypeId");
+
+                    b.HasOne("DiaryPortfolio.Domain.Entities.UserModel", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("ProjectFile");
-                });
 
-            modelBuilder.Entity("DiaryPortfolio.Domain.Entities.ProjectPhotoModel", b =>
-                {
-                    b.HasOne("DiaryPortfolio.Domain.Entities.PhotoModel", "Photo")
-                        .WithMany()
-                        .HasForeignKey("PhotoModelId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("ProjectType");
 
-                    b.HasOne("DiaryPortfolio.Domain.Entities.ProjectModel", "Project")
-                        .WithMany("ProjectPhotos")
-                        .HasForeignKey("ProjectModelId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Photo");
-
-                    b.Navigation("Project");
-                });
-
-            modelBuilder.Entity("DiaryPortfolio.Domain.Entities.ProjectVideoModel", b =>
-                {
-                    b.HasOne("DiaryPortfolio.Domain.Entities.ProjectModel", "Project")
-                        .WithMany("ProjectVideos")
-                        .HasForeignKey("ProjectModelId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DiaryPortfolio.Domain.Entities.VideoModel", "Video")
-                        .WithMany()
-                        .HasForeignKey("VideoModelId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Project");
-
-                    b.Navigation("Video");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("DiaryPortfolio.Domain.Entities.ResumeModel", b =>
                 {
                     b.HasOne("DiaryPortfolio.Domain.Entities.FileModel", "ResumeFile")
-                        .WithOne()
-                        .HasForeignKey("DiaryPortfolio.Domain.Entities.ResumeModel", "FileId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .WithMany()
+                        .HasForeignKey("ResumeFileId");
 
                     b.HasOne("DiaryPortfolio.Domain.Entities.ResumeTemplateModel", "ResumeTemplate")
-                        .WithOne()
-                        .HasForeignKey("DiaryPortfolio.Domain.Entities.ResumeModel", "TemplateId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .WithMany()
+                        .HasForeignKey("ResumeTemplateId");
 
                     b.Navigation("ResumeFile");
 
@@ -1121,30 +1053,45 @@ namespace DiaryPortfolio.Infrastructure.Migrations
 
             modelBuilder.Entity("DiaryPortfolio.Domain.Entities.SkillModel", b =>
                 {
-                    b.HasOne("DiaryPortfolio.Domain.Entities.PortfolioProfile", "PortfolioProfile")
-                        .WithMany()
-                        .HasForeignKey("PortfolioProfileId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("DiaryPortfolio.Domain.Entities.SelectionModel", "SkillLevel")
                         .WithMany()
                         .HasForeignKey("SkillLevelId");
 
-                    b.Navigation("PortfolioProfile");
+                    b.HasOne("DiaryPortfolio.Domain.Entities.UserModel", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("SkillLevel");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("DiaryPortfolio.Domain.Entities.SpaceModel", b =>
                 {
-                    b.HasOne("DiaryPortfolio.Domain.Entities.DiaryProfile", "DiaryProfile")
+                    b.HasOne("DiaryPortfolio.Domain.Entities.DiaryProfile", null)
                         .WithMany("SpaceModels")
-                        .HasForeignKey("DiaryProfileId")
+                        .HasForeignKey("DiaryProfileUserId");
+
+                    b.HasOne("DiaryPortfolio.Domain.Entities.UserModel", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("DiaryProfile");
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("DiaryPortfolio.Domain.Entities.VideoModel", b =>
+                {
+                    b.HasOne("DiaryPortfolio.Domain.Entities.MediaModel", "MediaModel")
+                        .WithMany("VideoModels")
+                        .HasForeignKey("MediaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MediaModel");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -1212,16 +1159,9 @@ namespace DiaryPortfolio.Infrastructure.Migrations
                 {
                     b.Navigation("ConditionModel");
 
-                    b.Navigation("MediaPhotos");
+                    b.Navigation("PhotoModels");
 
-                    b.Navigation("MediaVideos");
-                });
-
-            modelBuilder.Entity("DiaryPortfolio.Domain.Entities.ProjectModel", b =>
-                {
-                    b.Navigation("ProjectPhotos");
-
-                    b.Navigation("ProjectVideos");
+                    b.Navigation("VideoModels");
                 });
 
             modelBuilder.Entity("DiaryPortfolio.Domain.Entities.SpaceModel", b =>

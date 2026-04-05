@@ -18,6 +18,7 @@ using DiaryPortfolio.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace DiaryPortfolio.Infrastructure;
 
@@ -27,9 +28,10 @@ public static class ServiceExtensions
     {
         var connectionString = configuration.GetConnectionString("DefaultConnection");
         services.AddDbContext<ApplicationDbContext>(
-            options => options.UseSqlServer(
-                connectionString
-                )
+            options => options
+                .UseSqlServer(connectionString)
+                .LogTo(Console.WriteLine, LogLevel.Information)
+                .EnableSensitiveDataLogging()
             );
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IMediaRepository, MediaRepository>();
