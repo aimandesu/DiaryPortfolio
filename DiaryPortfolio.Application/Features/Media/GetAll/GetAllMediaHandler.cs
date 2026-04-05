@@ -33,7 +33,7 @@ namespace DiaryPortfolio.Application.Features.Media.GetAll
             CancellationToken cancellationToken)
         {
            
-            var user = await _userRepository.GetUserByUsername(request.Username);
+            var user = await _userRepository.GetUserByUsername(request.Username, Domain.Enum.ProfileType.Diary);
 
             if (user == null)
             {
@@ -48,9 +48,9 @@ namespace DiaryPortfolio.Application.Features.Media.GetAll
                 request.QuerySearchObject,
                 userId);
 
-            var mapped = mediaPagination.MapPagination(e => e.ToMediaModelDto());
+            //var mapped = mediaPagination.MapPagination(e => e.ToMediaModelDto());
 
-            return ResultResponse<Pagination<MediaModelDto>>.Success(mapped);
+            return ResultResponse<Pagination<MediaModelDto>>.Success(mediaPagination); //mapped
         }
     }
 }

@@ -2,6 +2,7 @@
 using DiaryPortfolio.Application.DTOs.Media;
 using DiaryPortfolio.Application.Helpers.Filter;
 using DiaryPortfolio.Domain.Entities;
+using DiaryPortfolio.Domain.Enum;
 using Mediator;
 using System;
 using System.Collections.Generic;

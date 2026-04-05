@@ -39,11 +39,16 @@ namespace DiaryPortfolio.Application.Features.User.Authentication.SignUp
                 );
             }
 
+            var portfolioProfile = new PortfolioProfile();
+            var diaryProfile =  new DiaryProfile();  //--remove for now because not using it, for 2nd phase
+
             var signUpResult = await _authenticationRepository.SignUp(
                 user: new UserModel
                 {
                     UserName = request.Username,
-                    Email = request.Email
+                    Email = request.Email,
+                    PortfolioProfile = portfolioProfile,
+                    DiaryProfile = diaryProfile,
                 },
                 password: request.Password
             );
@@ -63,7 +68,7 @@ namespace DiaryPortfolio.Application.Features.User.Authentication.SignUp
             return ResultResponse<AuthenticationResponse>.Success(
                 new AuthenticationResponse
                 {
-                    User = signUpResult?.ToUserModelDto(),
+                    User = signUpResult?.ToPortfolioProfileDto(),
                     JWTAccessToken = token.JWTAccessToken,
                     RefreshToken = token.RefreshToken,
                     ExpiresAt = token.ExpiresAt

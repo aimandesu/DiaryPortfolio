@@ -22,12 +22,13 @@ namespace DiaryPortfolio.Application.Features.User.Get
             _userRepository = userRepository;
         }
 
-        public async ValueTask<ResultResponse<UserModelDto>> Handle(
+        public async ValueTask<ResultResponse<UserModelDto>> Handle( //should look which user you want to search, because we have two modes
             GetUserRequest request,
             CancellationToken cancellationToken
         )
         {
-            var user = await _userRepository.GetUserByUsername(request.Username);
+            var user = await _userRepository.GetUserByUsername(
+                request.Username, request.ProfileType);
 
             if (user == null)
             {
@@ -36,11 +37,11 @@ namespace DiaryPortfolio.Application.Features.User.Get
                 );
             }
 
-            return ResultResponse<UserModelDto>.Success(user.ToUserModelDto());
-
-
+            return ResultResponse<UserModelDto>.Success(
+                request.ProfileType == Domain.Enum.ProfileType.Portfolio 
+                    ? user.ToPortfolioProfileDto() 
+                    : user.ToDiaryProfileDto()
+                );
         }
-
-
     }
 }

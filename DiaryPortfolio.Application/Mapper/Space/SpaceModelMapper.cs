@@ -16,7 +16,8 @@ namespace DiaryPortfolio.Application.Mapper.Space
             {
                 Id = spaceModel.Id,
                 Title = spaceModel.Title,
-                CreatedAt = spaceModel.CreatedAt
+                CreatedAt = spaceModel.CreatedAt,
+                UserId = spaceModel.DiaryProfileId
             };
         }
     }

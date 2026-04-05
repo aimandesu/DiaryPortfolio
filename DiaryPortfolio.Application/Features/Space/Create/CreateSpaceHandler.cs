@@ -1,6 +1,8 @@
 ﻿using DiaryPortfolio.Application.Common;
+using DiaryPortfolio.Application.DTOs.Space;
 using DiaryPortfolio.Application.IRepository.ISpaceRepository;
 using DiaryPortfolio.Application.IServices;
+using DiaryPortfolio.Application.Mapper.Space;
 using DiaryPortfolio.Domain.Entities;
 using Mediator;
 using Microsoft.EntityFrameworkCore;
@@ -12,38 +14,35 @@ using System.Threading.Tasks;
 
 namespace DiaryPortfolio.Application.Features.Space.Create
 {
-    internal class CreateSpaceHandler : IRequestHandler<CreateSpaceRequest, ResultResponse<SpaceModel>>
+    internal class CreateSpaceHandler : IRequestHandler<CreateSpaceRequest, ResultResponse<SpaceModelDto>>
     {
         private readonly ISpaceRepository _spaceRepository;
-        private readonly IUserService _userService;
         private readonly IUnitOfWork _unitOfWork;
 
         public CreateSpaceHandler(
             ISpaceRepository spaceRepository,
-            IUserService userService,
             IUnitOfWork unitOfWork)
         {
             _spaceRepository = spaceRepository;
-            _userService = userService;
             _unitOfWork = unitOfWork;
         }
 
-        public async ValueTask<ResultResponse<SpaceModel>> Handle(
+        public async ValueTask<ResultResponse<SpaceModelDto>> Handle(
             CreateSpaceRequest request,
             CancellationToken cancellationToken)
         {
 
-            var space = new SpaceModel
-            {
-                Title = request.Title,
-                CreatedAt = DateTime.UtcNow,
-                UserId = _userService.UserId!.Value
-            };
+            var response = await _spaceRepository.AddSpace(request.Title);
 
-            _spaceRepository.AddSpace(space);
+            if(response.Error != Error.None)
+            {
+                return ResultResponse<SpaceModelDto>.Failure(response.Error);
+            }
+
             await _unitOfWork.SaveChanges(cancellationToken);
 
-            return ResultResponse<SpaceModel>.Success(space);
+            return ResultResponse<SpaceModelDto>.Success(
+                response.Result.ToSpaceModelDto());
         }
 
     }

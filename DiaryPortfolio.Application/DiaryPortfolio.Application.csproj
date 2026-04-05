@@ -29,6 +29,7 @@
   <ItemGroup>
     <Folder Include="Features\Media\Get\" />
     <Folder Include="Features\Space\Update\" />
+    <Folder Include="Features\User\Profile\Update\" />
   </ItemGroup>
 	
   <ItemGroup>

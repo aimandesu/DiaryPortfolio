@@ -52,9 +52,9 @@ namespace DiaryPortfolio.Application.Features.Media.Update
 
             var existingMedia = await _mediaHandlerRepository.GetMediaWithFiles(new Guid(request.mediaId));
 
-            var oldFilePaths = existingMedia?.Result?.PhotoModels
-                .Select(p => p.Url)
-                .Concat(existingMedia.Result.VideoModels.Select(v => v.Url))
+            var oldFilePaths = existingMedia.Result?.MediaPhotos
+                .Select(p => p?.Photo?.Url ?? "")
+                .Concat(existingMedia.Result.MediaVideos.Select(v => v?.Video?.Url ?? ""))
                 .ToList();
 
             var updateMediaResult = await _mediaHandlerRepository.UpdateMedia(
@@ -72,9 +72,12 @@ namespace DiaryPortfolio.Application.Features.Media.Update
 
             try
             {
+                if (oldFilePaths != null)
+                {
+                    _fileHandlerRepository.DeleteFiles(oldFilePaths);
+                }
+                
                 await _unitOfWork.SaveChanges(cancellationToken);
-
-                _fileHandlerRepository.DeleteFiles(oldFilePaths ?? []);
 
                 return ResultResponse<MediaModelDto>.Success(updateMediaResult.Result.ToMediaModelDto());
             }

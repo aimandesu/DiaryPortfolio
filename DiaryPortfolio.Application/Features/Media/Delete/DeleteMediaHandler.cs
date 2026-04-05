@@ -34,18 +34,20 @@ namespace DiaryPortfolio.Application.Features.Media.Delete
             DeleteMediaRequest request, 
             CancellationToken cancellationToken)
         {
-            var mediaFiles = _mediaHandlerRepository.DeleteMedia(request.MediaId);
+            var mediaFiles = _mediaHandlerRepository.GetMediaFiles(request.MediaId);
 
             if (mediaFiles.Count == 0)
             {
                 return ResultResponse<MediaModel>.Failure(new Error("NOT FOUND", "Media Files not found"));
             }
-            else
-            {
-                _fileHandlerRepository.DeleteFiles(mediaFiles);
-                await _unitOfWork.SaveChanges(cancellationToken);
-                return ResultResponse<MediaModel>.Success(new MediaModel { Id =  new Guid(request.MediaId) });
-            }
+
+            _fileHandlerRepository.DeleteFiles(mediaFiles);
+            await _unitOfWork.SaveChanges(cancellationToken);
+
+            return ResultResponse<MediaModel>.Success(
+                new MediaModel { Id = new Guid(request.MediaId) }
+            );
+
         }
     }
 }

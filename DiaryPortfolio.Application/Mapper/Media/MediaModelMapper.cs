@@ -1,9 +1,7 @@
 ﻿using DiaryPortfolio.Application.DTOs.Media;
 using DiaryPortfolio.Application.Mapper.Condition;
 using DiaryPortfolio.Application.Mapper.Location;
-using DiaryPortfolio.Application.Mapper.Photo;
 using DiaryPortfolio.Application.Mapper.Space;
-using DiaryPortfolio.Application.Mapper.Video;
 using DiaryPortfolio.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -25,14 +23,12 @@ namespace DiaryPortfolio.Application.Mapper.Media
                 MediaStatus = mediaModel.SelectionMediaStatusModel?.Selection ?? "",
                 MediaType = mediaModel.SelectionMediaTypeModel?.Selection ?? "",
                 CreatedAt = mediaModel.CreatedAt,
-                SpaceId = mediaModel.SpaceId,
+                //SpaceId = mediaModel.SpaceId,
                 SpaceModel = mediaModel?.SpaceModel?.ToSpaceModelDto(),
                 LocationModel = mediaModel?.LocationModel?.ToLocationModelDto(),
                 ConditionModel = mediaModel?.ConditionModel?.ToConditionModelDto(),
-                VideoModels = mediaModel?.VideoModels?.Select(video => video.ToVideoModelDto()).ToList() ?? [],
-                PhotoModels = mediaModel?.PhotoModels?.Select(photo => photo.ToPhotoModelDto()).ToList() ?? [],
-                //TextId = mediaModel?.TextId ?? Guid.NewGuid(),
-                TextModel = mediaModel?.TextModel,
+                VideoModels   = mediaModel?.MediaVideos?.Select(v => v.Video).OfType<VideoModel>().ToList() ?? [],
+                PhotoModels = mediaModel?.MediaPhotos?.Select(p => p.Photo).OfType<PhotoModel>().ToList() ?? [],
                 //CollectionId = mediaModel?.CollectionId,
                 CollectionModel = mediaModel?.CollectionModel
             };

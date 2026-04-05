@@ -1,6 +1,6 @@
 ﻿using DiaryPortfolio.Application.Common;
 using DiaryPortfolio.Application.DTOs.Media;
-using DiaryPortfolio.Domain.Entities;
+using DiaryPortfolio.Application.Request;
 using Mediator;
 using System;
 using System.Collections.Generic;
