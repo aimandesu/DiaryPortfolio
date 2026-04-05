@@ -13,6 +13,6 @@ namespace DiaryPortfolio.Application.DTOs.Video
         public int Duration { get; set; }
         public string Mime { get; set; } = string.Empty;
         public double Size { get; set; }
-
+        public Guid MediaId { get; set; }
     }
 }

@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -32,7 +33,8 @@ namespace DiaryPortfolio.Application.Helpers.Authentication
                 );
 
             if (identityUser is null)
-                return ResultResponse<UserModel>.Failure(new Error("NotFound", "User not found"));
+                return ResultResponse<UserModel>.Failure(
+                    Error.FromStatus(HttpStatusCode.NotFound, "Error: User not found"));
 
             var result = await _signInManager.CheckPasswordSignInAsync(
                 identityUser,
@@ -44,11 +46,11 @@ namespace DiaryPortfolio.Application.Helpers.Authentication
             {
                 if (result.IsLockedOut)
                     return ResultResponse<UserModel>.Failure(
-                        new Error("User Locked Out", "Too many attempts")
+                        Error.FromStatus(HttpStatusCode.TooManyRequests, "User Locked Out: Too many attempts")
                     );
 
                 return ResultResponse<UserModel>.Failure(
-                    new Error("Invalid Credentials", "Username or Password incorrect")
+                    Error.FromStatus(HttpStatusCode.Unauthorized, "Invalid Credentials: Username or Password incorrect")
                 );
             }
 

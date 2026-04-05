@@ -14,5 +14,6 @@ namespace DiaryPortfolio.Application.DTOs.Photo
         public double Width { get; set; }
         public double Height { get; set; }
         public double Size { get; set; }
+        public Guid MediaId { get; set; }
     }
 }

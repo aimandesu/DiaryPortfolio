@@ -11,5 +11,6 @@ namespace DiaryPortfolio.Application.Helpers.FileDistributor
     {
         public VideoModel? Videos { get; set; }
         public PhotoModel? Photos { get; set; }
+        public FileModel? Files { get; set; }
     }
 }
