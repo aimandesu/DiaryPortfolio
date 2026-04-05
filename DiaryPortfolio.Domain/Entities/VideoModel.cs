@@ -7,8 +7,4 @@ public class VideoModel
     public int Duration  { get; set; }
     public string Mime { get; set; } = string.Empty;
     public double Size { get; set; }
-    
-    //EF
-    public Guid MediaId { get; set; }
-    public MediaModel? MediaModel { get; set; }
 }

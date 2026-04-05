@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace DiaryPortfolio.Domain.Enum;
 
-public enum SpaceOption
+public enum ProfileType
 {
-    SpaceOne,
-    SpaceTwo
+    Diary,
+    Portfolio
 }

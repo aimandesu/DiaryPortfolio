@@ -15,7 +15,7 @@ namespace DiaryPortfolio.Domain.Entities
         public SelectionModel? SkillLevel { get; set; }
 
         //FK, EF
-        public Guid UserId { get; set; }
-        public UserModel? User { get; set; }
+        public Guid PortfolioProfileId { get; set; }
+        public PortfolioProfile? PortfolioProfile { get; set; }
     }
 }

@@ -13,7 +13,7 @@ namespace DiaryPortfolio.Domain.Entities
         public string Url { get; set; } = string.Empty;
 
         //FK
-        public Guid UserId { get; set; }
-        public UserModel? User { get; set; }
+        public Guid PortfolioProfileId { get; set; }
+        public PortfolioProfile? PortfolioProfile { get; set; }
     }
 }

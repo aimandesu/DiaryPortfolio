@@ -7,8 +7,8 @@ public class SpaceModel
     public DateTime CreatedAt { get; set; }  = DateTime.Now;
     
     // FK to User
-    public Guid UserId { get; set; }
-    public UserModel? User { get; set; }
+    public Guid DiaryProfileId { get; set; }
+    public DiaryProfile? DiaryProfile { get; set; }
     
     //EF 
     public List<MediaModel> MediaModels { get; set; } = [];

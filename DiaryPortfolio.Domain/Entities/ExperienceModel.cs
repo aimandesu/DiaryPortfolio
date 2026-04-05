@@ -16,8 +16,8 @@ namespace DiaryPortfolio.Domain.Entities
         public DateTime? EndDate { get; set; }
 
         //FK, EF
-        public Guid UserId { get; set; }
-        public UserModel? User { get; set; }
+        public Guid PortfolioProfileId { get; set; }
+        public PortfolioProfile? PortfolioProfile { get; set; }
         public Guid LocationId { get; set; }
         public LocationModel? Location { get; set; }
     }

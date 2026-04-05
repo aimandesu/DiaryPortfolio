@@ -12,5 +12,6 @@ public enum MediaSubType
     Video,
     Image,
     Audio,
-    Text
+    Text,
+    File,
 }

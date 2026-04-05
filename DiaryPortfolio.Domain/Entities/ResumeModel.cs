@@ -13,7 +13,7 @@ namespace DiaryPortfolio.Domain.Entities
         public Guid? TemplateId { get; set; }
 
         //EF
-        FilesModel? ResumeFile { get; set; }
-        ResumeTemplateModel? ResumeTemplate { get; set; }
+        public FileModel? ResumeFile { get; set; }
+        public ResumeTemplateModel? ResumeTemplate { get; set; }
     }
 }

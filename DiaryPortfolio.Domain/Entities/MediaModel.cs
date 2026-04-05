@@ -22,16 +22,12 @@ public class MediaModel
     
     //Condition Table
     public ConditionModel? ConditionModel { get; set; }
-    
+
     //Videos
-    public List<VideoModel> VideoModels { get; set; } = [];
-    
+
     //Photos
-    public List<PhotoModel> PhotoModels { get; set; } = [];
-    
-    //TextStyle Table
-    public Guid TextId { get; set; }
-    public TextModel? TextModel { get; set; }
+    public List<MediaPhotoModel> MediaPhotos { get; set; } = [];
+    public List<MediaVideoModel> MediaVideos { get; set; } = [];
 
     //EF
     public Guid? CollectionId { get; set; }

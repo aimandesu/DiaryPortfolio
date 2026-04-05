@@ -13,11 +13,11 @@ namespace DiaryPortfolio.Domain.Entities
         public string Description { get; set; } = string.Empty;
 
         //FK, EF
-        public Guid SelectionId { get; set; }
-        public SelectionModel? ProjectType { get; set; }
-        public Guid UserId { get; set; }
-        public UserModel? User { get; set; }
+        public Guid PortfolioProfileId { get; set; }
+        public PortfolioProfile? PortfolioProfile { get; set; }
         public Guid? FileId { get; set; }
-        public FilesModel? ProjectFile { get; set; }
+        public FileModel? ProjectFile { get; set; }
+        public List<ProjectPhotoModel> ProjectPhotos { get; set; } = [];
+        public List<ProjectVideoModel> ProjectVideos { get; set; } = [];
     }
 }
