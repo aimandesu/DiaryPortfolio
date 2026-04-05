@@ -1,6 +1,7 @@
 ﻿using DiaryPortfolio.Application.Common;
 using DiaryPortfolio.Application.Helpers.FileDistributor;
 using DiaryPortfolio.Application.IRepository.IFileHandlerRepository;
+using DiaryPortfolio.Application.Request;
 using DiaryPortfolio.Domain.Entities;
 using DiaryPortfolio.Domain.Enum;
 using SixLabors.ImageSharp;
@@ -57,6 +58,8 @@ namespace DiaryPortfolio.Infrastructure.Repository.FileHandler
             {
                 ".mp4", ".avi", ".mov", ".wmv", ".flv", ".mkv"
             };
+
+            var filesAllowed = new List<string> { ".pdf" };
 
             List<Dictionary<MediaSubType, MediaDistributor>> distributedFiles = [];
 
@@ -116,6 +119,27 @@ namespace DiaryPortfolio.Infrastructure.Repository.FileHandler
                                     Mime = metadata.Mime,
                                     Size = metadata.Size,
                                     Duration = (int)(metadata.Duration ?? 0)
+                                }
+                            }
+                        }
+                    });
+                }
+                else if (filesAllowed.Contains(fileExtension.ToLower()))
+                {
+                    string filePath = await SaveFileAndGetPath(
+                        media,
+                        mediaType,
+                        MediaSubType.File);
+
+                    distributedFiles.Add(new Dictionary<MediaSubType, MediaDistributor>
+                    {
+                        {
+                            MediaSubType.File,
+                            new MediaDistributor
+                            {
+                                Files = new FileModel
+                                {
+                                    Url = "/" + filePath.Replace("\\", "/"),
                                 }
                             }
                         }

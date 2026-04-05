@@ -1,6 +1,6 @@
 ﻿using DiaryPortfolio.Application.Common;
 using DiaryPortfolio.Application.Helpers.FileDistributor;
-using DiaryPortfolio.Domain.Entities;
+using DiaryPortfolio.Application.Request;
 using DiaryPortfolio.Domain.Enum;
 using System;
 using System.Collections.Generic;

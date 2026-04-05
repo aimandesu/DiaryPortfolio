@@ -5,6 +5,7 @@ using DiaryPortfolio.Application.DTOs.Condition;
 using DiaryPortfolio.Application.DTOs.Location;
 using DiaryPortfolio.Application.IRepository.IMediaHandlerRepository;
 using DiaryPortfolio.Application.IServices;
+using DiaryPortfolio.Application.Request;
 using DiaryPortfolio.Domain.Entities;
 using DiaryPortfolio.Domain.Enum;
 using DiaryPortfolio.Infrastructure.Data;
@@ -30,17 +31,17 @@ namespace DiaryPortfolio.Infrastructure.Repository.MediaHandler
             _userService = userService;
         }
 
-        public List<string> DeleteMedia(string mediaId) 
+        public List<string> GetMediaFiles(string mediaId) 
         {
             var userId = _userService.UserId!.Value;
 
             var media = (from m in _context.Medias
                          join s in _context.Spaces on m.SpaceId equals s.Id
-                         where s.UserId == userId && m.Id == new Guid(mediaId)
+                         where s.DiaryProfile.UserId == userId && m.Id == new Guid(mediaId)
                          select m
                          )
-                         .Include(m => m.PhotoModels)
-                         .Include(s => s.VideoModels)
+                         .Include(m => m.MediaPhotos)
+                         .Include(s => s.MediaVideos)
                          .FirstOrDefault();
             
             if (media == null)
@@ -50,8 +51,8 @@ namespace DiaryPortfolio.Infrastructure.Repository.MediaHandler
 
             var filePaths = new List<string>();
 
-            filePaths.AddRange(media.PhotoModels.Select(p => p.Url));
-            filePaths.AddRange(media.VideoModels.Select(v => v.Url));
+            filePaths.AddRange(media.MediaPhotos.Select(p => p?.Photo?.Url ?? ""));
+            filePaths.AddRange(media.MediaVideos.Select(v => v?.Video?.Url ?? ""));
 
             _context.Medias.Remove(media);
 
@@ -59,7 +60,7 @@ namespace DiaryPortfolio.Infrastructure.Repository.MediaHandler
 
         }
 
-        public Task<Stream> GetFile(string mediaUrl)
+        public Task<Stream> StreamMediaFile(string mediaUrl)
         {
             throw new NotImplementedException();
         }
@@ -67,24 +68,24 @@ namespace DiaryPortfolio.Infrastructure.Repository.MediaHandler
         public async Task<ResultResponse<MediaModel?>> GetMediaWithFiles(Guid mediaId)
         {
             var response = await _context.Medias
-                .Include(m => m.PhotoModels)
-                .Include(m => m.VideoModels)
+                .Include(m => m.MediaPhotos)
+                .Include(m => m.MediaVideos)
                 .FirstOrDefaultAsync(m => m.Id == mediaId);
 
             return ResultResponse<MediaModel?>.Success(response);
         }
 
         public async Task<ResultResponse<MediaModel>> UpdateMedia(
-            Guid id, 
-            MediaUpload media, 
-            List<VideoModel> videos, 
+            Guid id,
+            MediaUpload media,
+            List<VideoModel> videos,
             List<PhotoModel> photos)
         {
             try
             {
                 var existingMedia = await _context.Medias
-                    .Include(m => m.PhotoModels)
-                    .Include(m => m.VideoModels)
+                    .Include(m => m.MediaPhotos)
+                    .Include(m => m.MediaVideos)
                     .Include(m => m.LocationModel)
                     .Include(m => m.ConditionModel)
                     .FirstOrDefaultAsync(m => m.Id == id);
@@ -95,13 +96,6 @@ namespace DiaryPortfolio.Infrastructure.Repository.MediaHandler
                         new Error("NotFound", "Media not found")
                     );
                 }
-
-                var textStyle = EnumHelper.ParseEnumOrThrow<TextStyle>(media.TextTitle.ToString());
-
-                var textLookup = _context.TextStyle
-                    .Where(e => e.TextStyle.ToString() == textStyle.ToString())
-                    .Select(e => e.Id)
-                    .FirstOrDefault();
 
                 var spaceIdLookup = _context.Spaces
                     .Where(e => e.Id == new Guid(media.SpaceId))
@@ -122,7 +116,6 @@ namespace DiaryPortfolio.Infrastructure.Repository.MediaHandler
                 existingMedia.Description = media.Description;
                 existingMedia.MediaStatusSelectionId = statusSelection;
                 existingMedia.MediaTypeSelectionId = typeSelection;
-                existingMedia.TextId = textLookup;
                 existingMedia.SpaceId = spaceIdLookup;
 
                 if (existingMedia.LocationModel != null)
@@ -138,38 +131,37 @@ namespace DiaryPortfolio.Infrastructure.Repository.MediaHandler
                     existingMedia.ConditionModel.DeletedTime = media.Condition?.DeletedTime;
                 }
 
-
                 //Photos
                 var newPhotoUrls = photos.Select(p => p.Url).ToHashSet();
 
-                var photosToDelete = existingMedia.PhotoModels
-                    .Where(p => !newPhotoUrls.Contains(p.Url))
+                var photosToDelete = existingMedia.MediaPhotos
+                    .Where(p => !newPhotoUrls.Contains(p?.Photo?.Url ?? ""))
                     .ToList();
 
-                _context.Photos.RemoveRange(photosToDelete);
-                existingMedia.PhotoModels.Clear();
+                _context.Photos.RemoveRange(photosToDelete.Select(p => p.Photo).ToList());
+                existingMedia.MediaPhotos.Clear();
 
                 foreach (var photo in photos)
                 {
-                    photo.MediaId = existingMedia.Id;
-                    existingMedia.PhotoModels.Add(photo);
+                    //photo.MediaId = existingMedia.Id;
+                    existingMedia.MediaPhotos.Add(new MediaPhotoModel { Photo = photo });
                 }
 
 
                 //Videos
                 var newVideoUrls = videos.Select(v => v.Url).ToHashSet();
 
-                var videosToDelete = existingMedia.VideoModels
-                    .Where(v => !newVideoUrls.Contains(v.Url))
+                var videosToDelete = existingMedia.MediaVideos
+                    .Where(v => !newVideoUrls.Contains(v?.Video?.Url ?? ""))
                     .ToList();
 
-                _context.Videos.RemoveRange(videosToDelete);
-                existingMedia.VideoModels.Clear();
+                _context.Videos.RemoveRange(videosToDelete.Select(v => v.Video).ToList());
+                existingMedia.MediaVideos.Clear();
 
                 foreach (var video in videos)
                 {
-                    video.MediaId = existingMedia.Id;
-                    existingMedia.VideoModels.Add(video);
+                    //video.MediaId = existingMedia.Id;
+                    existingMedia.MediaVideos.Add(new MediaVideoModel { Video = video });
                 }
 
                 return ResultResponse<MediaModel>.Success(existingMedia);
@@ -183,37 +175,16 @@ namespace DiaryPortfolio.Infrastructure.Repository.MediaHandler
         }
 
         public Task<ResultResponse<MediaModel>> UploadMedia(
-           MediaUpload media,
+            MediaUpload media,
             List<VideoModel> videos,
-            List<PhotoModel> photos
-            )
+            List<PhotoModel> photos)
         {
-
             try
             {
-               
-                var textLookup = _context.TextStyle
-                    .Where(e => e.TextStyle.ToString() == media.TextTitle.ToString())
-                    .Select(e => e.Id)
-                    .FirstOrDefault();
-
                 var spaceIdLookup = _context.Spaces
                     .Where(e => e.Id == new Guid(media.SpaceId))
                     .Select(e => e.Id)
                     .FirstOrDefault();
-
-                var locationLookup = new LocationModel
-                {
-                    Name = media.Location?.Name ?? "",
-                    Latitude = media.Location?.Latitude ?? "",
-                    Longitude = media.Location?.Longitude ?? ""
-                };
-
-                var conditionLookup = new ConditionModel
-                {
-                    AvailableTime = media.Condition?.AvailableTime ?? DateTime.UtcNow,
-                    DeletedTime = media.Condition?.DeletedTime
-                };
 
                 var statusSelection = _context.Selections
                     .Where(s => s.Selection == media.MediaStatus.ToString())
@@ -232,39 +203,36 @@ namespace DiaryPortfolio.Infrastructure.Repository.MediaHandler
                     MediaStatusSelectionId = statusSelection,
                     MediaTypeSelectionId = typeSelection,
                     CreatedAt = DateTime.UtcNow,
-                    TextId = textLookup,
                     SpaceId = spaceIdLookup,
-                    LocationModel = locationLookup,
-                    ConditionModel = conditionLookup,
+                    LocationModel = new LocationModel
+                    {
+                        Name = media.Location?.Name ?? "",
+                        Latitude = media.Location?.Latitude ?? "",
+                        Longitude = media.Location?.Longitude ?? ""
+                    },
+                    ConditionModel = new ConditionModel
+                    {
+                        AvailableTime = media.Condition?.AvailableTime ?? DateTime.UtcNow,
+                        DeletedTime = media.Condition?.DeletedTime
+                    },
+                    MediaPhotos = [.. photos.Select(photo => new MediaPhotoModel { Photo = photo })],
+                    MediaVideos = [.. videos.Select(video => new MediaVideoModel { Video = video })]
                 };
-
-                foreach (var photo in photos)
-                {
-                    photo.MediaId = mediaUpload.Id;
-                    mediaUpload.PhotoModels.Add(photo);
-                }
-
-                foreach (var video in videos)
-                {
-                    video.MediaId = mediaUpload.Id;
-                    mediaUpload.VideoModels.Add(video);
-                }
 
                 _context.Medias.Add(mediaUpload);
 
                 return Task.FromResult(ResultResponse<MediaModel>.Success(mediaUpload));
-
-            } 
+            }
             catch (Exception ex)
             {
                 return Task.FromResult(ResultResponse<MediaModel>.Failure(
                     new Error(
-                        Code: "Media_Upload_Failed", 
+                        Code: "Media_Upload_Failed",
                         Description: ex.Message
                     )
                 ));
             }
-           
+        
         }
     }
 }

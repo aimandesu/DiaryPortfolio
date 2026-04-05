@@ -1,4 +1,5 @@
 ﻿using DiaryPortfolio.Application.Common;
+using DiaryPortfolio.Application.DTOs.Media;
 using DiaryPortfolio.Application.Helpers.Filter;
 using DiaryPortfolio.Domain.Entities;
 using System;
@@ -11,6 +12,8 @@ namespace DiaryPortfolio.Application.IRepository.IMediaRepository
 {
     public interface IMediaRepository
     {
-        Task<Pagination<MediaModel>> GetAllMediaByUsername(QuerySearchObject querySearchObject, Guid userId);
+        Task<Pagination<MediaModelDto>> GetAllMediaByUsername(
+            QuerySearchObject querySearchObject, 
+            Guid userId);
     }
 }

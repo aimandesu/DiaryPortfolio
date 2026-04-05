@@ -10,6 +10,6 @@ namespace DiaryPortfolio.Application.IRepository.ISpaceRepository
 {
     public interface ISpaceRepository
     {
-        void AddSpace(SpaceModel space);
+        Task<ResultResponse<SpaceModel>> AddSpace(string title);
     }
 }

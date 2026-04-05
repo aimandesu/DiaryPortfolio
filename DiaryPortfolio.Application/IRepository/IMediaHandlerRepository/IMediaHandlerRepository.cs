@@ -1,6 +1,7 @@
 ﻿using DiaryPortfolio.Application.Common;
 using DiaryPortfolio.Application.DTOs.Condition;
 using DiaryPortfolio.Application.DTOs.Location;
+using DiaryPortfolio.Application.Request;
 using DiaryPortfolio.Domain.Entities;
 using DiaryPortfolio.Domain.Enum;
 using System;
@@ -24,8 +25,8 @@ namespace DiaryPortfolio.Application.IRepository.IMediaHandlerRepository
             List<VideoModel> videos,
             List<PhotoModel> photos
         );
-        Task<Stream> GetFile(string mediaUrl);
-        List<string> DeleteMedia(string mediaId);
+        Task<Stream> StreamMediaFile(string mediaUrl);
+        List<string> GetMediaFiles(string mediaId);
         Task<ResultResponse<MediaModel?>> GetMediaWithFiles(
             Guid mediaId
         );
