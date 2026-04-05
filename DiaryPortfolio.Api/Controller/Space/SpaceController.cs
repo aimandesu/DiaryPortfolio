@@ -1,4 +1,5 @@
 ﻿using DiaryPortfolio.Application.Common;
+using DiaryPortfolio.Application.DTOs.Space;
 using DiaryPortfolio.Application.Features.Space.Create;
 using DiaryPortfolio.Domain.Entities;
 using Mediator;
@@ -21,7 +22,7 @@ namespace DiaryPortfolio.Api.Controller.Space
 
         [HttpPost("addSpace")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<ActionResult<ResultResponse<SpaceModel>>> AddSpace(
+        public async Task<ActionResult<ResultResponse<SpaceModelDto>>> AddSpace(
             [FromForm] string Title,
             CancellationToken cancellationToken
         )

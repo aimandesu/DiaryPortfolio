@@ -5,6 +5,7 @@ using DiaryPortfolio.Application.Features.Media.Delete;
 using DiaryPortfolio.Application.Features.Media.GetAll;
 using DiaryPortfolio.Application.Features.Media.Update;
 using DiaryPortfolio.Application.Helpers.Filter;
+using DiaryPortfolio.Application.Request;
 using DiaryPortfolio.Domain.Entities;
 using DiaryPortfolio.Domain.Enum;
 using Mediator;
@@ -64,7 +65,6 @@ namespace DiaryPortfolio.Api.Controller.Media
                 MediaStatus = mediaUploadRequest?.MediaStatus ?? MediaStatus.Public,
                 MediaType = mediaUploadRequest?.MediaType ?? MediaType.Post,
                 SpaceId = mediaUploadRequest?.SpaceId ?? "",
-                TextTitle = mediaUploadRequest?.TextTitle ?? TextStyle.TimesNewRoman,
                 Location = mediaUploadRequest?.Location,
                 Condition = mediaUploadRequest?.Condition,
                 FileStreams = files.Select(f => new MediaStream
@@ -102,7 +102,6 @@ namespace DiaryPortfolio.Api.Controller.Media
                 MediaStatus = mediaUploadRequest?.MediaStatus ?? MediaStatus.Public,
                 MediaType = mediaUploadRequest?.MediaType ?? MediaType.Post,
                 SpaceId = mediaUploadRequest?.SpaceId ?? "",
-                TextTitle = mediaUploadRequest?.TextTitle ?? TextStyle.TimesNewRoman,
                 Location = mediaUploadRequest?.Location,
                 Condition = mediaUploadRequest?.Condition,
                 FileStreams = files.Select(f => new MediaStream

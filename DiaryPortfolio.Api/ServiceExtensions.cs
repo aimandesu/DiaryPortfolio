@@ -39,7 +39,7 @@ namespace DiaryPortfolio.Api
                             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                             await context.Response.WriteAsJsonAsync(
                                 ResultResponse<object>.Failure(
-                                    new Error("SERVER_ERROR", "Something went wrong")
+                                    new Error("SERVER_ERROR", exception?.Message ?? "")
                                 ));
                             break;
                     }
