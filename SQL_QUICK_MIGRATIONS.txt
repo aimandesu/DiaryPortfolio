@@ -1,0 +1,107 @@
+--MediaType
+
+-- 1. Generate the ID for the Parent Type
+DECLARE @ParentID UNIQUEIDENTIFIER = NEWID();
+
+-- 2. Insert the Parent (Types)
+INSERT INTO dbo.Types (id, title, description)
+VALUES (@ParentID, 'MediaType', 'To describe media types for media posting');
+
+-- 3. Insert the Children (Selections)
+-- We give EACH row its own NEWID() for its 'Id' column, 
+-- but use the SAME @ParentID for the 'TypeId' column.
+INSERT INTO dbo.Selections (id, selection, TypeId)
+VALUES 
+    (NEWID(), 'Post', @ParentID),
+    (NEWID(), 'Short', @ParentID),
+    (NEWID(), 'Profile', @ParentID);
+
+--Media Status
+
+-- 1. Generate the ID for the Parent Type
+DECLARE @ParentID UNIQUEIDENTIFIER = NEWID();
+
+-- 2. Insert the Parent (Types)
+INSERT INTO dbo.Types (id, title, description)
+VALUES (@ParentID, 'MediaStatus', 'To show current media status');
+
+-- 3. Insert the Children (Selections)
+-- We give EACH row its own NEWID() for its 'Id' column, 
+-- but use the SAME @ParentID for the 'TypeId' column.
+INSERT INTO dbo.Selections (id, selection, TypeId)
+VALUES 
+    (NEWID(), 'Public', @ParentID),
+    (NEWID(), 'Private', @ParentID);
+
+--Media Sub Type
+-- 1. Generate the ID for the Parent Type
+DECLARE @ParentID UNIQUEIDENTIFIER = NEWID();
+
+-- 2. Insert the Parent (Types)
+INSERT INTO dbo.Types (id, title, description)
+VALUES (@ParentID, 'MediaSubType', 'To Describe Subtype Available');
+
+-- 3. Insert the Children (Selections)
+-- We give EACH row its own NEWID() for its 'Id' column, 
+-- but use the SAME @ParentID for the 'TypeId' column.
+INSERT INTO dbo.Selections (id, selection, TypeId)
+VALUES 
+    (NEWID(), 'Video', @ParentID),
+    (NEWID(), 'Image', @ParentID),
+    (NEWID(), 'Audio', @ParentID),
+    (NEWID(), 'Text', @ParentID),
+    (NEWID(), 'File', @ParentID);
+
+
+--Files model
+-- 1. Generate the ID for the Parent Type
+DECLARE @ParentID UNIQUEIDENTIFIER = NEWID();
+
+-- 2. Insert the Parent (Types)
+INSERT INTO dbo.Types (id, title, description)
+VALUES (@ParentID, 'Portfolio Files Type', 'To describe available files type to choose');
+
+-- 3. Insert the Children (Selections)
+-- We give EACH row its own NEWID() for its 'Id' column, 
+-- but use the SAME @ParentID for the 'TypeId' column.
+INSERT INTO dbo.Selections (id, selection, TypeId)
+VALUES 
+    (NEWID(), 'Resume', @ParentID),
+    (NEWID(), 'Education', @ParentID),
+    (NEWID(), 'Project', @ParentID);
+
+--Skill model
+-- 1. Generate the ID for the Parent Type
+DECLARE @ParentID UNIQUEIDENTIFIER = NEWID();
+
+-- 2. Insert the Parent (Types)
+INSERT INTO dbo.Types (id, title, description)
+VALUES (@ParentID, 'Skills level', 'To describe levels of knowledge');
+
+-- 3. Insert the Children (Selections)
+-- We give EACH row its own NEWID() for its 'Id' column, 
+-- but use the SAME @ParentID for the 'TypeId' column.
+INSERT INTO dbo.Selections (id, selection, TypeId)
+VALUES 
+    (NEWID(), 'Novice', @ParentID),
+    (NEWID(), 'Beginner', @ParentID),
+    (NEWID(), 'Intermediate', @ParentID),
+    (NEWID(), 'Expert', @ParentID);
+
+--Education level model
+-- 1. Generate the ID for the Parent Type
+DECLARE @ParentID UNIQUEIDENTIFIER = NEWID();
+
+-- 2. Insert the Parent (Types)
+INSERT INTO dbo.Types (id, title, description)
+VALUES (@ParentID, 'Education tier', 'To describe education placement');
+
+-- 3. Insert the Children (Selections)
+-- We give EACH row its own NEWID() for its 'Id' column, 
+-- but use the SAME @ParentID for the 'TypeId' column.
+INSERT INTO dbo.Selections (id, selection, TypeId)
+VALUES 
+    (NEWID(), 'Primary', @ParentID),
+    (NEWID(), 'Secondary', @ParentID),
+    (NEWID(), 'Post-Secondary', @ParentID),
+    (NEWID(), 'Tertiary', @ParentID);
