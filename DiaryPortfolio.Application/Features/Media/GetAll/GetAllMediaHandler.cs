@@ -38,7 +38,7 @@ namespace DiaryPortfolio.Application.Features.Media.GetAll
             if (user == null)
             {
                 return ResultResponse<Pagination<MediaModelDto>>.Failure(
-                    new Error("USER_NOT_FOUND", "User not found")
+                    new Error(System.Net.HttpStatusCode.NotFound, "User not found")
                 );
             }
 

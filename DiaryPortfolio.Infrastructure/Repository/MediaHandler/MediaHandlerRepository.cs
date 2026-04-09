@@ -93,7 +93,7 @@ namespace DiaryPortfolio.Infrastructure.Repository.MediaHandler
                 if (existingMedia == null)
                 {
                     return ResultResponse<MediaModel>.Failure(
-                        new Error("NotFound", "Media not found")
+                        new Error(System.Net.HttpStatusCode.NotFound, "Media not found")
                     );
                 }
 
@@ -169,7 +169,7 @@ namespace DiaryPortfolio.Infrastructure.Repository.MediaHandler
             catch (Exception ex)
             {
                 return ResultResponse<MediaModel>.Failure(
-                    new Error("Media_Update_Failed", ex.Message)
+                    new Error(System.Net.HttpStatusCode.Conflict, ex.Message)
                 );
             }
         }
@@ -227,7 +227,7 @@ namespace DiaryPortfolio.Infrastructure.Repository.MediaHandler
             {
                 return Task.FromResult(ResultResponse<MediaModel>.Failure(
                     new Error(
-                        Code: "Media_Upload_Failed",
+                        Status: System.Net.HttpStatusCode.Conflict,
                         Description: ex.Message
                     )
                 ));

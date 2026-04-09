@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace DiaryPortfolio.Application.Common
@@ -30,23 +31,29 @@ namespace DiaryPortfolio.Application.Common
 
     }
 
-    public sealed record Error(string Code, string Description)
+    public sealed record Error(
+        [property: JsonConverter(typeof(JsonNumberEnumConverter<HttpStatusCode>))] HttpStatusCode? Status, 
+        string Description, 
+        object? CustomObject = null)
     {
-        public static Error None = new(string.Empty, string.Empty);
-        public static Error FromStatus(HttpStatusCode statusCode, string? customMessage = null)
-        {
-            var code = ((int)statusCode).ToString();
-            var baseMessage = statusCode.ToString(); // e.g. "NotFound"
+        public static Error None = new(null, string.Empty, null);
+        //public static Error FromStatus(
+        //    HttpStatusCode statusCode, 
+        //    string? customMessage = null, 
+        //    object? customObject = null)
+        //{
+        //    //var code = ((int)statusCode).ToString();
+        //    var baseMessage = statusCode.ToString(); // e.g. "NotFound"
 
-            // Optional: make it more readable ("Not Found")
-            var formattedMessage = baseMessage; //SplitCamelCase(baseMessage);
+        //    // Optional: make it more readable ("Not Found")
+        //    var formattedMessage = baseMessage; //SplitCamelCase(baseMessage);
 
-            var finalMessage = string.IsNullOrWhiteSpace(customMessage)
-                ? formattedMessage
-                : $"{formattedMessage}: {customMessage}";
+        //    var finalMessage = string.IsNullOrWhiteSpace(customMessage)
+        //        ? formattedMessage
+        //        : $"{formattedMessage}: {customMessage}";
 
-            return new Error(code, finalMessage);
-        }
+        //    return new Error(statusCode, finalMessage, customObject);
+        //}
 
         private static string SplitCamelCase(string input)
         {

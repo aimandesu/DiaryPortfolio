@@ -33,7 +33,7 @@ namespace DiaryPortfolio.Application.Features.User.Get
             if (user == null)
             {
                 return ResultResponse<UserModelDto>.Failure(
-                    new Error("USER_NOT_FOUND", "User not found")
+                    new Error(System.Net.HttpStatusCode.NotFound, "User not found")
                 );
             }
 

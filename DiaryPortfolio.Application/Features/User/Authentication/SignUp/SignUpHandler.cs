@@ -35,7 +35,7 @@ namespace DiaryPortfolio.Application.Features.User.Authentication.SignUp
             if (request.Password != request.PasswordConfirmation)
             {
                 return ResultResponse<AuthenticationResponse>.Failure(
-                    new Error("PASSWORD_MISMATCH", "Password and confirmation do not match")
+                    new Error(System.Net.HttpStatusCode.Unauthorized, "Password and confirmation do not match")
                 );
             }
 
@@ -56,7 +56,7 @@ namespace DiaryPortfolio.Application.Features.User.Authentication.SignUp
             if (signUpResult == null)
             {
                 return ResultResponse<AuthenticationResponse>.Failure(
-                    new Error("SIGN_UP_FAILED", "User sign up failed")
+                    new Error(System.Net.HttpStatusCode.Conflict, "User sign up failed")
                 );
             }
 

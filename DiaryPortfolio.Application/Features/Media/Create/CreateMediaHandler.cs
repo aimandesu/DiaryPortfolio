@@ -88,7 +88,7 @@ namespace DiaryPortfolio.Application.Features.Media.Create
                     ]);
 
                 return ResultResponse<MediaModelDto>.Failure(
-                    new Error("Database_Error", ex.InnerException?.Message ?? ex.Message)
+                    new Error(System.Net.HttpStatusCode.Conflict, ex.InnerException?.Message ?? ex.Message)
                 );
             }
 

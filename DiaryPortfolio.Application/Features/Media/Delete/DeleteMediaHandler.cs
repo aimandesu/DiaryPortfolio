@@ -38,7 +38,7 @@ namespace DiaryPortfolio.Application.Features.Media.Delete
 
             if (mediaFiles.Count == 0)
             {
-                return ResultResponse<MediaModel>.Failure(new Error("NOT FOUND", "Media Files not found"));
+                return ResultResponse<MediaModel>.Failure(new Error(System.Net.HttpStatusCode.NotFound, "Media Files not found"));
             }
 
             _fileHandlerRepository.DeleteFiles(mediaFiles);

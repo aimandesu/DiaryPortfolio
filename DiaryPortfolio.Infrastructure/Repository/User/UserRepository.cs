@@ -72,7 +72,7 @@ namespace DiaryPortfolio.Infrastructure.Repository.User
 
             if (user == null)
                 return ResultResponse<UserModel>.Failure(
-                    Error.FromStatus(HttpStatusCode.NotFound, "User not found")
+                    new Error(HttpStatusCode.NotFound, "User not found")
                 );
 
             var existingMedia = await _context.Users

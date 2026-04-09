@@ -23,7 +23,7 @@ namespace DiaryPortfolio.Api
                             context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                             await context.Response.WriteAsJsonAsync(
                                 ResultResponse<object>.Failure(
-                                    new Error("UNAUTHORIZED", "Please login")
+                                    new Error(System.Net.HttpStatusCode.Unauthorized, "Please login")
                                 ));
                             break;
 
@@ -31,7 +31,7 @@ namespace DiaryPortfolio.Api
                             context.Response.StatusCode = StatusCodes.Status400BadRequest;
                             await context.Response.WriteAsJsonAsync(
                                 ResultResponse<object>.Failure(
-                                    new Error("INVALID_OPERATION", ex.Message)
+                                    new Error(System.Net.HttpStatusCode.BadRequest, ex.Message)
                                 ));
                             break;
 
@@ -39,7 +39,7 @@ namespace DiaryPortfolio.Api
                             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                             await context.Response.WriteAsJsonAsync(
                                 ResultResponse<object>.Failure(
-                                    new Error("SERVER_ERROR", exception?.Message ?? "")
+                                    new Error(System.Net.HttpStatusCode.InternalServerError, exception?.Message ?? "")
                                 ));
                             break;
                     }

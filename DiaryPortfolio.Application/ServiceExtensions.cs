@@ -1,9 +1,14 @@
+using DiaryPortfolio.Application.Common;
 using DiaryPortfolio.Application.Helpers.Authentication;
 using DiaryPortfolio.Application.Helpers.Logger;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace DiaryPortfolio.Application
@@ -20,6 +25,44 @@ namespace DiaryPortfolio.Application
                     typeof(AuthBehavior<,>),
                     typeof(LoggingBehavior<,>)
                 ];
+            });
+
+            services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+                options.JsonSerializerOptions.WriteIndented = true;
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
+
+            services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.InvalidModelStateResponseFactory = context =>
+                {
+                    var problemDetailsFactory = context.HttpContext.RequestServices
+                        .GetRequiredService<ProblemDetailsFactory>();
+
+                    var problemDetails = problemDetailsFactory.CreateValidationProblemDetails(
+                        context.HttpContext,
+                        context.ModelState
+                    );
+
+                    var errors = context.ModelState
+                        .Where(x => x.Value.Errors.Count > 0)
+                        .ToDictionary(
+                            x => x.Key,
+                            x => x.Value.Errors.Select(e => e.ErrorMessage).ToArray()
+                        );
+
+                    return new BadRequestObjectResult(
+                        ResultResponse<object>.Failure(
+                            new Error(
+                                HttpStatusCode.BadRequest,
+                                 problemDetails.Title ?? "One or more validation errors occurred.",
+                                errors
+                            )
+                        )
+                    );
+                };
             });
 
         }

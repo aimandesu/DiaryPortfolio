@@ -39,7 +39,7 @@ namespace DiaryPortfolio.Infrastructure.Repository.Space
 
             if (userModel?.DiaryProfile == null) {
                 return ResultResponse<SpaceModel>.Failure(
-                    Error.FromStatus(
+                    new Error(
                         HttpStatusCode.NotFound, 
                         "User does not sign up for diary profile services yet.")
                 );
@@ -49,7 +49,7 @@ namespace DiaryPortfolio.Infrastructure.Repository.Space
                 .Any(s => s.Title.Equals(title, StringComparison.CurrentCultureIgnoreCase)))
             {
                 return ResultResponse<SpaceModel>.Failure(
-                    Error.FromStatus(
+                    new Error(
                         HttpStatusCode.BadRequest,
                         "Space with the same title already exists."
                     )

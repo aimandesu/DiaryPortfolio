@@ -98,7 +98,7 @@ namespace DiaryPortfolio.Application.Features.User.Profile.Create
                     ]);
 
                 return ResultResponse<UserModelDto>.Failure(
-                    new Error("Database_Error", ex.ToString())
+                    new Error(System.Net.HttpStatusCode.Conflict, ex.ToString())
                 );
 
             }

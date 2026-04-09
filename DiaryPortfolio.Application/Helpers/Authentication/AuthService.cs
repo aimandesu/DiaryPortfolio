@@ -34,7 +34,7 @@ namespace DiaryPortfolio.Application.Helpers.Authentication
 
             if (identityUser is null)
                 return ResultResponse<UserModel>.Failure(
-                    Error.FromStatus(HttpStatusCode.NotFound, "Error: User not found"));
+                    new Error(HttpStatusCode.NotFound, "Error: User not found"));
 
             var result = await _signInManager.CheckPasswordSignInAsync(
                 identityUser,
@@ -46,11 +46,11 @@ namespace DiaryPortfolio.Application.Helpers.Authentication
             {
                 if (result.IsLockedOut)
                     return ResultResponse<UserModel>.Failure(
-                        Error.FromStatus(HttpStatusCode.TooManyRequests, "User Locked Out: Too many attempts")
+                        new Error(HttpStatusCode.TooManyRequests, "User Locked Out: Too many attempts")
                     );
 
                 return ResultResponse<UserModel>.Failure(
-                    Error.FromStatus(HttpStatusCode.Unauthorized, "Invalid Credentials: Username or Password incorrect")
+                    new Error(HttpStatusCode.Unauthorized, "Invalid Credentials: Username or Password incorrect")
                 );
             }
 

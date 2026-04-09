@@ -149,7 +149,7 @@ namespace DiaryPortfolio.Infrastructure.Repository.FileHandler
                 {
                     return ResultResponse<List<Dictionary<MediaSubType, MediaDistributor>>>.Failure(
                         new Error(
-                              Code: "UnsupportedFileType",
+                              Status: System.Net.HttpStatusCode.UnsupportedMediaType,
                               Description: $"The file type '{fileExtension}' is not supported."
                           )
                       );
