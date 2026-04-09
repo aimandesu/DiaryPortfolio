@@ -2,8 +2,7 @@
 using DiaryPortfolio.Application.Common.Helpers;
 using DiaryPortfolio.Application.DTOs.Media;
 using DiaryPortfolio.Application.DTOs.User;
-using DiaryPortfolio.Application.IRepository.IFileHandlerRepository;
-using DiaryPortfolio.Application.IRepository.IUserRepository;
+using DiaryPortfolio.Application.IRepository;
 using DiaryPortfolio.Application.IServices;
 using DiaryPortfolio.Application.Mapper.User;
 using DiaryPortfolio.Application.Request;

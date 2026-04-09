@@ -1,6 +1,5 @@
 ﻿using DiaryPortfolio.Application.Common;
-using DiaryPortfolio.Application.IRepository.IAuthenticationRepository;
-using DiaryPortfolio.Application.IRepository.ITokenRepository;
+using DiaryPortfolio.Application.IRepository;
 using DiaryPortfolio.Application.Mapper.User;
 using DiaryPortfolio.Domain.Entities;
 using Mediator;

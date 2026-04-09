@@ -1,5 +1,5 @@
 ﻿using DiaryPortfolio.Application.Common;
-using DiaryPortfolio.Application.IRepository.IAuthenticationRepository;
+using DiaryPortfolio.Application.IRepository;
 using DiaryPortfolio.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

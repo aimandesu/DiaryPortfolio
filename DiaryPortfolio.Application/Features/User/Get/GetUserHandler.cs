@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DiaryPortfolio.Application.Common;
 using DiaryPortfolio.Application.DTOs.User;
-using DiaryPortfolio.Application.IRepository.IUserRepository;
+using DiaryPortfolio.Application.IRepository;
 using DiaryPortfolio.Application.Mapper.User;
 using Mediator;
 

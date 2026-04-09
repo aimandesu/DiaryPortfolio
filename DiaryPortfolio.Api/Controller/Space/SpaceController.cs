@@ -1,6 +1,6 @@
 ﻿using DiaryPortfolio.Application.Common;
 using DiaryPortfolio.Application.DTOs.Space;
-using DiaryPortfolio.Application.Features.Space.Create;
+using DiaryPortfolio.Application.Features.DiaryProfile.Space.Create;
 using DiaryPortfolio.Domain.Entities;
 using Mediator;
 using Microsoft.AspNetCore.Authorization;

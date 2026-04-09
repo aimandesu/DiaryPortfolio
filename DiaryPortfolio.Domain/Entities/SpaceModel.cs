@@ -8,7 +8,7 @@ public class SpaceModel
     
     // FK to User
     public Guid DiaryProfileId { get; set; }
-    public DiaryProfile? DiaryProfile { get; set; }
+    public DiaryProfileModel? DiaryProfile { get; set; }
     
     //EF 
     public List<MediaModel> MediaModels { get; set; } = [];

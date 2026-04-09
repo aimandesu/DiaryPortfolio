@@ -16,7 +16,7 @@ namespace DiaryPortfolio.Domain.Entities
 
         //FK, EF
         public Guid PortfolioProfileId { get; set; }
-        public PortfolioProfile? PortfolioProfile { get; set; }
+        public PortfolioProfileModel? PortfolioProfile { get; set; }
         public Guid LocationId { get; set; }
         public LocationModel? Location { get; set; }
         public Guid? FileId { get; set; }

@@ -1,9 +1,9 @@
 ﻿using DiaryPortfolio.Application.Common;
 using DiaryPortfolio.Application.DTOs.Media;
-using DiaryPortfolio.Application.Features.Media.Create;
-using DiaryPortfolio.Application.Features.Media.Delete;
-using DiaryPortfolio.Application.Features.Media.GetAll;
-using DiaryPortfolio.Application.Features.Media.Update;
+using DiaryPortfolio.Application.Features.DiaryProfile.Media.Create;
+using DiaryPortfolio.Application.Features.DiaryProfile.Media.Delete;
+using DiaryPortfolio.Application.Features.DiaryProfile.Media.GetAll;
+using DiaryPortfolio.Application.Features.DiaryProfile.Media.Update;
 using DiaryPortfolio.Application.Helpers.Filter;
 using DiaryPortfolio.Application.Request;
 using DiaryPortfolio.Domain.Entities;

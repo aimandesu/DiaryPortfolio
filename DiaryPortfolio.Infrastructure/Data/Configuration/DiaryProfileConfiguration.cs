@@ -9,16 +9,16 @@ using System.Threading.Tasks;
 
 namespace DiaryPortfolio.Infrastructure.Data.Configuration
 {
-    internal class DiaryProfileConfiguration : IEntityTypeConfiguration<DiaryProfile>
+    internal class DiaryProfileConfiguration : IEntityTypeConfiguration<DiaryProfileModel>
     {
-        public void Configure(EntityTypeBuilder<DiaryProfile> builder)
+        public void Configure(EntityTypeBuilder<DiaryProfileModel> builder)
         {
             // DiaryProfileConfiguration
             builder.HasKey(d => d.Id);
 
             builder.HasOne(d => d.User)
                    .WithOne(u => u.DiaryProfile)
-                   .HasForeignKey<DiaryProfile>(d => d.UserId)
+                   .HasForeignKey<DiaryProfileModel>(d => d.UserId)
                    .OnDelete(DeleteBehavior.Cascade);
         }
     }

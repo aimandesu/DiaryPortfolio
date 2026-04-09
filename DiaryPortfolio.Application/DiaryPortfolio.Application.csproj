@@ -7,9 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Features\Media\Create\Short\**" />
-    <EmbeddedResource Remove="Features\Media\Create\Short\**" />
-    <None Remove="Features\Media\Create\Short\**" />
+    <Compile Remove="Features\DiaryProfile\Media\Create\Short\**" />
+    <EmbeddedResource Remove="Features\DiaryProfile\Media\Create\Short\**" />
+    <None Remove="Features\DiaryProfile\Media\Create\Short\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,8 +27,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\Media\Get\" />
-    <Folder Include="Features\Space\Update\" />
+    <Folder Include="Features\DiaryProfile\Media\Get\" />
+    <Folder Include="Features\DiaryProfile\Space\Update\" />
+    <Folder Include="Features\PortfolioProfile\Skill\" />
     <Folder Include="Features\User\Profile\Update\" />
   </ItemGroup>
 	

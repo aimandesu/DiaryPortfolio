@@ -10,32 +10,32 @@ using static Dapper.SqlMapper;
 
 namespace DiaryPortfolio.Infrastructure.Data.Configuration
 {
-    internal class PortfolioProfileConfiguration : IEntityTypeConfiguration<PortfolioProfile>
+    internal class PortfolioProfileConfiguration : IEntityTypeConfiguration<PortfolioProfileModel>
     {
-        public void Configure(EntityTypeBuilder<PortfolioProfile> builder)
+        public void Configure(EntityTypeBuilder<PortfolioProfileModel> builder)
         {
             // DiaryProfileConfiguration
             builder.HasKey(d => d.Id);
 
             builder.HasOne(d => d.User)
                 .WithOne(u => u.PortfolioProfile)
-                .HasForeignKey<PortfolioProfile>(d => d.UserId)
+                .HasForeignKey<PortfolioProfileModel>(d => d.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             // inside PortfolioProfileConfiguration
             builder.HasOne(p => p.ProfilePhoto)
                 .WithOne()
-                .HasForeignKey<PortfolioProfile>(p => p.ProfilePhotoId)
+                .HasForeignKey<PortfolioProfileModel>(p => p.ProfilePhotoId)
                 .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasOne(p => p.Resume)
                 .WithOne()
-                .HasForeignKey<PortfolioProfile>(p => p.ResumeId)
+                .HasForeignKey<PortfolioProfileModel>(p => p.ResumeId)
                 .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasOne(p => p.Location)
                 .WithOne()
-                .HasForeignKey<PortfolioProfile>(p => p.LocationId)
+                .HasForeignKey<PortfolioProfileModel>(p => p.LocationId)
                 .OnDelete(DeleteBehavior.NoAction);
         }
     }

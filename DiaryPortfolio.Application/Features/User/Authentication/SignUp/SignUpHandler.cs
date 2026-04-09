@@ -1,8 +1,6 @@
 ﻿using DiaryPortfolio.Application.Common;
 using DiaryPortfolio.Application.DTOs.User;
-using DiaryPortfolio.Application.IRepository.IAuthenticationRepository;
-using DiaryPortfolio.Application.IRepository.ITokenRepository;
-using DiaryPortfolio.Application.IRepository.IUserRepository;
+using DiaryPortfolio.Application.IRepository;
 using DiaryPortfolio.Application.Mapper.User;
 using DiaryPortfolio.Domain.Entities;
 using Mediator;
@@ -39,8 +37,8 @@ namespace DiaryPortfolio.Application.Features.User.Authentication.SignUp
                 );
             }
 
-            var portfolioProfile = new PortfolioProfile();
-            var diaryProfile =  new DiaryProfile();  //--remove for now because not using it, for 2nd phase
+            var portfolioProfile = new PortfolioProfileModel();
+            var diaryProfile =  new DiaryProfileModel();  //--remove for now because not using it, for 2nd phase
 
             var signUpResult = await _authenticationRepository.SignUp(
                 user: new UserModel
