@@ -1,9 +1,9 @@
 ﻿using DiaryPortfolio.Application.Common;
 using DiaryPortfolio.Application.Common.Helpers;
-using DiaryPortfolio.Application.DTOs.Media;
+using DiaryPortfolio.Application.DTOs;
 using DiaryPortfolio.Application.IRepository;
 using DiaryPortfolio.Application.IServices;
-using DiaryPortfolio.Application.Mapper.Media;
+using DiaryPortfolio.Application.Mapper;
 using DiaryPortfolio.Domain.Enum;
 using Mediator;
 using Microsoft.EntityFrameworkCore;

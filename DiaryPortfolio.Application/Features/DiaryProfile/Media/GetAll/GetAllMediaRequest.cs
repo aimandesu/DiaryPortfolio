@@ -1,5 +1,5 @@
 ﻿using DiaryPortfolio.Application.Common;
-using DiaryPortfolio.Application.DTOs.Media;
+using DiaryPortfolio.Application.DTOs;
 using DiaryPortfolio.Application.Helpers.Filter;
 using DiaryPortfolio.Domain.Entities;
 using DiaryPortfolio.Domain.Enum;

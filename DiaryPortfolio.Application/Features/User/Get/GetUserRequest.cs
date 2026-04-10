@@ -1,5 +1,5 @@
 ﻿using DiaryPortfolio.Application.Common;
-using DiaryPortfolio.Application.DTOs.User;
+using DiaryPortfolio.Application.DTOs;
 using DiaryPortfolio.Domain.Enum;
 using Mediator;
 using System;

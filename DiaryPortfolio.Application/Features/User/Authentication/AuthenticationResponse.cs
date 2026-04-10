@@ -1,4 +1,4 @@
-﻿using DiaryPortfolio.Application.DTOs.User;
+﻿using DiaryPortfolio.Application.DTOs;
 using DiaryPortfolio.Domain.Entities;
 using System;
 using System.Collections.Generic;

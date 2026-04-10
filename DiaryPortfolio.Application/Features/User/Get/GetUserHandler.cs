@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DiaryPortfolio.Application.Common;
-using DiaryPortfolio.Application.DTOs.User;
+using DiaryPortfolio.Application.DTOs;
 using DiaryPortfolio.Application.IRepository;
-using DiaryPortfolio.Application.Mapper.User;
+using DiaryPortfolio.Application.Mapper;
 using Mediator;
 
 namespace DiaryPortfolio.Application.Features.User.Get

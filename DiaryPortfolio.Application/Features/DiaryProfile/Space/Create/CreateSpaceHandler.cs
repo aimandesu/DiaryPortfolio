@@ -1,8 +1,8 @@
 ﻿using DiaryPortfolio.Application.Common;
-using DiaryPortfolio.Application.DTOs.Space;
+using DiaryPortfolio.Application.DTOs;
 using DiaryPortfolio.Application.IRepository;
 using DiaryPortfolio.Application.IServices;
-using DiaryPortfolio.Application.Mapper.Space;
+using DiaryPortfolio.Application.Mapper;
 using DiaryPortfolio.Domain.Entities;
 using Mediator;
 using Microsoft.EntityFrameworkCore;

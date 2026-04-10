@@ -1,10 +1,9 @@
 ﻿using DiaryPortfolio.Application.Common;
 using DiaryPortfolio.Application.Common.Helpers;
-using DiaryPortfolio.Application.DTOs.Media;
-using DiaryPortfolio.Application.DTOs.User;
+using DiaryPortfolio.Application.DTOs;
 using DiaryPortfolio.Application.IRepository;
 using DiaryPortfolio.Application.IServices;
-using DiaryPortfolio.Application.Mapper.User;
+using DiaryPortfolio.Application.Mapper;
 using DiaryPortfolio.Application.Request;
 using DiaryPortfolio.Domain.Entities;
 using DiaryPortfolio.Domain.Enum;

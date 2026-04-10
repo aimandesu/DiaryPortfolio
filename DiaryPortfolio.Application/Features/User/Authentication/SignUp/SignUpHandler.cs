@@ -1,7 +1,6 @@
 ﻿using DiaryPortfolio.Application.Common;
-using DiaryPortfolio.Application.DTOs.User;
 using DiaryPortfolio.Application.IRepository;
-using DiaryPortfolio.Application.Mapper.User;
+using DiaryPortfolio.Application.Mapper;
 using DiaryPortfolio.Domain.Entities;
 using Mediator;
 using System;

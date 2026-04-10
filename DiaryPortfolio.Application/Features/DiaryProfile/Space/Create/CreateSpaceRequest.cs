@@ -1,5 +1,5 @@
 ﻿using DiaryPortfolio.Application.Common;
-using DiaryPortfolio.Application.DTOs.Space;
+using DiaryPortfolio.Application.DTOs;
 using DiaryPortfolio.Application.IServices;
 using DiaryPortfolio.Domain.Entities;
 using Mediator;
