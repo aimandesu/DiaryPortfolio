@@ -4,14 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DiaryPortfolio.Application.DTOs.Video
+namespace DiaryPortfolio.Application.DTOs
 {
-    public class VideoModelDto
+    public class PhotoModelDto
     {
         public Guid Id { get; set; }
         public string Url { get; set; } = string.Empty;
-        public int Duration { get; set; }
         public string Mime { get; set; } = string.Empty;
+        public double Width { get; set; }
+        public double Height { get; set; }
         public double Size { get; set; }
         public Guid MediaId { get; set; }
     }

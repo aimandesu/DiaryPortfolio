@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DiaryPortfolio.Application.DTOs.User;
+using DiaryPortfolio.Application.DTOs;
 using DiaryPortfolio.Domain.Entities;
 
-namespace DiaryPortfolio.Application.Mapper.User
+namespace DiaryPortfolio.Application.Mapper
 {
     static internal class UserModelMapper
     {

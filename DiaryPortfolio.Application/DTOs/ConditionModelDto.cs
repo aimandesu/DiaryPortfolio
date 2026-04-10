@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DiaryPortfolio.Application.DTOs.Condition
+namespace DiaryPortfolio.Application.DTOs
 {
     public class ConditionModelDto
     {

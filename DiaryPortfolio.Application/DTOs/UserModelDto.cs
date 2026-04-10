@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DiaryPortfolio.Application.DTOs.User
+namespace DiaryPortfolio.Application.DTOs
 {
     public class UserModelDto
     {

@@ -1,9 +1,4 @@
-﻿using DiaryPortfolio.Application.DTOs.Condition;
-using DiaryPortfolio.Application.DTOs.Location;
-using DiaryPortfolio.Application.DTOs.Photo;
-using DiaryPortfolio.Application.DTOs.Space;
-using DiaryPortfolio.Application.DTOs.Video;
-using DiaryPortfolio.Domain.Entities;
+﻿using DiaryPortfolio.Domain.Entities;
 using DiaryPortfolio.Domain.Enum;
 using System;
 using System.Collections.Generic;
@@ -11,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DiaryPortfolio.Application.DTOs.Media
+namespace DiaryPortfolio.Application.DTOs
 {
     public class MediaModelDto
     {

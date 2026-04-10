@@ -1,4 +1,4 @@
-﻿using DiaryPortfolio.Application.DTOs.Space;
+﻿using DiaryPortfolio.Application.DTOs;
 using DiaryPortfolio.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DiaryPortfolio.Application.Mapper.Space
+namespace DiaryPortfolio.Application.Mapper
 {
     static internal class SpaceModelMapper
     {
