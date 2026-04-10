@@ -1,12 +1,12 @@
 ﻿using DiaryPortfolio.Application.Common;
-using DiaryPortfolio.Application.DTOs.Space;
+using DiaryPortfolio.Application.DTOs;
 using DiaryPortfolio.Application.Features.DiaryProfile.Space.Create;
 using DiaryPortfolio.Domain.Entities;
 using Mediator;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace DiaryPortfolio.Api.Controller.Space
+namespace DiaryPortfolio.Api.Controller
 {
     [Route("api/space")]
     [ApiController]

@@ -1,5 +1,5 @@
 ﻿using DiaryPortfolio.Application.Common;
-using DiaryPortfolio.Application.DTOs.User;
+using DiaryPortfolio.Application.DTOs;
 using DiaryPortfolio.Application.Features.User.Authentication;
 using DiaryPortfolio.Application.Features.User.Authentication.Login;
 using DiaryPortfolio.Application.Features.User.Authentication.SignUp;
@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 
-namespace DiaryPortfolio.Api.Controller.User
+namespace DiaryPortfolio.Api.Controller
 {
     [Route("api/users")]
     [ApiController]

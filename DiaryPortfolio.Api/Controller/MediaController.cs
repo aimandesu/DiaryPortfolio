@@ -1,5 +1,5 @@
 ﻿using DiaryPortfolio.Application.Common;
-using DiaryPortfolio.Application.DTOs.Media;
+using DiaryPortfolio.Application.DTOs;
 using DiaryPortfolio.Application.Features.DiaryProfile.Media.Create;
 using DiaryPortfolio.Application.Features.DiaryProfile.Media.Delete;
 using DiaryPortfolio.Application.Features.DiaryProfile.Media.GetAll;
@@ -15,7 +15,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
-namespace DiaryPortfolio.Api.Controller.Media
+namespace DiaryPortfolio.Api.Controller
 {
     [Route("api/media")]
     public class MediaController : ControllerBase
