@@ -1,6 +1,4 @@
 ﻿using DiaryPortfolio.Application.Common;
-using DiaryPortfolio.Application.DTOs.Condition;
-using DiaryPortfolio.Application.DTOs.Location;
 using DiaryPortfolio.Application.Request;
 using DiaryPortfolio.Domain.Entities;
 using DiaryPortfolio.Domain.Enum;

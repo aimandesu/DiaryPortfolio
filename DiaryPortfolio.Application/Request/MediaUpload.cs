@@ -1,5 +1,4 @@
-﻿using DiaryPortfolio.Application.DTOs.Condition;
-using DiaryPortfolio.Application.DTOs.Location;
+﻿using DiaryPortfolio.Application.DTOs;
 using DiaryPortfolio.Domain.Enum;
 using System;
 using System.Collections.Generic;
