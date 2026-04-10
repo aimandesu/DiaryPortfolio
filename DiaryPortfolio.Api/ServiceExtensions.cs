@@ -1,4 +1,5 @@
 ﻿using DiaryPortfolio.Application.Common;
+using DiaryPortfolio.Infrastructure.Services;
 using Microsoft.AspNetCore.Diagnostics;
 
 namespace DiaryPortfolio.Api
@@ -23,7 +24,9 @@ namespace DiaryPortfolio.Api
                             context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                             await context.Response.WriteAsJsonAsync(
                                 ResultResponse<object>.Failure(
-                                    new Error(System.Net.HttpStatusCode.Unauthorized, "Please login")
+                                    new Error(
+                                        System.Net.HttpStatusCode.Unauthorized, 
+                                        "User not authorized, please login")
                                 ));
                             break;
 
@@ -35,11 +38,21 @@ namespace DiaryPortfolio.Api
                                 ));
                             break;
 
+                        case AppException ex:
+                            context.Response.StatusCode = (int)ex.StatusCode;
+                            await context.Response.WriteAsJsonAsync(
+                                ResultResponse<object>.Failure(
+                                    new Error(ex.StatusCode, ex.Message)
+                                ));
+                            break;
+
                         default:
                             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                             await context.Response.WriteAsJsonAsync(
                                 ResultResponse<object>.Failure(
-                                    new Error(System.Net.HttpStatusCode.InternalServerError, exception?.Message ?? "")
+                                    new Error(
+                                        System.Net.HttpStatusCode.InternalServerError, 
+                                        exception?.Message ?? "")
                                 ));
                             break;
                     }

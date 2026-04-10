@@ -1,10 +1,6 @@
 ﻿using Dapper;
 using DiaryPortfolio.Application.Common;
-using DiaryPortfolio.Application.DTOs.Location;
-using DiaryPortfolio.Application.DTOs.Media;
-using DiaryPortfolio.Application.DTOs.Photo;
-using DiaryPortfolio.Application.DTOs.Space;
-using DiaryPortfolio.Application.DTOs.Video;
+using DiaryPortfolio.Application.DTOs;
 using DiaryPortfolio.Application.DTOsSP.Media;
 using DiaryPortfolio.Application.Helpers.Filter;
 using DiaryPortfolio.Application.IRepository;

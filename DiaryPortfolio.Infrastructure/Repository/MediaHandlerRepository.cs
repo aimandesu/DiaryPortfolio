@@ -1,8 +1,6 @@
 ﻿using Azure.Core;
 using DiaryPortfolio.Application.Common;
 using DiaryPortfolio.Application.Common.Helpers;
-using DiaryPortfolio.Application.DTOs.Condition;
-using DiaryPortfolio.Application.DTOs.Location;
 using DiaryPortfolio.Application.IRepository;
 using DiaryPortfolio.Application.IServices;
 using DiaryPortfolio.Application.Request;

@@ -29,6 +29,13 @@ public static class ServiceExtensions
         services.AddScoped<IFileHandlerRepository, FileHandlerRepository>();
         services.AddScoped<IFilePathHandlerRepository, FilePathHandlerRepository>();
         services.AddScoped<ISpaceRepository, SpaceRepository>();
+        //services.AddScoped<IExperienceRepository, ExperienceRepository>();
+
+        services.Scan(scan => scan
+            .FromAssemblies(typeof(BaseRepository<>).Assembly)
+            .AddClasses(classes => classes.AssignableTo(typeof(IBaseRepository<>)))
+            .AsImplementedInterfaces()
+            .WithScopedLifetime());
 
         //Helper
         services.AddScoped<IUserService, UserService>();
