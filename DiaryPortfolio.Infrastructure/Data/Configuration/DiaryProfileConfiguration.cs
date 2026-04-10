@@ -20,6 +20,9 @@ namespace DiaryPortfolio.Infrastructure.Data.Configuration
                    .WithOne(u => u.DiaryProfile)
                    .HasForeignKey<DiaryProfileModel>(d => d.UserId)
                    .OnDelete(DeleteBehavior.Cascade);
+
+            builder
+                .ToTable("DiaryProfile");
         }
     }
 }

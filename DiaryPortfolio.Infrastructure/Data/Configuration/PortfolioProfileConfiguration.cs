@@ -37,6 +37,9 @@ namespace DiaryPortfolio.Infrastructure.Data.Configuration
                 .WithOne()
                 .HasForeignKey<PortfolioProfileModel>(p => p.LocationId)
                 .OnDelete(DeleteBehavior.NoAction);
+
+            builder
+                .ToTable("PortfolioProfile");
         }
     }
 }
