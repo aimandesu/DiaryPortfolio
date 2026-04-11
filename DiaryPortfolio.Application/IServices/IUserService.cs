@@ -9,8 +9,10 @@ namespace DiaryPortfolio.Application.IServices
     public interface IUserService
     {
         Guid? UserId { get; }
-        string? UserName { get; }
-        string? Email { get; }
+        //string? UserName { get; }
+        //string? Email { get; }
+        Guid? PortfolioProfileId { get; }
+        Guid? DiaryProfileId { get; }
         public bool IsAuthenticated { get; }
     }
 }

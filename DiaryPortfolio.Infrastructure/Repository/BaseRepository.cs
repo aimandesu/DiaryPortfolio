@@ -38,7 +38,7 @@ namespace DiaryPortfolio.Infrastructure.Repository
             return await _context.Set<T>().FindAsync(id);
         }
 
-        public virtual async Task<List<T>> GetAll()
+        public virtual async Task<List<T>> GetAll(Guid? id)
         {
             return await _context.Set<T>().ToListAsync();
         }

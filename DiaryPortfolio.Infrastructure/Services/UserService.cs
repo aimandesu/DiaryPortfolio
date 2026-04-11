@@ -32,9 +32,27 @@ namespace DiaryPortfolio.Infrastructure.Services
             }
         }
 
-        public string? UserName => _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Name);
+        public Guid? PortfolioProfileId
+        {
+            get
+            {
+                var value = _httpContextAccessor.HttpContext?.User?.FindFirstValue("portfolio_profile_id");
+                return Guid.TryParse(value, out var id) ? id : null;
+            }
+        }
 
-        public string? Email => _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Email);
+        public Guid? DiaryProfileId
+        {
+            get
+            {
+                var value = _httpContextAccessor.HttpContext?.User?.FindFirstValue("diary_profile_id");
+                return Guid.TryParse(value, out var id) ? id : null;
+            }
+        }
+
+        //public string? UserName => _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Name);
+
+        //public string? Email => _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Email);
 
         public bool IsAuthenticated => _httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated ?? false;
     }

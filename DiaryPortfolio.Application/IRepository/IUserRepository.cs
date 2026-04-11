@@ -14,6 +14,8 @@ namespace DiaryPortfolio.Application.IRepository
     {
         Task<UserModel?> GetUserByUsername(
             string username, ProfileType profileType);
+        Task<UserModel?> GetUserByUserId(
+            Guid userId, ProfileType profileType);
         Task<ResultResponse<UserModel>> UploadProfile(
             ProfileUpload profileUpload,
             PhotoModel? profilePhoto,

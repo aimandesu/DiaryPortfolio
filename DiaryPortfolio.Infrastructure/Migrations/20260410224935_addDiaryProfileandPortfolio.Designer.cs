@@ -12,11 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DiaryPortfolio.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260410103403_updatePortfolioandDiaryName")]
-    partial class updatePortfolioandDiaryName
+    [Migration("20260410224935_addDiaryProfileandPortfolio")]
+    partial class addDiaryProfileandPortfolio
     {
         /// <inheritdoc />
-        protected void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -1,0 +1,52 @@
+﻿@using DiaryPortfolio.Domain.Entities
+@* @model ExperienceModel *@
+
+@* @using DiaryPortfolio.Api.Views.PDF
+@model ExperienceReportViewModel *@
+
+@model List<ExperienceModel>
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 40px;
+            color: #333;
+        }
+        h1 { color: #1a1a2e; border-bottom: 2px solid #1a1a2e; padding-bottom: 8px; }
+        .experience-card {
+            margin-bottom: 24px;
+            padding: 16px;
+            border-left: 4px solid #4a90e2;
+            background: #f9f9f9;
+        }
+        .company { font-size: 18px; font-weight: bold; }
+        .role { color: #4a90e2; margin: 4px 0; }
+        .dates { font-size: 13px; color: #777; }
+        .description { margin-top: 8px; line-height: 1.6; }
+    </style>
+</head>
+<body>
+    @* <h1>@Model.FullName — Portfolio</h1>
+    <p>Generated on @Model.GeneratedAt.ToString("MMMM dd, yyyy")</p> *@
+
+    @foreach (var exp in Model) //.Experiences
+    {
+        <div class="experience-card">
+            <div class="company">@exp.Company</div>
+            <div class="role">@exp.Role</div>
+            <div class="dates">
+                @exp.StartDate?.ToString("MMM yyyy") — @(exp.EndDate?.ToString("MMM yyyy") ?? "Present")
+            </div>
+            <div class="description">@exp.Description</div>
+            @* @if (!string.IsNullOrEmpty(exp.Location))
+            {
+                <div class="location">📍 @exp.Location</div>
+            } *@
+        </div>
+    }
+</body>
+</html>

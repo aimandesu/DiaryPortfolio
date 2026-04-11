@@ -38,6 +38,38 @@ namespace DiaryPortfolio.Infrastructure.Repository
             //_userManager = userManager;
         }
 
+        public async Task<UserModel?> GetUserByUserId(
+            Guid userId, 
+            ProfileType profileType)
+        {
+            var query = _context.Users.AsQueryable();
+
+            if (profileType == ProfileType.Diary)
+            {
+                query = query
+                    .Include(u => u.DiaryProfile);
+            }
+            
+            if (profileType == ProfileType.Portfolio)
+            {
+                query = query
+                    .Include(u => u.PortfolioProfile);
+            }
+
+            if (profileType == ProfileType.All)
+            {
+                query = query
+                    .Include(u => u.PortfolioProfile)
+                    .Include(u => u.DiaryProfile);
+            }
+
+
+            var user = await query
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            return user;
+        }
+
         public async Task<UserModel?> GetUserByUsername(
             string username, ProfileType profileType)
         {
@@ -48,10 +80,18 @@ namespace DiaryPortfolio.Infrastructure.Repository
                 query = query
                     .Include(u => u.DiaryProfile);
             }
-            else if (profileType == ProfileType.Portfolio)
+            
+            if (profileType == ProfileType.Portfolio)
             {
                 query = query
                     .Include(u => u.PortfolioProfile);
+            }
+
+            if (profileType == ProfileType.All)
+            {
+                query = query
+                    .Include(u => u.PortfolioProfile)
+                    .Include(u => u.DiaryProfile);
             }
 
             var user = await query

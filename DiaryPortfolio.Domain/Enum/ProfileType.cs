@@ -9,5 +9,6 @@ namespace DiaryPortfolio.Domain.Enum;
 public enum ProfileType
 {
     Diary,
-    Portfolio
+    Portfolio,
+    All
 }

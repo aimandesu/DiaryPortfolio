@@ -41,5 +41,7 @@ public static class ServiceExtensions
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IAuthenticationRepository, AuthService>();
+        services.AddScoped<IRazorViewRenderer, RazorViewRenderer>();
+        services.AddScoped<IPdfGeneratorService, PdfGeneratorService>();
     }
 }

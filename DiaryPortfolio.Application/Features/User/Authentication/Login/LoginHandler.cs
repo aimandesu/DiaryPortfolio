@@ -15,13 +15,16 @@ namespace DiaryPortfolio.Application.Features.User.Authentication.Login
     {
         private readonly ITokenRepository _tokenRepository;
         private readonly IAuthenticationRepository _authenticationRepository;
+        private IUserRepository _userRepository;
 
         public LoginHandler(
             ITokenRepository tokenRepository,
-            IAuthenticationRepository authenticationRepository)
+            IAuthenticationRepository authenticationRepository,
+            IUserRepository userRepository)
         {
             _tokenRepository = tokenRepository;
             _authenticationRepository = authenticationRepository;
+            _userRepository = userRepository;
         }
 
         public async ValueTask<ResultResponse<AuthenticationResponse>> Handle(
@@ -38,9 +41,14 @@ namespace DiaryPortfolio.Application.Features.User.Authentication.Login
                 return ResultResponse<AuthenticationResponse>.Failure(loginResult.Error);
             }
 
+            var user = await _userRepository.GetUserByUserId(
+                loginResult.Result.Id, Domain.Enum.ProfileType.All);
+
             var token = _tokenRepository.GenerateToken(
                 Email: loginResult.Result.Email ?? "",
-                UserId: loginResult.Result?.Id ?? Guid.Empty
+                UserId: loginResult.Result?.Id ?? Guid.Empty,
+                PortfolioProfileId: user.PortfolioProfile.Id,
+                DiaryProfileId: user.DiaryProfile.Id
             );
 
             return ResultResponse<AuthenticationResponse>.Success(

@@ -29,6 +29,10 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<TypeModel> Types { get; set; }
     public DbSet<SelectionModel> Selections { get; set; }
 
+    //main path
+    public DbSet<DiaryProfileModel> DiaryProfile { get; set; }
+    public DbSet<PortfolioProfileModel> PortfolioProfile { get; set; }
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

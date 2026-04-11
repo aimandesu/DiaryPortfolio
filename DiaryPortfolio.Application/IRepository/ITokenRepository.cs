@@ -9,6 +9,10 @@ namespace DiaryPortfolio.Application.IRepository
 {
     public interface ITokenRepository
     {
-        TokenModel GenerateToken(string Email, Guid UserId);
+        TokenModel GenerateToken(
+            string Email, 
+            Guid UserId,
+            Guid? PortfolioProfileId,
+            Guid? DiaryProfileId);
     }
 }

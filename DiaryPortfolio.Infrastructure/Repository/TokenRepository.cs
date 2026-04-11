@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -25,14 +26,22 @@ namespace DiaryPortfolio.Infrastructure.Repository
 
         public TokenModel GenerateToken(
             string Email, 
-            Guid UserId)
+            Guid UserId,
+            Guid? PortfolioProfileId = null,
+            Guid? DiaryProfileId = null)
         {
-            var claims = new[]
+            var claims = new List<Claim>
             {
                 new System.Security.Claims.Claim(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub, UserId.ToString()),
                 new System.Security.Claims.Claim(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Email, Email),
                 new System.Security.Claims.Claim(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
+
+            if (PortfolioProfileId.HasValue)
+                claims.Add(new Claim("portfolio_profile_id", PortfolioProfileId.Value.ToString()));
+
+            if (DiaryProfileId.HasValue)
+                claims.Add(new Claim("diary_profile_id", DiaryProfileId.Value.ToString()));
 
             var creds = new SigningCredentials(_symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
 

@@ -4,6 +4,7 @@ using DiaryPortfolio.Api.Extensions;
 using DiaryPortfolio.Application;
 using DiaryPortfolio.Domain.Entities;
 using DiaryPortfolio.Infrastructure;
+using PuppeteerSharp;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -24,6 +25,12 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
         //options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
     });
+
+builder.Services.AddControllersWithViews()
+    .AddRazorRuntimeCompilation();
+
+var browserFetcher = new BrowserFetcher();
+await browserFetcher.DownloadAsync();
 
 
 var app = builder.Build();

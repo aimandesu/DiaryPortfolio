@@ -59,7 +59,9 @@ namespace DiaryPortfolio.Application.Features.User.Authentication.SignUp
 
             var token = _tokenRepository.GenerateToken(
                 Email: signUpResult.Email ?? "",
-                UserId: signUpResult?.Id ?? Guid.Empty
+                UserId: signUpResult?.Id ?? Guid.Empty, 
+                PortfolioProfileId: portfolioProfile.Id,
+                DiaryProfileId: diaryProfile.Id
             );
 
             return ResultResponse<AuthenticationResponse>.Success(

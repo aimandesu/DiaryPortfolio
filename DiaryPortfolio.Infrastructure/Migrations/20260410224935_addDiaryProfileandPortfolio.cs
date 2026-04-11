@@ -1,0 +1,22 @@
+﻿using Microsoft.EntityFrameworkCore.Migrations;
+
+#nullable disable
+
+namespace DiaryPortfolio.Infrastructure.Migrations
+{
+    /// <inheritdoc />
+    public partial class addDiaryProfileandPortfolio : Migration
+    {
+        /// <inheritdoc />
+        protected override void Up(MigrationBuilder migrationBuilder)
+        {
+
+        }
+
+        /// <inheritdoc />
+        protected override void Down(MigrationBuilder migrationBuilder)
+        {
+
+        }
+    }
+}

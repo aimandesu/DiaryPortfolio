@@ -12,27 +12,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DiaryPortfolio.Application.Features.PortfolioProfile.Experience.Create
+namespace DiaryPortfolio.Application.Features.PortfolioProfile.Experience.Update
 {
-    internal class CreateExperienceHandler : IRequestHandler<CreateExperienceRequest, ResultResponse<ExperienceModelDto>>
+    internal class UpdateExperienceHandler : IRequestHandler<UpdateExperienceRequest, ResultResponse<ExperienceModelDto>>
     {
         private readonly IExperienceRepository _experienceRepository;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IUserService _userService;
-        
 
-        public CreateExperienceHandler(
+        public UpdateExperienceHandler(
             IExperienceRepository experienceRepository,
-            IUnitOfWork unitOfWork,
-            IUserService userService)
+            IUnitOfWork unitOfWork)
         {
             _experienceRepository = experienceRepository;
             _unitOfWork = unitOfWork;
-            _userService = userService;
         }
 
         public async ValueTask<ResultResponse<ExperienceModelDto>> Handle(
-            CreateExperienceRequest request, 
+            UpdateExperienceRequest request, 
             CancellationToken cancellationToken)
         {
             try
@@ -46,28 +42,27 @@ namespace DiaryPortfolio.Application.Features.PortfolioProfile.Experience.Create
 
                 var entity = new ExperienceModel
                 {
-                    Id = Guid.NewGuid(),
+                    Id = new Guid(request.Id),
                     Company = request.ExperienceUpload.Company,
                     Role = request.ExperienceUpload.Role,
                     Description = request.ExperienceUpload.Description,
                     StartDate = request.ExperienceUpload.StartDate,
                     EndDate = request.ExperienceUpload.EndDate,
                     Location = location,
-                    PortfolioProfileId = _userService.PortfolioProfileId ?? Guid.Empty,
                 };
 
-                var response = await _experienceRepository.Create(entity);
+                var response = await _experienceRepository.Update(entity);
                 await _unitOfWork.SaveChanges(cancellationToken);
 
                 return ResultResponse<ExperienceModelDto>.Success(response.ToExperienceModelDto());
             }
-            catch (AppException ex) {
-                
+            catch (AppException ex)
+            {
+
                 return ResultResponse<ExperienceModelDto>.Failure(
                     new Error(ex.StatusCode, ex.Message)
                 );
             }
         }
-
     }
 }

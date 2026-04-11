@@ -44,8 +44,8 @@ namespace DiaryPortfolio.Application.Helpers.Authentication
                              $"Request '{typeof(TRequest).Name}' requires authentication but has no profile type given.")
                 };
 
-                var user = await _userRepository.GetUserByUsername(
-                    _userService.UserName ?? "", 
+                var user = await _userRepository.GetUserByUserId(
+                    _userService.UserId ?? Guid.Empty, 
                     profileType);
 
                 if (user == null)
