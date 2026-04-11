@@ -29,6 +29,8 @@ public static class ServiceExtensions
         services.AddScoped<IFileHandlerRepository, FileHandlerRepository>();
         services.AddScoped<IFilePathHandlerRepository, FilePathHandlerRepository>();
         services.AddScoped<ISpaceRepository, SpaceRepository>();
+        services.AddScoped<IPortfolioProfileRepository, PortfolioProfileRepository>();
+        services.AddScoped<IDiaryProfileRepository, DiaryProfileRepository>();
         //services.AddScoped<IExperienceRepository, ExperienceRepository>();
 
         services.Scan(scan => scan

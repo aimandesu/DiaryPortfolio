@@ -27,13 +27,6 @@ namespace DiaryPortfolio.Application
                 ];
             });
 
-            services.AddControllers().AddJsonOptions(options =>
-            {
-                options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-                options.JsonSerializerOptions.WriteIndented = true;
-                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-            });
-
             services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.InvalidModelStateResponseFactory = context =>

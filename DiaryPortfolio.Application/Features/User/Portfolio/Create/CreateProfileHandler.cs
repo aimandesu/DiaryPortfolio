@@ -20,20 +20,20 @@ namespace DiaryPortfolio.Application.Features.User.Profile.Create
     internal class CreateProfileHandler : IRequestHandler<CreateProfileRequest, ResultResponse<UserModelDto>>
     {
         private readonly IFileHandlerRepository _fileHandlerRepository;
-        private readonly IUserRepository _userRepository;
+        private readonly IPortfolioProfileRepository _portfolioProfileRepository;
         private readonly IUnitOfWork _unitOfWork;
         //private readonly UserManager<UserModel> _userManager;
 
         public CreateProfileHandler(
             IFileHandlerRepository fileHandlerRepository,
-            IUserRepository userRepository,
+            IPortfolioProfileRepository portfolioProfileRepository,
             IUnitOfWork unitOfWork
             //,
             //UserManager<UserModel> userManager
         )
         {
             _fileHandlerRepository = fileHandlerRepository;
-            _userRepository = userRepository;
+            _portfolioProfileRepository = portfolioProfileRepository;
             _unitOfWork = unitOfWork;
             //_userManager = userManager;
         }
@@ -65,7 +65,7 @@ namespace DiaryPortfolio.Application.Features.User.Profile.Create
                 return ResultResponse<UserModelDto>.Failure(uploadResult.Error);
             }
 
-            var uploadProfileResult = await _userRepository.UploadProfile(
+            var uploadProfileResult = await _portfolioProfileRepository.UploadProfile(
                 profileUpload: request.ProfileUpload,
                 profilePhoto: uploadResult.Result
                     .Where(e => e.ContainsKey(MediaSubType.Image))
