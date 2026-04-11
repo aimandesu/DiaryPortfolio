@@ -1,5 +1,7 @@
 ﻿using DiaryPortfolio.Application.Common;
 using DiaryPortfolio.Application.DTOs;
+using DiaryPortfolio.Application.Features.Reporting.Experience;
+using DiaryPortfolio.Application.Features.Reporting.Resume;
 using DiaryPortfolio.Application.Features.User.Authentication;
 using DiaryPortfolio.Application.Features.User.Authentication.Login;
 using DiaryPortfolio.Application.Features.User.Authentication.SignUp;
@@ -133,6 +135,21 @@ namespace DiaryPortfolio.Api.Controller
             var request = new CreateProfileRequest(profileUpload);
             return await _mediator.Send(request, cancellationToken);
 
+        }
+
+        [HttpGet("resume/pdf/{id}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> ExportPdf(
+            [FromRoute] string id,
+            CancellationToken cancellationToken)
+        {
+
+            var pdfBytes = await _mediator.Send(
+                new CreateResumeReportRequest(id),
+                cancellationToken
+            );
+
+            return File(pdfBytes, "application/pdf", "resume-report.pdf");
         }
 
     }

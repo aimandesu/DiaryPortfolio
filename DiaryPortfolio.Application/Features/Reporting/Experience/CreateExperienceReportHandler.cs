@@ -32,7 +32,7 @@ namespace DiaryPortfolio.Application.Features.Reporting.Experience
             CreateExperienceReportRequest request, 
             CancellationToken cancellationToken)
         {
-            var response = await _experienceRepository.GetAll(new Guid(request.id));
+            var response = await _experienceRepository.GetAll(new Guid(request.Id));
 
             var html = await _razorRenderer.RenderViewToStringAsync("Pdf/ExperienceReport", response);
             return await _pdfGenerator.GenerateFromHtmlAsync(html);

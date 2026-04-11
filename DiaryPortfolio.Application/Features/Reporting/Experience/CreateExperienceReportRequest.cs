@@ -8,5 +8,5 @@ using System.Threading.Tasks;
 namespace DiaryPortfolio.Application.Features.Reporting.Experience
 {
     public sealed record class CreateExperienceReportRequest(
-        string id) : IRequest<byte[]>;
+        string Id) : IRequest<byte[]>;
 }

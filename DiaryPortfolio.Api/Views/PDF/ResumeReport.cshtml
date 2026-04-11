@@ -1,0 +1,157 @@
+﻿@using DiaryPortfolio.Application.DTOs
+@model ResumeReportDto
+
+@{
+    ViewData["Title"] = "Resume Report";
+}
+
+<div class="resume-container">
+    @if (Model?.User != null)
+    {
+        <header class="resume-header">
+            <h1>@Model.User.Name</h1>
+            <p class="tagline">@Model.User.Title</p>
+            <div class="contact-info">
+                <span><i class="bi bi-envelope"></i> @Model.User.Email</span>
+                <span><i class="bi bi-geo-alt"></i> @Model.User.Address</span>
+                <span><i class="bi bi-person"></i> @Model.User.UserName</span>
+            </div>
+        </header>
+
+        <div class="resume-body">
+            <aside class="resume-sidebar">
+                <section>
+                    <h3>About Me</h3>
+                    <p>@Model.User.About</p>
+                </section>
+                
+                <section>
+                    <h3>Details</h3>
+                    <p><strong>Age:</strong> @Model.User.Age</p>
+                </section>
+            </aside>
+
+            <main class="resume-main">
+                <section>
+                    <h3 class="section-title">Work Experience</h3>
+                    <hr />
+                    
+                    @if (Model.Experiencs != null && Model.Experiencs.Any())
+                    {
+                        @foreach (var exp in Model.Experiencs)
+                        {
+                            <div class="experience-item">
+                                <div class="exp-header">
+                                    <span class="company">@exp.Company</span>
+                                    <span class="dates">
+                                        @exp.StartDate?.ToString("MMM yyyy") - 
+                                        @(exp.EndDate.HasValue ? exp.EndDate.Value.ToString("MMM yyyy") : "Present")
+                                    </span>
+                                </div>
+                                <div class="role">@exp.Role</div>
+                                <p class="description">@exp.Description</p>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p>No work experience listed.</p>
+                    }
+                </section>
+            </main>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning">Resume data is unavailable.</div>
+    }
+</div>
+
+<style>
+    .resume-container {
+        max-width: 900px;
+        margin: 20px auto;
+        background: #fff;
+        padding: 40px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #333;
+    }
+
+    .resume-header {
+        text-align: center;
+        border-bottom: 2px solid #333;
+        padding-bottom: 20px;
+        margin-bottom: 20px;
+    }
+
+    .resume-header h1 {
+        margin: 0;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+    }
+
+    .tagline {
+        font-size: 1.2rem;
+        color: #666;
+        margin-bottom: 10px;
+    }
+
+    .contact-info span {
+        margin: 0 10px;
+        font-size: 0.9rem;
+    }
+
+    .resume-body {
+        display: flex;
+        gap: 40px;
+    }
+
+    .resume-sidebar {
+        flex: 1;
+        border-right: 1px solid #eee;
+        padding-right: 20px;
+    }
+
+    .resume-main {
+        flex: 2;
+    }
+
+    .section-title {
+        text-transform: uppercase;
+        color: #2c3e50;
+        margin-bottom: 5px;
+    }
+
+    .experience-item {
+        margin-bottom: 25px;
+    }
+
+    .exp-header {
+        display: flex;
+        justify-content: space-between;
+        font-weight: bold;
+    }
+
+    .company {
+        color: #2980b9;
+        font-size: 1.1rem;
+    }
+
+    .role {
+        font-style: italic;
+        margin-bottom: 5px;
+        color: #555;
+    }
+
+    .description {
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+
+    /* Print styling to make it look good on paper */
+    @@media print {
+        .resume-container { box-shadow: none; margin: 0; padding: 0; }
+        body { background: white; }
+    }
+</style>

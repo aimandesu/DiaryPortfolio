@@ -99,52 +99,5 @@ namespace DiaryPortfolio.Infrastructure.Repository
 
             return user;
         }
-
-        public async Task<ResultResponse<UserModel>> UploadProfile(
-            ProfileUpload profileUpload,
-            PhotoModel? profilePhoto,
-            FileModel? resumeFile)
-        {
-            var userId = _userService.UserId!.Value;
-
-            var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Id == userId);
-
-            if (user == null)
-                return ResultResponse<UserModel>.Failure(
-                    new Error(HttpStatusCode.NotFound, "User not found")
-                );
-
-            var existingMedia = await _context.Users
-                .Include(d => d.DiaryProfile)
-                .Include(d => d.PortfolioProfile)
-                .FirstOrDefaultAsync(u => u.Id == userId);
-
-            await _context.Database.ExecuteSqlRawAsync(
-                "EXEC sp_UpsertPortfolioProfile @UserId, @UserName, @NormalizedUserName, @Email, @NormalizedEmail, @Name, @Age, @Title, @About, @Address, @LocationName, @Latitude, @Longitude, @PhotoUrl, @PhotoMime, @PhotoWidth, @PhotoHeight, @PhotoSize, @FileUrl, @FileDescription",
-                new SqlParameter("@UserId", userId),
-                new SqlParameter("@UserName", profileUpload.UserName),
-                new SqlParameter("@NormalizedUserName", profileUpload.UserName.ToUpperInvariant()),
-                new SqlParameter("@Email", profileUpload.Email),
-                new SqlParameter("@NormalizedEmail", profileUpload.Email.ToUpperInvariant()),
-                new SqlParameter("@Name", profileUpload.Name),
-                new SqlParameter("@Age", (object?)profileUpload.Age ?? DBNull.Value),
-                new SqlParameter("@Title", profileUpload.Title),
-                new SqlParameter("@About", profileUpload.About),
-                new SqlParameter("@Address", profileUpload.Address),
-                new SqlParameter("@LocationName", profileUpload.Location?.Name ?? ""),
-                new SqlParameter("@Latitude", ""),
-                new SqlParameter("@Longitude", ""),
-                new SqlParameter("@PhotoUrl", (object?)profilePhoto?.Url ?? DBNull.Value),
-                new SqlParameter("@PhotoMime", (object?)profilePhoto?.Mime ?? DBNull.Value),
-                new SqlParameter("@PhotoWidth", (object?)profilePhoto?.Width ?? DBNull.Value),
-                new SqlParameter("@PhotoHeight", (object?)profilePhoto?.Height ?? DBNull.Value),
-                new SqlParameter("@PhotoSize", (object?)profilePhoto?.Size ?? DBNull.Value),
-                new SqlParameter("@FileUrl", (object?)resumeFile?.Url ?? DBNull.Value),
-                new SqlParameter("@FileDescription", (object?)resumeFile?.Description ?? DBNull.Value)
-            );
-
-            return ResultResponse<UserModel>.Success(user);
-        }
     }
 }
