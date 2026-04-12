@@ -138,7 +138,7 @@ namespace DiaryPortfolio.Api.Controller
         }
 
         [HttpGet("resume/pdf/{id}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        //[Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> ExportPdf(
             [FromRoute] string id,
             CancellationToken cancellationToken)

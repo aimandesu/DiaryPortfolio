@@ -20,7 +20,7 @@ public static class ServiceExtensions
             options => options
                 .UseSqlServer(connectionString)
                 .LogTo(Console.WriteLine, LogLevel.Information)
-                .EnableSensitiveDataLogging()
+                //.EnableSensitiveDataLogging()
             );
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IMediaRepository, MediaRepository>();

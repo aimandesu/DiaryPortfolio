@@ -1,0 +1,15 @@
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    "./Views/**/*.cshtml",
+    "./Views/PDF/*.cshtml",
+    "./wwwroot/**/*.html"
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+
+cd api layer then
+npx tailwindcss -i ./wwwroot/css/input.css -o ./wwwroot/css/output.css --watch

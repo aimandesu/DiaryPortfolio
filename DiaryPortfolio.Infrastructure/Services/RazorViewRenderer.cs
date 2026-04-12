@@ -31,6 +31,25 @@ namespace DiaryPortfolio.Infrastructure.Services
             _serviceProvider = serviceProvider;
         }
 
+        public async Task<string> RenderFileToBase64ImageAsync(string path)
+        {
+            // 1. Combine with the actual folder path on your server
+            // Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", relativePath.TrimStart('/'))
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), path.TrimStart('/'));
+
+            if (!File.Exists(filePath)) return "";
+
+            // 2. Read the bytes and convert to Base64
+            byte[] imageArray = await File.ReadAllBytesAsync(filePath);
+            string base64ImageRepresentation = Convert.ToBase64String(imageArray);
+
+            // 3. Determine the mime type (png/jpg)
+            string extension = Path.GetExtension(filePath).ToLower().Replace(".", "");
+
+            // 4. Return the full Data URI
+            return $"data:image/{extension};base64,{base64ImageRepresentation}";
+        }
+
         public async Task<string> RenderViewToStringAsync<TModel>(string viewName, TModel model)
         {
             var httpContext = new DefaultHttpContext

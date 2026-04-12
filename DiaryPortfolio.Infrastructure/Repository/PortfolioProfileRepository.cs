@@ -33,11 +33,18 @@ namespace DiaryPortfolio.Infrastructure.Repository
         public async Task<ResultResponse<ResumeReportDto>> GenerateResume(string userId)
         {
             var query = from user in _context.Users
-                           where user.Id == new Guid(userId)
-                           join portfolio in _context.PortfolioProfile
+                            where user.Id == new Guid(userId)
+
+                            join portfolio in _context.PortfolioProfile
                                 on user.Id equals portfolio.UserId
-                           join experience in _context.Experiences
+
+                            join photos in _context.Photos
+                                on portfolio.ProfilePhotoId equals photos.Id into photoGroup
+                            from photos in photoGroup.DefaultIfEmpty()
+
+                            join experience in _context.Experiences
                                 on portfolio.Id equals experience.PortfolioProfileId into userExperiences
+
                            select new ResumeReportDto
                            {
                                User = new UserModelDto
@@ -49,6 +56,15 @@ namespace DiaryPortfolio.Infrastructure.Repository
                                    Title = portfolio.Title,
                                    About = portfolio.About,
                                    Address = portfolio.Address,
+                                   ProfilePhoto = photos == null ? null : new PhotoModel
+                                   {
+                                       Id = photos.Id,
+                                       Url = photos.Url,
+                                       Mime = photos.Mime,
+                                       Width = photos.Width,
+                                       Height = photos.Height,
+                                       Size = photos.Size,
+                                   }
                                },
                                Experiencs = userExperiences.Select(e => new ExperienceModelDto
                                {
@@ -57,6 +73,13 @@ namespace DiaryPortfolio.Infrastructure.Repository
                                    Description = e.Description,
                                    StartDate = e.StartDate,
                                    EndDate = e.EndDate,
+                                   Location = e.Location == null ? null : new LocationModel
+                                   {
+                                       Id = e.Location.Id,
+                                       Name = e.Location.Name,
+                                       Latitude = e.Location.Latitude,
+                                       Longitude = e.Location.Longitude
+                                   }
                                }).ToList(),
                            };
 

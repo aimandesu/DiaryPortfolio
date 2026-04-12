@@ -37,6 +37,7 @@ var app = builder.Build();
 app.ConfigureExceptionHandler();
 app.ConfigureMedia();
 //app.EnsureSeed();
+app.UseStaticFiles();
 app.UseCors("CorsPolicy");
 app.MapIdentityApi<UserModel>();
 app.UseHttpsRedirection();

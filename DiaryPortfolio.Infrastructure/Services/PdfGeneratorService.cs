@@ -13,6 +13,18 @@ namespace DiaryPortfolio.Infrastructure.Services
     {
         public async Task<byte[]> GenerateFromHtmlAsync(string html)
         {
+            // 1. Locate the physical output.css on your server
+            var cssPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "css", "output.css");
+            var tailwindCss = await File.ReadAllTextAsync(cssPath);
+
+            // 2. Inject the CSS into the HTML string
+            // This replaces the <link> tag with the actual CSS content
+            var finalHtml = html.Replace(
+                "<link rel=\"stylesheet\" href=\"/css/output.css\" />",
+                $"<style>{tailwindCss}</style>"
+            );
+
+
             await using var browser = await Puppeteer.LaunchAsync(new LaunchOptions
             {
                 Headless = true,
@@ -21,7 +33,7 @@ namespace DiaryPortfolio.Infrastructure.Services
 
             await using var page = await browser.NewPageAsync();
 
-            await page.SetContentAsync(html, new PuppeteerSharp.NavigationOptions
+            await page.SetContentAsync(finalHtml, new PuppeteerSharp.NavigationOptions
             {
                 WaitUntil = new[] { WaitUntilNavigation.Networkidle0 } // waits for all resources
             });

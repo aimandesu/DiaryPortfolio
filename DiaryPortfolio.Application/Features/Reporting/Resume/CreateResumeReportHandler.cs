@@ -31,6 +31,13 @@ namespace DiaryPortfolio.Application.Features.Reporting.Resume
         {
             var response = await _portfolioProfileRepository.GenerateResume(request.UserId);
 
+            var photo = response?.Result?.User?.ProfilePhoto;
+
+            if (photo != null && !string.IsNullOrEmpty(photo.Url))
+            {
+                photo.Url = await _razorRenderer.RenderFileToBase64ImageAsync(photo.Url);
+            }
+
             var html = await _razorRenderer.RenderViewToStringAsync("Pdf/ResumeReport", response.Result);
 
             return await _pdfGenerator.GenerateFromHtmlAsync(html);

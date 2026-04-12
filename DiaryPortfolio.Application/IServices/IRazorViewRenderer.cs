@@ -9,5 +9,6 @@ namespace DiaryPortfolio.Application.IServices
     public interface IRazorViewRenderer
     {
         Task<string> RenderViewToStringAsync<TModel>(string viewName, TModel model);
+        Task<string> RenderFileToBase64ImageAsync(string path);
     }
 }

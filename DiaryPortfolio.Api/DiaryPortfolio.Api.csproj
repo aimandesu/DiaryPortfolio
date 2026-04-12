@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
@@ -15,5 +15,13 @@
     <ProjectReference Include="..\DiaryPortfolio.Infrastructure\DiaryPortfolio.Infrastructure.csproj" />
     <ProjectReference Include="..\DiaryPortfolio.Application\DiaryPortfolio.Application.csproj" />
   </ItemGroup>
+
+	<Target Name="Tailwind" BeforeTargets="Build">
+		<Exec Condition="'$(Configuration)' == 'Debug'"
+			  Command="npx tailwindcss -i ./wwwroot/css/input.css -o ./wwwroot/css/output.css" />
+
+		<Exec Condition="'$(Configuration)' == 'Release'"
+			  Command="npx tailwindcss -i ./wwwroot/css/input.css -o ./wwwroot/css/output.css --minify" />
+	</Target>
 
 </Project>
