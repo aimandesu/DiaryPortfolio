@@ -17,11 +17,9 @@
   </ItemGroup>
 
 	<Target Name="Tailwind" BeforeTargets="Build">
-		<Exec Condition="'$(Configuration)' == 'Debug'"
-			  Command="npx tailwindcss -i ./wwwroot/css/input.css -o ./wwwroot/css/output.css" />
+		<Exec Condition="'$(Configuration)' == 'Debug'" Command="npx tailwindcss -i ./wwwroot/css/input.css -o ./wwwroot/css/output.css" />
 
-		<Exec Condition="'$(Configuration)' == 'Release'"
-			  Command="npx tailwindcss -i ./wwwroot/css/input.css -o ./wwwroot/css/output.css --minify" />
+		<Exec Condition="'$(Configuration)' == 'Release'" Command="npx tailwindcss -i ./wwwroot/css/input.css -o ./wwwroot/css/output.css --minify" />
 	</Target>
 
 </Project>

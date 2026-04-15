@@ -1,3 +1,4 @@
+using DiaryPortfolio.Application.Features.User.Chat.Create;
 using DiaryPortfolio.Application.Helpers.Authentication;
 using DiaryPortfolio.Application.IRepository;
 using DiaryPortfolio.Application.IServices;
@@ -45,5 +46,13 @@ public static class ServiceExtensions
         services.AddScoped<IAuthenticationRepository, AuthService>();
         services.AddScoped<IRazorViewRenderer, RazorViewRenderer>();
         services.AddScoped<IPdfGeneratorService, PdfGeneratorService>();
+
+        //Signal R
+        services.AddSignalR(
+            options => options.EnableDetailedErrors = true
+        );
+
+        services.AddScoped<IChatNotifier, ChatNotifier>();
+        services.AddScoped<CreateChatHandler>();
     }
 }
