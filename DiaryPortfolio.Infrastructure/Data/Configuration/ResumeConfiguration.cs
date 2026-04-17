@@ -16,13 +16,13 @@ namespace DiaryPortfolio.Infrastructure.Data.Configuration
             builder.HasKey(r => r.Id);
 
             builder.HasOne(r => r.ResumeFile)
-                .WithOne()
-                .HasForeignKey<ResumeModel>(r => r.FileId)
+                .WithMany()
+                .HasForeignKey(r => r.FileId)
                 .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasOne(r => r.ResumeTemplate)
-                .WithOne()
-                .HasForeignKey<ResumeModel>(r => r.TemplateId)
+                .WithMany()
+                .HasForeignKey(r => r.TemplateId)
                 .OnDelete(DeleteBehavior.NoAction);
         }
     }

@@ -11,7 +11,7 @@ namespace DiaryPortfolio.Application.Features.Reporting.Resume
 {
     public sealed record class CreateResumeReportRequest(
         string UserId
-    ) : IRequest<byte[]>;
-        //IRequireAuthentication,
-        //IRequirePortfolioProfile;
+    ) : IRequest<byte[]>,
+        IRequireAuthentication,
+        IRequirePortfolioProfile;
 }

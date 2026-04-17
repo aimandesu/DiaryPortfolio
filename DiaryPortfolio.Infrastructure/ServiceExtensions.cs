@@ -32,6 +32,7 @@ public static class ServiceExtensions
         services.AddScoped<ISpaceRepository, SpaceRepository>();
         services.AddScoped<IPortfolioProfileRepository, PortfolioProfileRepository>();
         services.AddScoped<IDiaryProfileRepository, DiaryProfileRepository>();
+        services.AddScoped<IResumeRepository, ResumeRepository>();
         //services.AddScoped<IExperienceRepository, ExperienceRepository>();
 
         services.Scan(scan => scan
@@ -53,6 +54,5 @@ public static class ServiceExtensions
         );
 
         services.AddScoped<IChatNotifier, ChatNotifier>();
-        services.AddScoped<CreateChatHandler>();
     }
 }

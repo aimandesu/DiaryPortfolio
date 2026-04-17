@@ -12,35 +12,19 @@ namespace DiaryPortfolio.Application.Features.Reporting.Resume
 {
     internal class CreateResumeReportHandler : IRequestHandler<CreateResumeReportRequest, byte[]>
     {
-        private readonly IPortfolioProfileRepository _portfolioProfileRepository;
-        private readonly IRazorViewRenderer _razorRenderer;
-        private readonly IPdfGeneratorService _pdfGenerator;
+        private readonly IResumeRepository _resumeRepository;
+
         public CreateResumeReportHandler(
-            IPortfolioProfileRepository portfolioProfileRepository,
-            IRazorViewRenderer razorRenderer,
-            IPdfGeneratorService pdfGenerator)
+            IResumeRepository resumeRepository)
         {
-            _portfolioProfileRepository = portfolioProfileRepository;
-            _razorRenderer = razorRenderer;
-            _pdfGenerator = pdfGenerator;
+            _resumeRepository = resumeRepository;
         }
 
         public async ValueTask<byte[]> Handle(
             CreateResumeReportRequest request, 
             CancellationToken cancellationToken)
         {
-            var response = await _portfolioProfileRepository.GenerateResume(request.UserId);
-
-            var photo = response?.Result?.User?.ProfilePhoto;
-
-            if (photo != null && !string.IsNullOrEmpty(photo.Url))
-            {
-                photo.Url = await _razorRenderer.RenderFileToBase64ImageAsync(photo.Url);
-            }
-
-            var html = await _razorRenderer.RenderViewToStringAsync("Pdf/ResumeReport", response.Result);
-
-            return await _pdfGenerator.GenerateFromHtmlAsync(html);
+            return await _resumeRepository.GenerateResumeReport(request.UserId);
         }
     }
 }
