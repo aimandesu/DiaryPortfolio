@@ -7,6 +7,12 @@ public enum MediaType
     Profile,
 }
 
+public enum MediaStatus
+{
+    Public,
+    Private,
+}
+
 public enum MediaSubType
 {
     Video,

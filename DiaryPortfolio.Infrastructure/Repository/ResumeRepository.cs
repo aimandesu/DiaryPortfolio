@@ -20,19 +20,22 @@ namespace DiaryPortfolio.Infrastructure.Repository
         private readonly IPdfGeneratorService _pdfGenerator;
         private readonly ApplicationDbContext _context;
         private readonly IUserService _userService;
+        private readonly ISelectionHelper _selectionHelper;
 
         public ResumeRepository(
             IPortfolioProfileRepository portfolioProfileRepository,
             IRazorViewRenderer razorRenderer,
             IPdfGeneratorService pdfGenerator,
             ApplicationDbContext context,
-            IUserService userService)
+            IUserService userService,
+            ISelectionHelper selectionHelper)
         {
             _portfolioProfileRepository = portfolioProfileRepository;
             _razorRenderer = razorRenderer;
             _pdfGenerator = pdfGenerator;
             _context = context;
             _userService = userService;
+            _selectionHelper = selectionHelper;
         }
 
         public async Task<ResultResponse<ResumeModel>> DeleteResume(string resumeId)
@@ -86,16 +89,12 @@ namespace DiaryPortfolio.Infrastructure.Repository
         public async Task<ResultResponse<ResumeModel>> UploadResume(
             string templateId, FileModel? file)
         {
-            var typeSelection = (
-                from t in _context.Selections
-                where t.Selection == FilesEnum.Resume.ToString()
-                select t.Id
-            ).FirstOrDefault();
+            var typeSelection = await _selectionHelper.GetSelectionIdAsync(FilesEnum.Resume);
 
             var resumeFile = new FileModel
             {
                 Url = file?.Url ?? "",
-                SelectionId = typeSelection
+                SelectionId = typeSelection,
             };
 
             var resume = new ResumeModel

@@ -33,8 +33,10 @@ public static class ServiceExtensions
         services.AddScoped<IPortfolioProfileRepository, PortfolioProfileRepository>();
         services.AddScoped<IDiaryProfileRepository, DiaryProfileRepository>();
         services.AddScoped<IResumeRepository, ResumeRepository>();
+        services.AddScoped<ISkillRepository, SkillRepository>();
         //services.AddScoped<IExperienceRepository, ExperienceRepository>();
 
+        //this is for the top one -> the one we do addscoped IExperienceRepository with ExperienceRepository
         services.Scan(scan => scan
             .FromAssemblies(typeof(BaseRepository<>).Assembly)
             .AddClasses(classes => classes.AssignableTo(typeof(IBaseRepository<>)))
@@ -47,6 +49,7 @@ public static class ServiceExtensions
         services.AddScoped<IAuthenticationRepository, AuthService>();
         services.AddScoped<IRazorViewRenderer, RazorViewRenderer>();
         services.AddScoped<IPdfGeneratorService, PdfGeneratorService>();
+        services.AddScoped<ISelectionHelper, SelectionHelper>();
 
         //Signal R
         services.AddSignalR(

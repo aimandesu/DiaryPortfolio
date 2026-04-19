@@ -14,14 +14,14 @@ using System.Threading.Tasks;
 
 namespace DiaryPortfolio.Application.Features.PortfolioProfile.Resume.Create
 {
-    internal class CreateResumeResponse : IRequestHandler<CreateResumeRequest, ResultResponse<ResumeModel>>
+    internal class CreateResumeHandler : IRequestHandler<CreateResumeRequest, ResultResponse<ResumeModel>>
     {
         private readonly IResumeRepository _resumeRepository;
         private readonly IFileHandlerRepository _fileHandlerRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IUserService _userService;
 
-        public CreateResumeResponse(
+        public CreateResumeHandler(
            IResumeRepository resumeRepository, 
            IFileHandlerRepository fileHandlerRepository,
            IUnitOfWork unitOfWork,

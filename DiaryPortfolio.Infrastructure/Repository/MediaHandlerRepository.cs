@@ -20,13 +20,16 @@ namespace DiaryPortfolio.Infrastructure.Repository
     {
         private readonly ApplicationDbContext _context;
         private readonly IUserService _userService;
+        private readonly ISelectionHelper _selectionHelper;
 
         public MediaHandlerRepository(
             ApplicationDbContext context,
-            IUserService userService)
+            IUserService userService,
+            ISelectionHelper selectionHelper)
         {
             _context = context;
             _userService = userService;
+            _selectionHelper = selectionHelper;
         }
 
         public List<string> GetMediaFiles(string mediaId) 
@@ -100,15 +103,9 @@ namespace DiaryPortfolio.Infrastructure.Repository
                     .Select(e => e.Id)
                     .FirstOrDefault();
 
-                var statusSelection = _context.Selections
-                    .Where(s => s.Selection == media.MediaStatus.ToString())
-                    .Select(s => s.Id)
-                    .FirstOrDefault();
+                var statusSelection = await _selectionHelper.GetSelectionIdAsync(media.MediaStatus);
 
-                var typeSelection = _context.Selections
-                    .Where(s => s.Selection == media.MediaType.ToString())
-                    .Select(s => s.Id)
-                    .FirstOrDefault();
+                var typeSelection = await _selectionHelper.GetSelectionIdAsync(media.MediaType);
 
                 existingMedia.Title = media.Title;
                 existingMedia.Description = media.Description;
