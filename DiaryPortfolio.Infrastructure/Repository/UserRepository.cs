@@ -6,7 +6,9 @@ using DiaryPortfolio.Application.IServices;
 using DiaryPortfolio.Application.Request;
 using DiaryPortfolio.Domain.Entities;
 using DiaryPortfolio.Domain.Enum;
+using DiaryPortfolio.Domain.Interfaces;
 using DiaryPortfolio.Infrastructure.Data;
+using DiaryPortfolio.Infrastructure.Services;
 using Mediator;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
@@ -36,6 +38,23 @@ namespace DiaryPortfolio.Infrastructure.Repository
             _context = context;
             _userService = userService;
             //_userManager = userManager;
+        }
+
+        public async Task EnsureOwnerAsync(
+            Guid resourceId, 
+            Type resourceType, 
+            Guid userId)
+        {
+            var entity = await _context.FindAsync(resourceType, resourceId);
+
+            if (entity == null)
+                throw new AppException("Resource not found.", HttpStatusCode.NotFound);
+
+            if (entity is not IHaveOwner owned)
+                throw new InvalidOperationException($"{resourceType.Name} does not implement IHaveOwner.");
+
+            if (owned.OwnerId != userId)
+                throw new AppException("You do not own this resource.", HttpStatusCode.Forbidden);
         }
 
         public async Task<UserModel?> GetUserByUserId(

@@ -7,6 +7,7 @@ using Mediator;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -54,6 +55,22 @@ namespace DiaryPortfolio.Application.Helpers.Authentication
                         $"User does not have {profileType} account yet",
                         System.Net.HttpStatusCode.Unauthorized
                     );
+                }
+
+                var ownershipAttr = typeof(TRequest)
+                    .GetCustomAttribute<RequireOwnershipAttribute>();
+
+
+                if (ownershipAttr != null)
+                {
+                    var resourceIdProp = typeof(TRequest).GetProperty("Id");
+                    var rawValue = resourceIdProp!.GetValue(request)!.ToString();
+                    var resourceId = Guid.Parse(rawValue);
+
+                    await _userRepository.EnsureOwnerAsync(
+                        resourceId,
+                        ownershipAttr.ResourceType,
+                        _userService?.PortfolioProfileId ?? Guid.Empty);
                 }
 
 

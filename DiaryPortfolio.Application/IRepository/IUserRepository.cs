@@ -16,5 +16,10 @@ namespace DiaryPortfolio.Application.IRepository
             string username, ProfileType profileType);
         Task<UserModel?> GetUserByUserId(
             Guid userId, ProfileType profileType);
+
+        Task EnsureOwnerAsync(
+            Guid resourceId, 
+            Type resourceType, 
+            Guid userId);
     }
 }
