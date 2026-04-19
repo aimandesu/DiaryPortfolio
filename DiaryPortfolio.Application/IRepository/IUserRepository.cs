@@ -19,7 +19,6 @@ namespace DiaryPortfolio.Application.IRepository
 
         Task EnsureOwnerAsync(
             Guid resourceId, 
-            Type resourceType, 
-            Guid userId);
+            Type resourceType);
     }
 }

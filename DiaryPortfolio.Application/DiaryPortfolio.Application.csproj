@@ -29,7 +29,6 @@
   <ItemGroup>
     <Folder Include="Features\DiaryProfile\Media\Get\" />
     <Folder Include="Features\DiaryProfile\Space\Update\" />
-    <Folder Include="Features\PortfolioProfile\Skill\" />
     <Folder Include="Features\User\Diary\" />
     <Folder Include="Features\User\Portfolio\Update\" />
   </ItemGroup>

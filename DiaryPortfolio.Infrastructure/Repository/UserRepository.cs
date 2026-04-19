@@ -42,19 +42,32 @@ namespace DiaryPortfolio.Infrastructure.Repository
 
         public async Task EnsureOwnerAsync(
             Guid resourceId, 
-            Type resourceType, 
-            Guid userId)
+            Type resourceType)
         {
             var entity = await _context.FindAsync(resourceType, resourceId);
 
             if (entity == null)
-                throw new AppException("Resource not found.", HttpStatusCode.NotFound);
+            {
+                return;
+                //throw new AppException(
+                //    "Resource not found.",
+                //    HttpStatusCode.NotFound);
+            }
 
-            if (entity is not IHaveOwner owned)
-                throw new InvalidOperationException($"{resourceType.Name} does not implement IHaveOwner.");
+            if (entity is not IUserOwner userOwner)
+            {
+                throw new InvalidOperationException(
+                    $"{resourceType.Name} does not implement IUserOwner " +
+                    $"but is using the implementation.");
+            }
 
-            if (owned.OwnerId != userId)
-                throw new AppException("You do not own this resource.", HttpStatusCode.Forbidden);
+            if (userOwner.OwnerId != (_userService?.UserId ?? Guid.Empty))
+            {
+                throw new AppException(
+                    "User does not own this resource.",
+                    HttpStatusCode.Forbidden);
+            }
+                
         }
 
         public async Task<UserModel?> GetUserByUserId(

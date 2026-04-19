@@ -63,14 +63,13 @@ namespace DiaryPortfolio.Application.Helpers.Authentication
 
                 if (ownershipAttr != null)
                 {
-                    var resourceIdProp = typeof(TRequest).GetProperty("Id");
+                    var resourceIdProp = typeof(TRequest).GetProperty("Id"); //this value must follow controller so for all use Id
                     var rawValue = resourceIdProp!.GetValue(request)!.ToString();
                     var resourceId = Guid.Parse(rawValue);
 
                     await _userRepository.EnsureOwnerAsync(
                         resourceId,
-                        ownershipAttr.ResourceType,
-                        _userService?.PortfolioProfileId ?? Guid.Empty);
+                        ownershipAttr.ResourceType);
                 }
 
 

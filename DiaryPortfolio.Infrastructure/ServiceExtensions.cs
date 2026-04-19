@@ -34,9 +34,12 @@ public static class ServiceExtensions
         services.AddScoped<IDiaryProfileRepository, DiaryProfileRepository>();
         services.AddScoped<IResumeRepository, ResumeRepository>();
         services.AddScoped<ISkillRepository, SkillRepository>();
+        services.AddScoped<ICustomUrlRepository, CustomUrlRepository>();
         //services.AddScoped<IExperienceRepository, ExperienceRepository>();
 
         //this is for the top one -> the one we do addscoped IExperienceRepository with ExperienceRepository
+        //-> to use this, you need to make the repository a public repository, if you try to extend with
+        //IBaseRepository
         services.Scan(scan => scan
             .FromAssemblies(typeof(BaseRepository<>).Assembly)
             .AddClasses(classes => classes.AssignableTo(typeof(IBaseRepository<>)))

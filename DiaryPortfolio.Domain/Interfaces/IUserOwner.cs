@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DiaryPortfolio.Domain.Interfaces
 {
-    public interface IHaveOwner
+    public interface IUserOwner
     {
         Guid OwnerId { get; }
     }

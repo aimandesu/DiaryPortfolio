@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DiaryPortfolio.Domain.Entities
 {
-    public class SkillModel  : IHaveOwner
+    public class SkillModel  : IUserOwner
     {
         public Guid Id { get; set; } = Guid.NewGuid();
         public string Name { get; set; } = string.Empty;
@@ -19,6 +19,6 @@ namespace DiaryPortfolio.Domain.Entities
         public Guid PortfolioProfileId { get; set; }
         public PortfolioProfileModel? PortfolioProfile { get; set; }
 
-        public Guid OwnerId => PortfolioProfileId;
+        public Guid OwnerId => PortfolioProfile?.UserId ?? Guid.Empty;
     }
 }
