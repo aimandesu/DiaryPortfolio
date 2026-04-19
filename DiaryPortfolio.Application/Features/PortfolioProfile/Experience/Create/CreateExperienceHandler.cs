@@ -39,7 +39,7 @@ namespace DiaryPortfolio.Application.Features.PortfolioProfile.Experience.Create
             {
                 var location = new LocationModel
                 {
-                    Name = request.ExperienceUpload.Name,
+                    AddressLine1 = request.ExperienceUpload.Name,
                     Latitude = request.ExperienceUpload.Latitude,
                     Longitude = request.ExperienceUpload.Longitude
                 };

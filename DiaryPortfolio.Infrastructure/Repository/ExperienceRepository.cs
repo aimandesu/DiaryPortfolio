@@ -85,7 +85,7 @@ namespace DiaryPortfolio.Infrastructure.Repository
 
             if (entity.Location != null && model.Location != null)
             {
-                entity.Location.Name = model.Location.Name;
+                entity.Location.AddressLine1 = model.Location.AddressLine1;
                 entity.Location.Latitude = model.Location.Latitude;
                 entity.Location.Longitude = model.Location.Longitude;
             }

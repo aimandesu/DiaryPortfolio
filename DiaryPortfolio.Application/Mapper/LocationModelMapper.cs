@@ -15,7 +15,7 @@ namespace DiaryPortfolio.Application.Mapper
             return new LocationModelDto
             {
                 Id = locationModel.Id,
-                Name = locationModel.Name,
+                Name = locationModel.AddressLine1,
                 Latitude = locationModel.Latitude,
                 Longitude = locationModel.Longitude,
             };

@@ -115,9 +115,9 @@ namespace DiaryPortfolio.Infrastructure.Repository
 
                 if (existingMedia.LocationModel != null)
                 {
-                    existingMedia.LocationModel.Name = media.Location?.Name ?? "";
-                    existingMedia.LocationModel.Latitude = media.Location?.Latitude ?? "";
-                    existingMedia.LocationModel.Longitude = media.Location?.Longitude ?? "";
+                    existingMedia.LocationModel.AddressLine1 = media.Location?.Name ?? "";
+                    existingMedia.LocationModel.Latitude =  Convert.ToDecimal(media.Location?.Latitude);
+                    existingMedia.LocationModel.Longitude = Convert.ToDecimal(media.Location?.Longitude);
                 }
 
                 if (existingMedia.ConditionModel != null)
@@ -201,9 +201,9 @@ namespace DiaryPortfolio.Infrastructure.Repository
                     SpaceId = spaceIdLookup,
                     LocationModel = new LocationModel
                     {
-                        Name = media.Location?.Name ?? "",
-                        Latitude = media.Location?.Latitude ?? "",
-                        Longitude = media.Location?.Longitude ?? ""
+                        AddressLine1 = media.Location?.Name ?? "",
+                        Latitude =  Convert.ToDecimal(media.Location?.Latitude),
+                        Longitude = Convert.ToDecimal(media.Location?.Longitude)
                     },
                     ConditionModel = new ConditionModel
                     {

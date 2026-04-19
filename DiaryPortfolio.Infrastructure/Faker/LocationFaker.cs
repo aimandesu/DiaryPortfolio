@@ -12,9 +12,9 @@ namespace DiaryPortfolio.Infrastructure.Faker
         public LocationFaker()
         {
             RuleFor(l => l.Id, f => Guid.NewGuid());
-            RuleFor(l => l.Name, f => f.Lorem.Sentence(2));
-            RuleFor(l => l.Latitude, f => f.Address.Latitude().ToString());
-            RuleFor(l => l.Longitude, f => f.Address.Longitude().ToString());
+            RuleFor(l => l.AddressLine1, f => f.Lorem.Sentence(2));
+            RuleFor(l => l.Latitude, f => Convert.ToDecimal(f.Address.Latitude()));
+            RuleFor(l => l.Longitude, f => Convert.ToDecimal(f.Address.Longitude()));
         }
     }
 }

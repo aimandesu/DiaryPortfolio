@@ -76,7 +76,7 @@ namespace DiaryPortfolio.Infrastructure.Repository
                                    Location = e.Location == null ? null : new LocationModel
                                    {
                                        Id = e.Location.Id,
-                                       Name = e.Location.Name,
+                                       AddressLine1 = e.Location.AddressLine1,
                                        Latitude = e.Location.Latitude,
                                        Longitude = e.Location.Longitude
                                    }
@@ -129,7 +129,7 @@ namespace DiaryPortfolio.Infrastructure.Repository
                 new SqlParameter("@Title", profileUpload.Title),
                 new SqlParameter("@About", profileUpload.About),
                 new SqlParameter("@Address", profileUpload.Address),
-                new SqlParameter("@LocationName", profileUpload.Location?.Name ?? ""),
+                new SqlParameter("@LocationName", profileUpload.Location?.AddressLine1 ?? ""),
                 new SqlParameter("@Latitude", ""),
                 new SqlParameter("@Longitude", ""),
                 new SqlParameter("@PhotoUrl", (object?)profilePhoto?.Url ?? DBNull.Value),
