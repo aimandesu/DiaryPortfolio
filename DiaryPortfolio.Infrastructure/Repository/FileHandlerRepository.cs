@@ -49,17 +49,11 @@ namespace DiaryPortfolio.Infrastructure.Repository
             List<MediaStream> fileStreams,
             MediaType mediaType)
         {
-            var imagesAllowed = new List<string>
-            {
-                ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".svg"
-            };
+            var imagesAllowed = AllowedContentTypes.Images;
 
-            var videosAllowed = new List<string>
-            {
-                ".mp4", ".avi", ".mov", ".wmv", ".flv", ".mkv"
-            };
+            var videosAllowed = AllowedContentTypes.Videos;
 
-            var filesAllowed = new List<string> { ".pdf" };
+            var filesAllowed = AllowedContentTypes.Documents;
 
             List<Dictionary<MediaSubType, MediaDistributor>> distributedFiles = [];
 

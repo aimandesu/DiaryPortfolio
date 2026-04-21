@@ -1,6 +1,9 @@
 using DiaryPortfolio.Application.Common;
+using DiaryPortfolio.Application.Features.PortfolioProfile.Project.Create;
 using DiaryPortfolio.Application.Helpers.Authentication;
 using DiaryPortfolio.Application.Helpers.Logger;
+using DiaryPortfolio.Application.Helpers.Validation;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
@@ -17,13 +21,18 @@ namespace DiaryPortfolio.Application
     {
         public static void ConfigureApplication(this IServiceCollection services)
         {
+            services.AddValidatorsFromAssembly(
+                Assembly.GetExecutingAssembly()
+                //includeInternalTypes: true -> use this if your validation is internal class
+            );
 
             services.AddMediator(options =>
             {
                 options.ServiceLifetime = ServiceLifetime.Scoped;
                 options.PipelineBehaviors = [
                     typeof(AuthBehavior<,>),
-                    typeof(LoggingBehavior<,>)
+                    typeof(LoggingBehavior<,>),
+                    typeof(ValidationBehavior<,>)
                 ];
             });
 

@@ -13,6 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="12.1.1" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
     <PackageReference Include="Mediator.Abstractions" Version="3.0.1" />
     <PackageReference Include="Mediator.SourceGenerator" Version="3.0.1">
       <PrivateAssets>all</PrivateAssets>
@@ -29,6 +31,8 @@
   <ItemGroup>
     <Folder Include="Features\DiaryProfile\Media\Get\" />
     <Folder Include="Features\DiaryProfile\Space\Update\" />
+    <Folder Include="Features\PortfolioProfile\Project\Delete\" />
+    <Folder Include="Features\PortfolioProfile\Project\Update\" />
     <Folder Include="Features\User\Diary\" />
     <Folder Include="Features\User\Portfolio\Update\" />
   </ItemGroup>
