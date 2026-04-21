@@ -34,9 +34,10 @@ namespace DiaryPortfolio.Infrastructure.Repository
 
             return mediaType switch
             {
+                //for diary profile
                 MediaType.Profile => BuildPath(
                     mediaSubType,
-                    userId ?? "", 
+                    userId ?? "",
                     fileName,
                     "profile"
                 ),
@@ -57,6 +58,21 @@ namespace DiaryPortfolio.Infrastructure.Repository
                     datePath
                 ),
 
+                //for portfolio profile
+                MediaType.Education => BuildPath(
+                    mediaSubType,
+                    userId ?? "",
+                    fileName,
+                    "educations"
+                ),
+
+                MediaType.Project => BuildPath(
+                    mediaSubType,
+                    userId ?? "",
+                    fileName,
+                    "projects"
+                ),
+
                 _ => throw new ArgumentOutOfRangeException(nameof(mediaType))
             };
 
@@ -74,7 +90,7 @@ namespace DiaryPortfolio.Infrastructure.Repository
             {
                 MediaSubType.Image => "image",
                 MediaSubType.Video => "video",
-                _ => "media"
+                _ => mediaSubType.ToString().ToLower(),
             };
 
             var ext = Path.GetExtension(originalFileName);

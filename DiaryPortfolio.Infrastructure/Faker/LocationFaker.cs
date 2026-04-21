@@ -13,8 +13,8 @@ namespace DiaryPortfolio.Infrastructure.Faker
         {
             RuleFor(l => l.Id, f => Guid.NewGuid());
             RuleFor(l => l.AddressLine1, f => f.Lorem.Sentence(2));
-            RuleFor(l => l.Latitude, f => Convert.ToDecimal(f.Address.Latitude()));
-            RuleFor(l => l.Longitude, f => Convert.ToDecimal(f.Address.Longitude()));
+            RuleFor(l => l.Latitude, f => Convert.ToDouble(f.Address.Latitude()));
+            RuleFor(l => l.Longitude, f => Convert.ToDouble(f.Address.Longitude()));
         }
     }
 }

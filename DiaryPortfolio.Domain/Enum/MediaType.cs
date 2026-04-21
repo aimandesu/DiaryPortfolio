@@ -1,10 +1,12 @@
 namespace DiaryPortfolio.Domain.Enum;
 
-public enum MediaType
+public enum MediaType //related with how files path created
 {
     Post,
     Short,
     Profile,
+    Education,
+    Project
 }
 
 public enum MediaStatus
@@ -13,7 +15,7 @@ public enum MediaStatus
     Private,
 }
 
-public enum MediaSubType
+public enum MediaSubType //related with how files path created
 {
     Video,
     Image,

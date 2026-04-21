@@ -10,7 +10,7 @@ namespace DiaryPortfolio.Application.DTOs
     {
         public Guid Id { get; set; } = Guid.Empty;
         public string Name { get; set; } = string.Empty;
-        public decimal? Latitude { get; set; } 
-        public decimal? Longitude { get; set; }
+        public double? Latitude { get; set; } 
+        public double? Longitude { get; set; }
     }
 }

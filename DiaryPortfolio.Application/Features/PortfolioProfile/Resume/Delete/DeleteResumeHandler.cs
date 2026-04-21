@@ -1,4 +1,5 @@
 ﻿using DiaryPortfolio.Application.Common;
+using DiaryPortfolio.Application.DTOs;
 using DiaryPortfolio.Application.IRepository;
 using DiaryPortfolio.Application.IServices;
 using DiaryPortfolio.Domain.Entities;
@@ -34,6 +35,11 @@ namespace DiaryPortfolio.Application.Features.PortfolioProfile.Resume.Delete
             try
             {
                 var response = await _resumeRepository.DeleteResume(request.resumeId);
+
+                if (response.Error != Error.None)
+                {
+                    return response;
+                }
 
                 if (response.Result.ResumeFile != null) {
                     _fileHandlerRepository.DeleteFile(response.Result.ResumeFile.Url);

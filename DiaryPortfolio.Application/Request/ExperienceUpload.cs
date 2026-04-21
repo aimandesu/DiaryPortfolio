@@ -15,7 +15,7 @@ namespace DiaryPortfolio.Application.Request
         public DateTime? EndDate { get; set; }
         //Location
         public string Name { get; set; } = string.Empty;
-        public decimal Latitude { get; set; }
-        public decimal Longitude { get; set; }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
     }
 }

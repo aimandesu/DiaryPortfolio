@@ -116,8 +116,8 @@ namespace DiaryPortfolio.Infrastructure.Repository
                 if (existingMedia.LocationModel != null)
                 {
                     existingMedia.LocationModel.AddressLine1 = media.Location?.Name ?? "";
-                    existingMedia.LocationModel.Latitude =  Convert.ToDecimal(media.Location?.Latitude);
-                    existingMedia.LocationModel.Longitude = Convert.ToDecimal(media.Location?.Longitude);
+                    existingMedia.LocationModel.Latitude =  Convert.ToDouble(media.Location?.Latitude);
+                    existingMedia.LocationModel.Longitude = Convert.ToDouble(media.Location?.Longitude);
                 }
 
                 if (existingMedia.ConditionModel != null)
@@ -169,7 +169,7 @@ namespace DiaryPortfolio.Infrastructure.Repository
             }
         }
 
-        public Task<ResultResponse<MediaModel>> UploadMedia(
+        public async Task<ResultResponse<MediaModel>> UploadMedia(
             MediaUpload media,
             List<VideoModel> videos,
             List<PhotoModel> photos)
@@ -181,16 +181,10 @@ namespace DiaryPortfolio.Infrastructure.Repository
                     .Select(e => e.Id)
                     .FirstOrDefault();
 
-                var statusSelection = _context.Selections
-                    .Where(s => s.Selection == media.MediaStatus.ToString())
-                    .Select(s => s.Id)
-                    .FirstOrDefault();
+                var statusSelection = await _selectionHelper.GetSelectionIdAsync(media.MediaStatus);
 
-                var typeSelection = _context.Selections
-                    .Where(s => s.Selection == media.MediaType.ToString())
-                    .Select(s => s.Id)
-                    .FirstOrDefault();
-
+                var typeSelection = await _selectionHelper.GetSelectionIdAsync(media.MediaType);
+               
                 var mediaUpload = new MediaModel
                 {
                     Title = media.Title,
@@ -202,8 +196,8 @@ namespace DiaryPortfolio.Infrastructure.Repository
                     LocationModel = new LocationModel
                     {
                         AddressLine1 = media.Location?.Name ?? "",
-                        Latitude =  Convert.ToDecimal(media.Location?.Latitude),
-                        Longitude = Convert.ToDecimal(media.Location?.Longitude)
+                        Latitude =  Convert.ToDouble(media.Location?.Latitude),
+                        Longitude = Convert.ToDouble(media.Location?.Longitude)
                     },
                     ConditionModel = new ConditionModel
                     {
@@ -216,16 +210,16 @@ namespace DiaryPortfolio.Infrastructure.Repository
 
                 _context.Medias.Add(mediaUpload);
 
-                return Task.FromResult(ResultResponse<MediaModel>.Success(mediaUpload));
+                return ResultResponse<MediaModel>.Success(mediaUpload); //if no async Task.FromResult
             }
             catch (Exception ex)
             {
-                return Task.FromResult(ResultResponse<MediaModel>.Failure(
+                return ResultResponse<MediaModel>.Failure(
                     new Error(
                         Status: System.Net.HttpStatusCode.Conflict,
                         Description: ex.Message
                     )
-                ));
+                );
             }
         
         }

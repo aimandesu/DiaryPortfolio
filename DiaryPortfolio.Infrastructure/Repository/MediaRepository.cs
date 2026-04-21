@@ -80,8 +80,8 @@ namespace DiaryPortfolio.Infrastructure.Repository
                 {
                     Id = row.Loc_Id.Value,
                     Name = row.Loc_Name ?? "",
-                    Latitude = Convert.ToDecimal(row.Loc_Latitude),
-                    Longitude = Convert.ToDecimal(row.Loc_Latitude),
+                    Latitude = Convert.ToDouble(row.Loc_Latitude),
+                    Longitude = Convert.ToDouble(row.Loc_Latitude),
                 } : null,
 
                 VideoModels = [],
