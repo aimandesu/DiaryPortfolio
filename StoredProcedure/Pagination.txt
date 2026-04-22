@@ -1,0 +1,61 @@
+ALTER PROCEDURE [dbo].[sp_GetMediaByUserId]
+    @UserId  UNIQUEIDENTIFIER,
+    @Skip    INT,
+    @PerPage INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Capture only the paged Media IDs first
+    CREATE TABLE #PagedMediaIds (Id UNIQUEIDENTIFIER);
+
+    INSERT INTO #PagedMediaIds (Id)
+    SELECT m.Id
+    FROM Medias m
+    INNER JOIN Spaces s          ON m.SpaceId       = s.Id
+    INNER JOIN DiaryPortfolios dp ON s.dp_id        = dp.Id
+    WHERE dp.UserId = @UserId
+    ORDER BY m.CreatedAt DESC
+    OFFSET @Skip ROWS FETCH NEXT @PerPage ROWS ONLY;
+
+    -- Result set 1: total count
+    SELECT COUNT(*)
+    FROM Medias m
+    INNER JOIN Spaces s           ON m.SpaceId  = s.Id
+    INNER JOIN DiaryPortfolios dp ON s.dp_id    = dp.Id
+    WHERE dp.UserId = @UserId;
+
+    -- Result set 2: paged media (flat row)
+    SELECT
+        m.Id,
+        m.Title,
+        m.Description,
+        m.CreatedAt,
+        ss.Selection  AS MediaStatus,
+        ts.Selection  AS MediaType,
+        sp.Id         AS Space_Id,
+        sp.Title      AS Space_Title,
+        l.Id          AS Loc_Id,
+        l.Name        AS Loc_Name,
+        l.Latitude    AS Loc_Latitude,
+        l.Longitude   AS Loc_Longitude
+    FROM Medias m
+    INNER JOIN #PagedMediaIds pmi ON m.Id                    = pmi.Id
+    LEFT JOIN  Selections ss      ON m.MediaStatusSelectionId = ss.Id
+    LEFT JOIN  Selections ts      ON m.MediaTypeSelectionId   = ts.Id
+    LEFT JOIN  Spaces sp          ON m.SpaceId                = sp.Id
+    LEFT JOIN  Locations l        ON m.LocationId             = l.Id
+    ORDER BY m.CreatedAt DESC;
+
+    -- Result set 3: videos for THIS PAGE only
+    SELECT v.Id, v.Url, v.Duration, v.Mime, v.Size, v.MediaId
+    FROM Videos v
+    WHERE v.MediaId IN (SELECT Id FROM #PagedMediaIds);
+
+    -- Result set 4: photos for THIS PAGE only
+    SELECT p.Id, p.Url, p.Mime, p.Width, p.Height, p.Size, p.MediaId
+    FROM Photos p
+    WHERE p.MediaId IN (SELECT Id FROM #PagedMediaIds);
+
+    DROP TABLE #PagedMediaIds;
+END

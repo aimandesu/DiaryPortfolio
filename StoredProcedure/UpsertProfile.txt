@@ -1,0 +1,151 @@
+USE [diary_portfolio]
+GO
+/****** Object:  StoredProcedure [dbo].[sp_UpsertPortfolioProfile]    Script Date: 22/4/2026 8:31:09 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[sp_UpsertPortfolioProfile]
+    -- User
+    @UserId UNIQUEIDENTIFIER,
+    @UserName NVARCHAR(256),
+    @NormalizedUserName NVARCHAR(256),
+    @Email NVARCHAR(256),
+    @NormalizedEmail NVARCHAR(256),
+
+    -- Portfolio Profile
+    @Name NVARCHAR(MAX),
+    @Age INT = NULL,
+    @Title NVARCHAR(MAX),
+    @About NVARCHAR(MAX),
+    @Address NVARCHAR(MAX),
+
+    -- Location
+    @AddressLine1 NVARCHAR(MAX),
+	@AddressLine2 NVARCHAR(MAX),
+    @Latitude NVARCHAR(MAX) = '',
+    @Longitude NVARCHAR(MAX) = '',
+
+    -- Photo
+    @PhotoUrl NVARCHAR(MAX),
+    @PhotoMime NVARCHAR(MAX),
+    @PhotoWidth FLOAT,
+    @PhotoHeight FLOAT,
+    @PhotoSize FLOAT,
+
+    -- File (Resume)
+    @FileUrl NVARCHAR(MAX),
+    @FileDescription NVARCHAR(MAX) = ''
+AS
+BEGIN
+    SET NOCOUNT ON;
+    BEGIN TRANSACTION;
+
+    BEGIN TRY
+
+        -- 1. Update AspNetUsers
+        UPDATE AspNetUsers
+        SET 
+            UserName = @UserName,
+            NormalizedUserName = @NormalizedUserName,
+            Email = @Email,
+            NormalizedEmail = @NormalizedEmail
+        WHERE Id = @UserId;
+
+        -- 2. Get existing FK ids from PortfolioProfile
+        DECLARE @ExistingLocationId UNIQUEIDENTIFIER;
+        DECLARE @ExistingResumeId UNIQUEIDENTIFIER;
+        DECLARE @ExistingPhotoId UNIQUEIDENTIFIER;
+        DECLARE @ExistingFileId UNIQUEIDENTIFIER;
+		DECLARE @PortfolioProfileId UNIQUEIDENTIFIER;
+
+		-- insert the declaration
+        SELECT 
+            @ExistingLocationId = LocationId,
+            --@ExistingResumeId = ResumeId,
+            @ExistingPhotoId = ProfilePhotoId,
+			@PortfolioProfileId = Id
+        FROM PortfolioProfile
+        WHERE UserId = @UserId;
+
+		SELECT @ExistingResumeId = Id FROM Resume
+		WHERE PortfolioProfileId = @PortfolioProfileId
+
+        -- Get existing FileId from Resume if Resume exists
+        IF @ExistingResumeId IS NOT NULL
+            SELECT @ExistingFileId = FileId FROM Resume WHERE Id = @ExistingResumeId;
+
+        -- 3. Upsert Location
+        DECLARE @LocationId UNIQUEIDENTIFIER = ISNULL(@ExistingLocationId, NEWID());
+        IF @ExistingLocationId IS NULL
+            INSERT INTO Locations (Id, AddressLine1, AddressLine2, Latitude, Longitude)
+            VALUES (@LocationId, @AddressLine1, @AddressLine2, @Latitude, @Longitude);
+        ELSE
+            UPDATE Locations 
+			SET 
+				AddressLine1 = @AddressLine1, 
+				AddressLine2 = @AddressLine2, 
+				Latitude = @Latitude, 
+				Longitude = @Longitude 
+			WHERE Id = @LocationId;
+
+        -- 4. Upsert Photo (always replace data, keep same row if exists)
+        DECLARE @PhotoId UNIQUEIDENTIFIER = ISNULL(@ExistingPhotoId, NEWID());
+        IF @ExistingPhotoId IS NULL
+            INSERT INTO Photos (Id, Url, Mime, Width, Height, Size)
+            VALUES (@PhotoId, @PhotoUrl, @PhotoMime, @PhotoWidth, @PhotoHeight, @PhotoSize);
+        ELSE
+            UPDATE Photos 
+            SET 
+				Url = @PhotoUrl, 
+				Mime = @PhotoMime, 
+				Width = @PhotoWidth, 
+                Height = @PhotoHeight, 
+				Size = @PhotoSize
+            WHERE Id = @PhotoId;
+
+        -- 5. Upsert File (resume file, always replace data)
+        DECLARE @FileId UNIQUEIDENTIFIER = ISNULL(@ExistingFileId, NEWID());
+        IF @ExistingFileId IS NULL
+            INSERT INTO Files (Id, Url, Description)
+            VALUES (@FileId, @FileUrl, @FileDescription);
+        ELSE
+            UPDATE Files 
+            SET Url = @FileUrl, Description = @FileDescription
+            WHERE Id = @FileId;
+
+        -- 6. Upsert PortfolioProfile FIRST
+		DECLARE @FinalPortfolioProfileId UNIQUEIDENTIFIER = ISNULL(@PortfolioProfileId, NEWID());
+		IF NOT EXISTS (SELECT 1 FROM PortfolioProfile WHERE UserId = @UserId)
+			INSERT INTO PortfolioProfile (Id, UserId, Name, Age, Title, About, Address, LocationId, ProfilePhotoId)
+			VALUES (@FinalPortfolioProfileId, @UserId, @Name, @Age, @Title, @About, @Address, @LocationId, @PhotoId);
+		ELSE
+			UPDATE PortfolioProfile
+			SET
+				Name = @Name,
+				Age = @Age,
+				Title = @Title,
+				About = @About,
+				Address = @Address,
+				LocationId = @LocationId,
+				ProfilePhotoId = @PhotoId
+			WHERE UserId = @UserId;
+
+		-- 7. THEN Upsert Resume
+		DECLARE @ResumeId UNIQUEIDENTIFIER = ISNULL(@ExistingResumeId, NEWID());
+		IF @ExistingResumeId IS NULL
+			INSERT INTO Resume (Id, FileId, PortfolioProfileId)
+			VALUES (@ResumeId, @FileId, @FinalPortfolioProfileId); -- ✅ FK now exists
+		ELSE
+			UPDATE Resume 
+			SET FileId = @FileId 
+		WHERE Id = @ResumeId;
+
+        COMMIT TRANSACTION;
+
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH
+END
