@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DiaryPortfolio.Domain.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DiaryPortfolio.Domain.Entities
 {
-    public class PortfolioProfileModel
+    public class PortfolioProfileModel : IUserOwner
     {
         public Guid Id { get; set; } = Guid.NewGuid();
         public string Name { get; set; } = string.Empty;
@@ -19,12 +20,13 @@ namespace DiaryPortfolio.Domain.Entities
         public Guid? LocationId { get; set; }
         public LocationModel? Location { get; set; }
 
-        public Guid? ResumeId { get; set; }
         public ResumeModel? Resume { get; set; }
 
         public Guid? ProfilePhotoId { get; set; }
         public PhotoModel? ProfilePhoto { get; set; }
         public Guid UserId { get; set; }  // PK + FK
         public UserModel User { get; set; } = null!;
+
+        public Guid OwnerId => User.Id;
     }
 }

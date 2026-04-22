@@ -43,7 +43,7 @@ namespace DiaryPortfolio.Application.Features.User.Profile.Create
             CancellationToken cancellationToken)
         {
 
-            var mediaType = MediaType.Profile;
+            var mediaType = MediaType.PortfolioProfile;
 
             var streams = new List<MediaStream>();
 

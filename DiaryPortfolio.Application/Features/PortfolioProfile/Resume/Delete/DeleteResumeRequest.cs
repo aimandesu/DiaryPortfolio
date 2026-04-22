@@ -1,4 +1,5 @@
 ﻿using DiaryPortfolio.Application.Common;
+using DiaryPortfolio.Application.IServices;
 using DiaryPortfolio.Domain.Entities;
 using Mediator;
 using System;
@@ -9,6 +10,10 @@ using System.Threading.Tasks;
 
 namespace DiaryPortfolio.Application.Features.PortfolioProfile.Resume.Delete
 {
+    [RequireOwnership(typeof(ResumeModel))]
     public sealed record class DeleteResumeRequest(
-        string resumeId) : IRequest<ResultResponse<ResumeModel>>;
+        string Id
+    ) : IRequest<ResultResponse<ResumeModel>>,
+        IRequireAuthentication,
+        IRequirePortfolioProfile;
 }

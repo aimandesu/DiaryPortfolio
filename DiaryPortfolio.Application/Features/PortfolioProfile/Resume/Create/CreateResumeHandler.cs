@@ -50,7 +50,7 @@ namespace DiaryPortfolio.Application.Features.PortfolioProfile.Resume.Create
 
             var uploadResult = await _fileHandlerRepository.DistributeFiles(
                 new List<MediaStream> { mediaStream },
-                MediaType.Profile
+                MediaType.PortfolioProfile
             );
 
             if (uploadResult.Error != Error.None)

@@ -14,6 +14,7 @@ namespace DiaryPortfolio.Application.Mapper
         {
             return new ProjectModelDto
             {
+                Id = projectModel.Id,
                 Title = projectModel.Title,
                 Description = projectModel.Description,
                 ProjectFile = projectModel.ProjectFile,

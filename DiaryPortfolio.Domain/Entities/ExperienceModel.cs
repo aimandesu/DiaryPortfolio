@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DiaryPortfolio.Domain.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DiaryPortfolio.Domain.Entities
 {
-    public class ExperienceModel
+    public class ExperienceModel : IUserOwner
     {
         public Guid Id { get; set; } = Guid.NewGuid();
         public string Company { get; set; } = string.Empty;
@@ -20,5 +21,7 @@ namespace DiaryPortfolio.Domain.Entities
         public PortfolioProfileModel? PortfolioProfile { get; set; }
         public Guid LocationId { get; set; }
         public LocationModel? Location { get; set; }
+
+        public Guid OwnerId => PortfolioProfile?.UserId ?? Guid.Empty;
     }
 }

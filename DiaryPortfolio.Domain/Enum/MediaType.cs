@@ -4,9 +4,12 @@ public enum MediaType //related with how files path created
 {
     Post,
     Short,
-    Profile,
     Education,
-    Project
+    Project,
+
+    //modules
+    PortfolioProfile,
+    DiaryProfile,
 }
 
 public enum MediaStatus

@@ -34,18 +34,19 @@ namespace DiaryPortfolio.Application.Features.PortfolioProfile.Resume.Delete
         {
             try
             {
-                var response = await _resumeRepository.DeleteResume(request.resumeId);
+                var response = await _resumeRepository.DeleteResume(request.Id);
 
                 if (response.Error != Error.None)
                 {
                     return response;
                 }
 
+
+                await _unitOfWork.SaveChanges(cancellationToken);
+
                 if (response.Result.ResumeFile != null) {
                     _fileHandlerRepository.DeleteFile(response.Result.ResumeFile.Url);
                 }
-
-                await _unitOfWork.SaveChanges(cancellationToken);
 
                 return response;
 

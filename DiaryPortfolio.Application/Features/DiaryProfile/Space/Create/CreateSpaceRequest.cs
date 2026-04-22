@@ -12,5 +12,8 @@ using System.Threading.Tasks;
 namespace DiaryPortfolio.Application.Features.DiaryProfile.Space.Create
 {
     public sealed record class CreateSpaceRequest(
-        string Title) : IRequest<ResultResponse<SpaceModelDto>>, IRequireAuthentication;
+        string Title
+    ) : IRequest<ResultResponse<SpaceModelDto>>, 
+        IRequireAuthentication,
+        IRequireDiaryProfile;
 }

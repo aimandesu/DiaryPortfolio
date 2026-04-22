@@ -78,7 +78,9 @@ namespace DiaryPortfolio.Application.Features.PortfolioProfile.Project.Create
 
             var uploadResult = await _fileHandlerRepository.DistributeFiles(
                 [.. streams],
-                MediaType.Project);
+                MediaType.Project,
+                project?.Id.ToString()
+            );
 
             if (uploadResult.Error != Error.None)
             {

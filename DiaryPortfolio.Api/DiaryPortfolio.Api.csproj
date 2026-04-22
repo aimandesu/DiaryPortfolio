@@ -16,6 +16,10 @@
     <ProjectReference Include="..\DiaryPortfolio.Application\DiaryPortfolio.Application.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="uploads\" />
+  </ItemGroup>
+
 	<Target Name="Tailwind" BeforeTargets="Build">
 		<Exec Condition="'$(Configuration)' == 'Debug'" Command="npx tailwindcss -i ./wwwroot/css/input.css -o ./wwwroot/css/output.css" />
 

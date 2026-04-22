@@ -18,5 +18,9 @@ namespace DiaryPortfolio.Application.IServices
             TEnum enumValue, 
             CancellationToken cancellationToken = default)
             where TEnum : Enum;
+
+        Task<Guid> GetSelectionSpaceId(
+            Guid id,
+            CancellationToken cancellationToken = default);
     }
 }

@@ -32,7 +32,7 @@ namespace DiaryPortfolio.Application.Features.PortfolioProfile.Experience.Delete
         {
             try
             {
-                var response = await _experienceRepository.Delete(new Guid(request.id));
+                var response = await _experienceRepository.Delete(new Guid(request.Id));
                 await _unitOfWork.SaveChanges(cancellationToken);
 
                 return ResultResponse<ExperienceModelDto>.Success(response.ToExperienceModelDto());
