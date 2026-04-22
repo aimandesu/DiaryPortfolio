@@ -12,7 +12,8 @@ namespace DiaryPortfolio.Application.IRepository
         string BuildPath(
             MediaType mediaType,
             MediaSubType mediaSubType,
-            string fileName
+            string fileName,
+            string? id = null
         );
     }
 }

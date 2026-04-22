@@ -15,7 +15,8 @@ namespace DiaryPortfolio.Application.IRepository
         //distribute files to its location
         Task<ResultResponse<List<Dictionary<MediaSubType, MediaDistributor>>>> DistributeFiles(
             List<MediaStream> fileStreams,
-            MediaType mediaType
+            MediaType mediaType,
+            string? id = null
         );
         MediaMetadata ReadMediaMetadata(
             string filePath, 

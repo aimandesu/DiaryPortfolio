@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace DiaryPortfolio.Infrastructure.Repository
@@ -44,7 +45,26 @@ namespace DiaryPortfolio.Infrastructure.Repository
             Guid resourceId, 
             Type resourceType)
         {
-            var entity = await _context.FindAsync(resourceType, resourceId);
+            object? entity;
+
+            // Check if this type knows how to load its own ownership chain
+            var withIncludesMethod = resourceType.GetMethod(
+                nameof(IUserOwnerQuery.WithOwnerIncludes),
+                BindingFlags.Public | BindingFlags.Static);
+
+            if (withIncludesMethod != null)
+            {
+                // Use the type's own include query, then filter by PK
+                var query = (IQueryable<object>)withIncludesMethod.Invoke(null, [_context])!;
+                entity = await query
+                    .Where(e => EF.Property<Guid>(e, "Id") == resourceId)
+                    .FirstOrDefaultAsync();
+            }
+            else
+            {
+                // Fallback: simple FindAsync for flat entities
+                entity = await _context.FindAsync(resourceType, resourceId);
+            }
 
             if (entity == null)
             {

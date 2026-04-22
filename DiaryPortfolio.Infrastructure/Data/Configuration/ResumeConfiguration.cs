@@ -24,6 +24,11 @@ namespace DiaryPortfolio.Infrastructure.Data.Configuration
                 .WithMany()
                 .HasForeignKey(r => r.TemplateId)
                 .OnDelete(DeleteBehavior.NoAction);
+
+            builder.HasOne(r => r.PortfolioProfile)
+                .WithOne(p => p.Resume)
+                .HasForeignKey<ResumeModel>(r => r.PortfolioProfileId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

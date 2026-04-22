@@ -63,7 +63,7 @@ namespace DiaryPortfolio.Infrastructure.Repository
             var profile = await _context.PortfolioProfile
                 .FirstOrDefaultAsync(p => p.UserId == _userService.UserId);
 
-            profile.ResumeId = null;
+            //profile.ResumeId = null;
 
             _context.Resume.Remove(resume);
 
@@ -112,7 +112,7 @@ namespace DiaryPortfolio.Infrastructure.Repository
             var profile =  await _context.PortfolioProfile
                 .FirstOrDefaultAsync(p => p.UserId == _userService.UserId);
 
-            profile.ResumeId = resume.Id;
+            //profile.ResumeId = resume.Id;
 
             return ResultResponse<ResumeModel>.Success(resume);
         }

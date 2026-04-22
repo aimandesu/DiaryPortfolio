@@ -29,8 +29,10 @@ namespace DiaryPortfolio.Infrastructure.Data.Configuration
                 .WithOne(c => c.MediaModel)
                 .HasForeignKey<ConditionModel>(m => m.MediaId);
 
-            builder
-                .HasOne(m => m.LocationModel);
+            builder.HasOne(m => m.LocationModel)
+                .WithOne()
+                .HasForeignKey<MediaModel>(m => m.LocationId)
+                .OnDelete(DeleteBehavior.SetNull);
             //.WithOne(c => c.MediaModel)
             //.HasForeignKey<LocationModel>(m => m.MediaId);
 

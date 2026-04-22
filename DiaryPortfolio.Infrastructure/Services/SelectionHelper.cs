@@ -47,5 +47,17 @@ namespace DiaryPortfolio.Infrastructure.Services
 
             return result;
         }
+
+        public async Task<Guid> GetSelectionSpaceId(
+            Guid id, 
+            CancellationToken cancellationToken = default)
+        {
+            var result = await _context.Spaces
+                    .Where(e => e.Id == id)
+                    .Select(e => e.Id)
+                    .FirstOrDefaultAsync(cancellationToken);
+
+            return result;
+        }
     }
 }

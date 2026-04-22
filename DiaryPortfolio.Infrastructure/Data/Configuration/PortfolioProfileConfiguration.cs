@@ -28,11 +28,6 @@ namespace DiaryPortfolio.Infrastructure.Data.Configuration
                 .HasForeignKey<PortfolioProfileModel>(p => p.ProfilePhotoId)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            builder.HasOne(p => p.Resume)
-                .WithOne()
-                .HasForeignKey<PortfolioProfileModel>(p => p.ResumeId)
-                .OnDelete(DeleteBehavior.NoAction);
-
             builder.HasOne(p => p.Location)
                 .WithOne()
                 .HasForeignKey<PortfolioProfileModel>(p => p.LocationId)

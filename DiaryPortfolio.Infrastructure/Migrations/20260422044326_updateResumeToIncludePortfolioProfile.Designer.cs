@@ -4,6 +4,7 @@ using DiaryPortfolio.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DiaryPortfolio.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260422044326_updateResumeToIncludePortfolioProfile")]
+    partial class updateResumeToIncludePortfolioProfile
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -406,6 +409,9 @@ namespace DiaryPortfolio.Infrastructure.Migrations
                     b.Property<Guid?>("ProfilePhotoId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("ResumeId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -422,6 +428,10 @@ namespace DiaryPortfolio.Infrastructure.Migrations
                     b.HasIndex("ProfilePhotoId")
                         .IsUnique()
                         .HasFilter("[ProfilePhotoId] IS NOT NULL");
+
+                    b.HasIndex("ResumeId")
+                        .IsUnique()
+                        .HasFilter("[ResumeId] IS NOT NULL");
 
                     b.HasIndex("UserId")
                         .IsUnique();
@@ -520,18 +530,12 @@ namespace DiaryPortfolio.Infrastructure.Migrations
                     b.Property<Guid?>("FileId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("PortfolioProfileId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid?>("TemplateId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("FileId");
-
-                    b.HasIndex("PortfolioProfileId")
-                        .IsUnique();
 
                     b.HasIndex("TemplateId");
 
@@ -1090,6 +1094,11 @@ namespace DiaryPortfolio.Infrastructure.Migrations
                         .HasForeignKey("DiaryPortfolio.Domain.Entities.PortfolioProfileModel", "ProfilePhotoId")
                         .OnDelete(DeleteBehavior.NoAction);
 
+                    b.HasOne("DiaryPortfolio.Domain.Entities.ResumeModel", "Resume")
+                        .WithOne("PortfolioProfile")
+                        .HasForeignKey("DiaryPortfolio.Domain.Entities.PortfolioProfileModel", "ResumeId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
                     b.HasOne("DiaryPortfolio.Domain.Entities.UserModel", "User")
                         .WithOne("PortfolioProfile")
                         .HasForeignKey("DiaryPortfolio.Domain.Entities.PortfolioProfileModel", "UserId")
@@ -1099,6 +1108,8 @@ namespace DiaryPortfolio.Infrastructure.Migrations
                     b.Navigation("Location");
 
                     b.Navigation("ProfilePhoto");
+
+                    b.Navigation("Resume");
 
                     b.Navigation("User");
                 });
@@ -1176,18 +1187,10 @@ namespace DiaryPortfolio.Infrastructure.Migrations
                         .HasForeignKey("FileId")
                         .OnDelete(DeleteBehavior.NoAction);
 
-                    b.HasOne("DiaryPortfolio.Domain.Entities.PortfolioProfileModel", "PortfolioProfile")
-                        .WithOne("Resume")
-                        .HasForeignKey("DiaryPortfolio.Domain.Entities.ResumeModel", "PortfolioProfileId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("DiaryPortfolio.Domain.Entities.ResumeTemplateModel", "ResumeTemplate")
                         .WithMany()
                         .HasForeignKey("TemplateId")
                         .OnDelete(DeleteBehavior.NoAction);
-
-                    b.Navigation("PortfolioProfile");
 
                     b.Navigation("ResumeFile");
 
@@ -1310,11 +1313,6 @@ namespace DiaryPortfolio.Infrastructure.Migrations
                     b.Navigation("MediaVideos");
                 });
 
-            modelBuilder.Entity("DiaryPortfolio.Domain.Entities.PortfolioProfileModel", b =>
-                {
-                    b.Navigation("Resume");
-                });
-
             modelBuilder.Entity("DiaryPortfolio.Domain.Entities.PostalCodeModel", b =>
                 {
                     b.Navigation("Locations");
@@ -1325,6 +1323,11 @@ namespace DiaryPortfolio.Infrastructure.Migrations
                     b.Navigation("ProjectPhotos");
 
                     b.Navigation("ProjectVideos");
+                });
+
+            modelBuilder.Entity("DiaryPortfolio.Domain.Entities.ResumeModel", b =>
+                {
+                    b.Navigation("PortfolioProfile");
                 });
 
             modelBuilder.Entity("DiaryPortfolio.Domain.Entities.SpaceModel", b =>

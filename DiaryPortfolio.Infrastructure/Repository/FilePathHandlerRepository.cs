@@ -22,7 +22,8 @@ namespace DiaryPortfolio.Infrastructure.Repository
         public string BuildPath(
             MediaType mediaType, 
             MediaSubType mediaSubType, 
-            string fileName)
+            string fileName,
+            string? id = null)
         {
             var date = DateTime.UtcNow;
             var userId = _userService.UserId!.Value.ToString();
@@ -34,20 +35,29 @@ namespace DiaryPortfolio.Infrastructure.Repository
 
             return mediaType switch
             {
-                //for diary profile
-                MediaType.Profile => BuildPath(
+                //modules
+                MediaType.PortfolioProfile => BuildPath(
                     mediaSubType,
                     userId ?? "",
                     fileName,
-                    "profile"
+                    "portfolio-profile"
                 ),
 
+                MediaType.DiaryProfile => BuildPath(
+                    mediaSubType,
+                    userId ?? "",
+                    fileName,
+                    "diary-profile"
+                ),
+
+                //for diary profile
                 MediaType.Post => BuildPath(
                     mediaSubType,
                     userId ?? "",
                     fileName,
                     "posts",
-                    datePath
+                    datePath,
+                    subjectId: id
                 ),
 
                 MediaType.Short => BuildPath(
@@ -55,7 +65,8 @@ namespace DiaryPortfolio.Infrastructure.Repository
                     userId ?? "",
                     fileName,
                     "shorts",
-                    datePath
+                    datePath,
+                    subjectId: id
                 ),
 
                 //for portfolio profile
@@ -70,7 +81,8 @@ namespace DiaryPortfolio.Infrastructure.Repository
                     mediaSubType,
                     userId ?? "",
                     fileName,
-                    "projects"
+                    "projects",
+                    subjectId: id
                 ),
 
                 _ => throw new ArgumentOutOfRangeException(nameof(mediaType))
@@ -83,7 +95,8 @@ namespace DiaryPortfolio.Infrastructure.Repository
             string userId,
             string originalFileName,
             string contentType,
-            string? additionalPath = null
+            string? additionalPath = null,
+            string? subjectId = null
         )
         {
             var prefix = mediaSubType switch
@@ -114,6 +127,11 @@ namespace DiaryPortfolio.Infrastructure.Repository
             if (!string.IsNullOrEmpty(additionalPath))
             {
                 pathComponents.Add(additionalPath);
+            }
+
+            if (!string.IsNullOrEmpty(subjectId))
+            {
+                pathComponents.Add(subjectId);
             }
 
             // Add filename

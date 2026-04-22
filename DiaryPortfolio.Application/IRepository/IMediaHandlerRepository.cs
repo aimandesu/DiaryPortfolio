@@ -18,13 +18,13 @@ namespace DiaryPortfolio.Application.IRepository
             List<PhotoModel> photos
         );
         Task<ResultResponse<MediaModel>> UpdateMedia(
-            Guid id,
             MediaUpload media,
             List<VideoModel> videos,
-            List<PhotoModel> photos
+            List<PhotoModel> photos,
+            MediaModel? existingMedia
         );
         Task<Stream> StreamMediaFile(string mediaUrl);
-        List<string> GetMediaFiles(string mediaId);
+        List<string> DeleteMedia(string mediaId);
         Task<ResultResponse<MediaModel?>> GetMediaWithFiles(
             Guid mediaId
         );

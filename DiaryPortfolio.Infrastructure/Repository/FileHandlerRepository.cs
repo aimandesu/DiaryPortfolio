@@ -47,7 +47,8 @@ namespace DiaryPortfolio.Infrastructure.Repository
 
         public async Task<ResultResponse<List<Dictionary<MediaSubType, MediaDistributor>>>> DistributeFiles(
             List<MediaStream> fileStreams,
-            MediaType mediaType)
+            MediaType mediaType,
+            string? id = null)
         {
             var imagesAllowed = AllowedContentTypes.Images;
 
@@ -69,7 +70,8 @@ namespace DiaryPortfolio.Infrastructure.Repository
                     string imagePath = await SaveFileAndGetPath(
                         media, // pass Stream and FileName
                         mediaType, // pass MediaType from controller
-                        MediaSubType.Image);
+                        MediaSubType.Image,
+                        id);
 
                     var metadata = ReadMediaMetadata(imagePath, MediaSubType.Image, fileExtension);
 
@@ -97,7 +99,8 @@ namespace DiaryPortfolio.Infrastructure.Repository
                     string videoPath = await SaveFileAndGetPath(
                         media, // pass Stream and FileName
                         mediaType, // pass MediaType from controller
-                        MediaSubType.Video);
+                        MediaSubType.Video,
+                        id);
 
                     var metadata = ReadMediaMetadata(videoPath, MediaSubType.Video, fileExtension);
 
@@ -123,7 +126,8 @@ namespace DiaryPortfolio.Infrastructure.Repository
                     string filePath = await SaveFileAndGetPath(
                         media,
                         mediaType,
-                        MediaSubType.File);
+                        MediaSubType.File,
+                        id);
 
                     distributedFiles.Add(new Dictionary<MediaSubType, MediaDistributor>
                     {
@@ -202,12 +206,14 @@ namespace DiaryPortfolio.Infrastructure.Repository
         private async Task<string> SaveFileAndGetPath(
             MediaStream media,
             MediaType mediaType,
-            MediaSubType mediaSubType)
+            MediaSubType mediaSubType,
+            string? id = null)
         {
             var path = _filePathHandlerRepository.BuildPath(
                 mediaType,
                 mediaSubType,
-                media.FileName
+                media.FileName,
+                id: id
             );
 
             Directory.CreateDirectory(Path.GetDirectoryName(path)!);
