@@ -105,7 +105,11 @@ namespace DiaryPortfolio.Infrastructure.Repository
             if (profileType == ProfileType.Portfolio)
             {
                 query = query
-                    .Include(u => u.PortfolioProfile);
+                    .Include(u => u.PortfolioProfile)
+                        .ThenInclude(p => p.ProfilePhoto)
+                    .Include(u => u.PortfolioProfile)
+                        .ThenInclude(p => p.Resume)
+                        .ThenInclude(f => f.ResumeFile);
             }
 
             if (profileType == ProfileType.All)
@@ -136,7 +140,11 @@ namespace DiaryPortfolio.Infrastructure.Repository
             if (profileType == ProfileType.Portfolio)
             {
                 query = query
-                    .Include(u => u.PortfolioProfile);
+                    .Include(u => u.PortfolioProfile)
+                        .ThenInclude(p => p.ProfilePhoto)
+                    .Include(u => u.PortfolioProfile)
+                        .ThenInclude(p => p.Resume)
+                        .ThenInclude(f => f.ResumeFile);
             }
 
             if (profileType == ProfileType.All)

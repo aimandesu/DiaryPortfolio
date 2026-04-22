@@ -1,5 +1,5 @@
 ﻿using DiaryPortfolio.Application.Common;
-using DiaryPortfolio.Application.DTOs;
+using DiaryPortfolio.Application.DTOs.Reporting;
 using DiaryPortfolio.Application.Request;
 using DiaryPortfolio.Domain.Entities;
 using System;
@@ -15,7 +15,8 @@ namespace DiaryPortfolio.Application.IRepository
         Task<ResultResponse<UserModel>> UploadProfile(
             ProfileUpload profileUpload,
             PhotoModel? profilePhoto,
-            FileModel? resumeFile
+            FileModel? resumeFile,
+            UserModel? userModel
         );
 
         Task<ResultResponse<ResumeReportDto>> GenerateResume(

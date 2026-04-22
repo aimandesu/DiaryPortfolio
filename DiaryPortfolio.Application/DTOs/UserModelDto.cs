@@ -17,7 +17,7 @@ namespace DiaryPortfolio.Application.DTOs
         public string About { get; set; } = string.Empty;
         public string Address { get; set; } = string.Empty;
         public LocationModel? Location { get; set; }
-        public ResumeModel? Resume { get; set; }
+        public ResumeModelDto? Resume { get; set; }
         public PhotoModel? ProfilePhoto { get; set; }
     }
 }

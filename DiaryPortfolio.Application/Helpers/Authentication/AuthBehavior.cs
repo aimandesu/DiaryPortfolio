@@ -1,6 +1,7 @@
 ﻿using DiaryPortfolio.Application.Common;
 using DiaryPortfolio.Application.IRepository;
 using DiaryPortfolio.Application.IServices;
+using DiaryPortfolio.Domain.Entities;
 using DiaryPortfolio.Domain.Enum;
 using DiaryPortfolio.Infrastructure.Services;
 using Mediator;
@@ -64,11 +65,20 @@ namespace DiaryPortfolio.Application.Helpers.Authentication
                 if (ownershipAttr != null)
                 {
                     var resourceIdProp = typeof(TRequest).GetProperty("Id"); //this value must follow controller so for all use Id
-                    var rawValue = resourceIdProp!.GetValue(request)!.ToString();
-                    var resourceId = Guid.Parse(rawValue);
+
+                    Guid? resourceId = ownershipAttr.ResourceType switch 
+                    //this scenario might not even happen tbh, because we already
+                    //encapsulate area needed portfolioprofileid with their own userservice id
+                    {
+                        var t when t == typeof(PortfolioProfileModel) => _userService.PortfolioProfileId,
+                        var t when t == typeof(DiaryProfileModel) => _userService.DiaryProfileId,
+                        _ => Guid.TryParse(resourceIdProp!.GetValue(request)?.ToString(), out var parsed)
+                                                            ? parsed
+                                                            : null
+                    };
 
                     await _userRepository.EnsureOwnerAsync(
-                        resourceId,
+                        resourceId ?? Guid.Empty,
                         ownershipAttr.ResourceType);
                 }
 

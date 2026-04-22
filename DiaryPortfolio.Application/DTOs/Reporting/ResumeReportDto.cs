@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DiaryPortfolio.Application.DTOs
+namespace DiaryPortfolio.Application.DTOs.Reporting
 {
     public class ResumeReportDto
     {

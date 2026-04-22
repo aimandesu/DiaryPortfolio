@@ -10,10 +10,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DiaryPortfolio.Application.Features.User.Profile.Create
+namespace DiaryPortfolio.Application.Features.User.Profile.Update
 {
     [RequireOwnership(typeof(PortfolioProfileModel))]
-    public sealed record class CreateProfileRequest(
+    public sealed record class UpdateProfileRequest(
         ProfileUpload ProfileUpload
     ) : IRequest<ResultResponse<UserModelDto>>,
         IRequireAuthentication,

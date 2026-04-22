@@ -1,6 +1,7 @@
 ﻿using DiaryPortfolio.Application.Common;
 using DiaryPortfolio.Application.Common.Helpers;
 using DiaryPortfolio.Application.DTOs;
+using DiaryPortfolio.Application.Helpers;
 using DiaryPortfolio.Application.IRepository;
 using DiaryPortfolio.Application.IServices;
 using DiaryPortfolio.Application.Mapper;
@@ -9,37 +10,44 @@ using DiaryPortfolio.Domain.Entities;
 using DiaryPortfolio.Domain.Enum;
 using Mediator;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DiaryPortfolio.Application.Features.User.Profile.Create
+namespace DiaryPortfolio.Application.Features.User.Profile.Update
 {
-    internal class CreateProfileHandler : IRequestHandler<CreateProfileRequest, ResultResponse<UserModelDto>>
+    internal class UpdateProfileHandler : IRequestHandler<UpdateProfileRequest, ResultResponse<UserModelDto>>
     {
         private readonly IFileHandlerRepository _fileHandlerRepository;
         private readonly IPortfolioProfileRepository _portfolioProfileRepository;
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IUserRepository _userRepository;
+        private readonly IUserService _userService;
+        //private readonly IUnitOfWork _unitOfWork;
         //private readonly UserManager<UserModel> _userManager;
 
-        public CreateProfileHandler(
+        public UpdateProfileHandler(
             IFileHandlerRepository fileHandlerRepository,
             IPortfolioProfileRepository portfolioProfileRepository,
-            IUnitOfWork unitOfWork
+            IUserRepository userRepository,
+            IUserService userService
+            //IUnitOfWork unitOfWork
             //,
             //UserManager<UserModel> userManager
         )
         {
             _fileHandlerRepository = fileHandlerRepository;
             _portfolioProfileRepository = portfolioProfileRepository;
-            _unitOfWork = unitOfWork;
+            _userRepository = userRepository;
+            _userService = userService;
+            //_unitOfWork = unitOfWork;
             //_userManager = userManager;
         }
 
         public async ValueTask<ResultResponse<UserModelDto>> Handle(
-            CreateProfileRequest request, 
+            UpdateProfileRequest request, 
             CancellationToken cancellationToken)
         {
 
@@ -47,13 +55,29 @@ namespace DiaryPortfolio.Application.Features.User.Profile.Create
 
             var streams = new List<MediaStream>();
 
+            var existingPortfolioProfile = await _userRepository
+                .GetUserByUserId(
+                    _userService.UserId ?? Guid.Empty,
+                    ProfileType.Portfolio);
+
+            //url
+            var filesToDelete = new[]
+            {
+                existingPortfolioProfile?.PortfolioProfile?.Resume?.ResumeFile?.Url,
+                existingPortfolioProfile?.PortfolioProfile?.ProfilePhoto?.Url
+            }
+            .Where(x => !string.IsNullOrEmpty(x))
+            .ToList();
+
             if (request.ProfileUpload?.ResumeFileStream is not null)
+            {
                 streams.Add(request.ProfileUpload.ResumeFileStream);
+            }
 
             if (request.ProfileUpload?.ProfileFileSteam is not null)
+            {
                 streams.Add(request.ProfileUpload.ProfileFileSteam);
-
-            // Operations
+            }
 
             var uploadResult = await _fileHandlerRepository.DistributeFiles(
                 streams,
@@ -65,35 +89,29 @@ namespace DiaryPortfolio.Application.Features.User.Profile.Create
                 return ResultResponse<UserModelDto>.Failure(uploadResult.Error);
             }
 
+            var media = uploadResult.Result.ExtractMedia();
+
             var uploadProfileResult = await _portfolioProfileRepository.UploadProfile(
+                userModel: existingPortfolioProfile,
                 profileUpload: request.ProfileUpload,
-                profilePhoto: uploadResult.Result
-                    .Where(e => e.ContainsKey(MediaSubType.Image))
-                    .Select(e => e[MediaSubType.Image].Photos)
-                    .ToList().First(),
-                resumeFile: uploadResult.Result
-                    .Where(e => e.ContainsKey(MediaSubType.File))
-                    .Select(e => e[MediaSubType.File].Files)
-                    .ToList().First()
+                profilePhoto: media.Photos.FirstOrDefault(),
+                resumeFile: media.Files.FirstOrDefault()
             );
 
             try
             {
                 //await _unitOfWork.SaveChanges(cancellationToken);
                 //await _userManager.UpdateAsync(uploadProfileResult.Result);
-                return ResultResponse<UserModelDto>.Success(uploadProfileResult.Result.ToPortfolioProfileDto()); //ni pun kene terangkan profile mana
+
+                if (filesToDelete != null && filesToDelete.Count > 0)
+                {
+                    _fileHandlerRepository.DeleteFiles(filesToDelete);
+                } 
+
+                return ResultResponse<UserModelDto>.Success(
+                    uploadProfileResult.Result.ToPortfolioProfileDto()); 
             }
             catch (Exception ex) {
-
-                _fileHandlerRepository.DeleteFiles(
-                    [
-                    .. uploadResult.Result
-                        .Where(e => e.ContainsKey(MediaSubType.Image))
-                        .Select(e => e[MediaSubType.Image].Photos?.Url ?? ""),
-                    .. uploadResult.Result
-                        .Where(e => e.ContainsKey(MediaSubType.File))
-                        .Select(e => e[MediaSubType.File].Files?.Url ?? "")
-                    ]);
 
                 return ResultResponse<UserModelDto>.Failure(
                     new Error(System.Net.HttpStatusCode.Conflict, ex.ToString())

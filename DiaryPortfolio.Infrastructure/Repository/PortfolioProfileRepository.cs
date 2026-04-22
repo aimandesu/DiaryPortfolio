@@ -1,10 +1,12 @@
 ﻿using DiaryPortfolio.Application.Common;
 using DiaryPortfolio.Application.DTOs;
+using DiaryPortfolio.Application.DTOs.Reporting;
 using DiaryPortfolio.Application.IRepository;
 using DiaryPortfolio.Application.IServices;
 using DiaryPortfolio.Application.Request;
 using DiaryPortfolio.Domain.Entities;
 using DiaryPortfolio.Infrastructure.Data;
+using DiaryPortfolio.Infrastructure.Services;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -19,15 +21,18 @@ namespace DiaryPortfolio.Infrastructure.Repository
     public class PortfolioProfileRepository : IPortfolioProfileRepository
     {
         private readonly ApplicationDbContext _context;
-        private readonly IUserService _userService;
+        private readonly IFileHandlerRepository _fileHandlerRepository;
+        //private readonly IUserService _userService;
 
         public PortfolioProfileRepository(
             ApplicationDbContext context,
-            IUserService userService
+            IFileHandlerRepository fileHandlerRepository
+            //IUserService userService
         )
         {
             _context = context;
-            _userService = userService;
+            _fileHandlerRepository = fileHandlerRepository;
+            //_userService = userService;
         }
 
         public async Task<ResultResponse<ResumeReportDto>> GenerateResume(string userId)
@@ -100,48 +105,68 @@ namespace DiaryPortfolio.Infrastructure.Repository
         public async Task<ResultResponse<UserModel>> UploadProfile(
             ProfileUpload profileUpload, 
             PhotoModel? profilePhoto, 
-            FileModel? resumeFile)
+            FileModel? resumeFile,
+            UserModel? user)
         {
-            var userId = _userService.UserId!.Value;
 
-            var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Id == userId);
+            try
+            {
+                if (user?.PortfolioProfile == null)
+                    return ResultResponse<UserModel>.Failure(
+                        new Error(HttpStatusCode.NotFound, "User not found")
+                    );
 
-            if (user == null)
-                return ResultResponse<UserModel>.Failure(
-                    new Error(HttpStatusCode.NotFound, "User not found")
+                await _context.Database.ExecuteSqlRawAsync(
+                    "EXEC sp_UpsertPortfolioProfile " +
+                    "   @UserId, @UserName, @NormalizedUserName, @Email, @NormalizedEmail, " +
+                    "   @Name, @Age, @Title, @About, @Address, " +
+                    "   @AddressLine1, @AddressLine2, @Latitude, @Longitude, " +
+                    "   @PhotoUrl, @PhotoMime, @PhotoWidth, @PhotoHeight, @PhotoSize, " +
+                    "   @FileUrl, @FileDescription",
+
+                    new SqlParameter("@UserId", user.Id),
+                    new SqlParameter("@UserName", profileUpload.UserName),
+                    new SqlParameter("@NormalizedUserName", profileUpload.UserName.ToUpperInvariant()),
+                    new SqlParameter("@Email", profileUpload.Email),
+                    new SqlParameter("@NormalizedEmail", profileUpload.Email.ToUpperInvariant()),
+
+                    new SqlParameter("@Name", profileUpload.Name),
+                    new SqlParameter("@Age", (object?)profileUpload.Age ?? DBNull.Value),
+                    new SqlParameter("@Title", profileUpload.Title),
+                    new SqlParameter("@About", profileUpload.About),
+                    new SqlParameter("@Address", profileUpload.Address),
+
+                    new SqlParameter("@AddressLine1", profileUpload.Location?.AddressLine1 ?? ""),
+                    new SqlParameter("@AddressLine2", profileUpload.Location?.AddressLine1 ?? ""),
+                    new SqlParameter("@Latitude", (object?)profileUpload.Location?.Latitude ?? ""),
+                    new SqlParameter("@Longitude", (object?)profileUpload.Location?.Longitude ?? ""),
+
+                    new SqlParameter("@PhotoUrl", (object?)profilePhoto?.Url ?? DBNull.Value),
+                    new SqlParameter("@PhotoMime", (object?)profilePhoto?.Mime ?? DBNull.Value),
+                    new SqlParameter("@PhotoWidth", (object?)profilePhoto?.Width ?? DBNull.Value),
+                    new SqlParameter("@PhotoHeight", (object?)profilePhoto?.Height ?? DBNull.Value),
+                    new SqlParameter("@PhotoSize", (object?)profilePhoto?.Size ?? DBNull.Value),
+
+                    new SqlParameter("@FileUrl", (object?)resumeFile?.Url ?? DBNull.Value),
+                    new SqlParameter("@FileDescription", (object?)resumeFile?.Description ?? DBNull.Value)
                 );
 
-            var existingMedia = await _context.Users
-                .Include(d => d.DiaryProfile)
-                .Include(d => d.PortfolioProfile)
-                .FirstOrDefaultAsync(u => u.Id == userId);
+                return ResultResponse<UserModel>.Success(user);
 
-            await _context.Database.ExecuteSqlRawAsync(
-                "EXEC sp_UpsertPortfolioProfile @UserId, @UserName, @NormalizedUserName, @Email, @NormalizedEmail, @Name, @Age, @Title, @About, @Address, @LocationName, @Latitude, @Longitude, @PhotoUrl, @PhotoMime, @PhotoWidth, @PhotoHeight, @PhotoSize, @FileUrl, @FileDescription",
-                new SqlParameter("@UserId", userId),
-                new SqlParameter("@UserName", profileUpload.UserName),
-                new SqlParameter("@NormalizedUserName", profileUpload.UserName.ToUpperInvariant()),
-                new SqlParameter("@Email", profileUpload.Email),
-                new SqlParameter("@NormalizedEmail", profileUpload.Email.ToUpperInvariant()),
-                new SqlParameter("@Name", profileUpload.Name),
-                new SqlParameter("@Age", (object?)profileUpload.Age ?? DBNull.Value),
-                new SqlParameter("@Title", profileUpload.Title),
-                new SqlParameter("@About", profileUpload.About),
-                new SqlParameter("@Address", profileUpload.Address),
-                new SqlParameter("@LocationName", profileUpload.Location?.AddressLine1 ?? ""),
-                new SqlParameter("@Latitude", ""),
-                new SqlParameter("@Longitude", ""),
-                new SqlParameter("@PhotoUrl", (object?)profilePhoto?.Url ?? DBNull.Value),
-                new SqlParameter("@PhotoMime", (object?)profilePhoto?.Mime ?? DBNull.Value),
-                new SqlParameter("@PhotoWidth", (object?)profilePhoto?.Width ?? DBNull.Value),
-                new SqlParameter("@PhotoHeight", (object?)profilePhoto?.Height ?? DBNull.Value),
-                new SqlParameter("@PhotoSize", (object?)profilePhoto?.Size ?? DBNull.Value),
-                new SqlParameter("@FileUrl", (object?)resumeFile?.Url ?? DBNull.Value),
-                new SqlParameter("@FileDescription", (object?)resumeFile?.Description ?? DBNull.Value)
-            );
+            }
+            catch (Exception ex)
+            {
+                _fileHandlerRepository.DeleteFiles(
+                    [
+                        profilePhoto?.Url ?? "",
+                        resumeFile?.Url ?? ""
+                    ]);
 
-            return ResultResponse<UserModel>.Success(user);
+                return ResultResponse<UserModel>.Failure(
+                   new Error(HttpStatusCode.UnprocessableContent, ex.Message)
+                );
+            }
+           
         }
     }
 }

@@ -6,7 +6,7 @@ using DiaryPortfolio.Application.Features.User.Authentication;
 using DiaryPortfolio.Application.Features.User.Authentication.Login;
 using DiaryPortfolio.Application.Features.User.Authentication.SignUp;
 using DiaryPortfolio.Application.Features.User.Get;
-using DiaryPortfolio.Application.Features.User.Profile.Create;
+using DiaryPortfolio.Application.Features.User.Profile.Update;
 using DiaryPortfolio.Application.Request;
 using DiaryPortfolio.Domain.Entities;
 using DiaryPortfolio.Domain.Enum;
@@ -132,7 +132,7 @@ namespace DiaryPortfolio.Api.Controller
                 };
             }
 
-            var request = new CreateProfileRequest(profileUpload);
+            var request = new UpdateProfileRequest(profileUpload);
             return await _mediator.Send(request, cancellationToken);
 
         }

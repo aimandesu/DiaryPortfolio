@@ -22,7 +22,7 @@ namespace DiaryPortfolio.Application.Mapper
                 About = userModel?.PortfolioProfile?.About ?? "",
                 Address = userModel?.PortfolioProfile?.Address ?? "",
                 Location = userModel?.PortfolioProfile?.Location,
-                Resume = userModel?.PortfolioProfile?.Resume,
+                Resume = userModel?.PortfolioProfile?.Resume?.ToResumeModelDto(),
                 ProfilePhoto = userModel?.PortfolioProfile?.ProfilePhoto,
             };
         }
