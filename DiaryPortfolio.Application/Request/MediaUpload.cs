@@ -21,6 +21,10 @@ namespace DiaryPortfolio.Application.Request
         //actual files to be uploaded
         public List<MediaStream> FileStreams { get; set; } = [];
 
+        //update
+        public List<string> DeletedPhotoIds { get; set; } = [];
+        public List<string> DeletedVideoIds { get; set; } = [];
+
     }
 
 }

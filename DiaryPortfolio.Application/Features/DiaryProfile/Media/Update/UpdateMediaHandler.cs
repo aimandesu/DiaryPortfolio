@@ -5,6 +5,7 @@ using DiaryPortfolio.Application.Helpers;
 using DiaryPortfolio.Application.IRepository;
 using DiaryPortfolio.Application.IServices;
 using DiaryPortfolio.Application.Mapper;
+using DiaryPortfolio.Domain.Entities;
 using DiaryPortfolio.Domain.Enum;
 using Mediator;
 using Microsoft.EntityFrameworkCore;
@@ -23,8 +24,8 @@ namespace DiaryPortfolio.Application.Features.DiaryProfile.Media.Update
         private readonly IUnitOfWork _unitOfWork;
 
         public UpdateMediaHandler(
-            IFileHandlerRepository fileHandlerRepository, 
-            IMediaHandlerRepository mediaHandlerRepository, 
+            IFileHandlerRepository fileHandlerRepository,
+            IMediaHandlerRepository mediaHandlerRepository,
             IUnitOfWork unitOfWork)
         {
             _fileHandlerRepository = fileHandlerRepository;
@@ -33,69 +34,82 @@ namespace DiaryPortfolio.Application.Features.DiaryProfile.Media.Update
         }
 
         public async ValueTask<ResultResponse<MediaModelDto>> Handle(
-            UpdateMediaRequest request, 
+            UpdateMediaRequest request,
             CancellationToken cancellationToken)
         {
             var mediaType = EnumHelper.ParseEnumOrThrow<MediaType>(
                 request.MediaUpload.MediaType.ToString()
             );
 
+            var existingMedia = await _mediaHandlerRepository
+                .GetMediaWithFiles(new Guid(request.Id));
+
             var uploadResult = await _fileHandlerRepository.DistributeFiles(
                 request.MediaUpload.FileStreams,
-                mediaType
+                mediaType,
+                existingMedia.Result?.Id.ToString()
             );
 
             if (uploadResult.Error != Error.None)
             {
-                return ResultResponse<MediaModelDto>.Failure(uploadResult.Error);
+                return ResultResponse<MediaModelDto>
+                    .Failure(uploadResult.Error);
             }
 
-            var existingMedia = await _mediaHandlerRepository.GetMediaWithFiles(new Guid(request.mediaId));
+            var deletedVideoIdGuids = request.MediaUpload.DeletedVideoIds
+                .Select(id => Guid.Parse(id))
+                .ToHashSet();
 
-            var oldFilePaths = existingMedia.Result?.MediaPhotos
-                .Select(p => p?.Photo?.Url ?? "")
-                .Concat(existingMedia.Result.MediaVideos.Select(v => v?.Video?.Url ?? ""))
-                .ToList();
+            var deletedPhotoIdGuids = request.MediaUpload.DeletedPhotoIds
+                .Select(id => Guid.Parse(id))
+                .ToHashSet();
+
+            var deletedPhotos = existingMedia.Result?.MediaPhotos
+                .Where(p => p.Photo != null && deletedPhotoIdGuids
+                    .Contains(p.Photo.Id))
+                .Select(p => p?.Photo?.Url);
+
+            var deletedVideos = existingMedia.Result?.MediaVideos
+                .Where(v => v?.Video != null && deletedVideoIdGuids
+                .Contains(v.Video.Id))
+                .Select(v => v?.Video?.Url);
+
+            var filesToDelete = deletedPhotos?.Concat(deletedVideos ?? []).ToList();
+
+            var media = uploadResult.Result.ExtractMedia();
 
             var updateMediaResult = await _mediaHandlerRepository.UpdateMedia(
-                id: new Guid(request.mediaId),
                 media: request.MediaUpload,
-                videos: uploadResult.Result
-                    .Where(e => e.ContainsKey(MediaSubType.Video))
-                    .Select(e => e[MediaSubType.Video].Videos)
-                    .ToList()!,
-                photos: uploadResult.Result
-                    .Where(e => e.ContainsKey(MediaSubType.Image))
-                    .Select(e => e[MediaSubType.Image].Photos)
-                    .ToList()!
+                videos: media.Videos,
+                photos: media.Photos,
+                existingMedia: existingMedia.Result
             );
 
             try
             {
-                if (oldFilePaths != null)
-                {
-                    _fileHandlerRepository.DeleteFiles(oldFilePaths);
-                }
-                
+
                 await _unitOfWork.SaveChanges(cancellationToken);
 
-                return ResultResponse<MediaModelDto>.Success(updateMediaResult.Result.ToMediaModelDto());
+                if (filesToDelete != null && filesToDelete.Count > 0)
+                {
+                    _fileHandlerRepository.DeleteFiles(filesToDelete);
+                }
+
+                return ResultResponse<MediaModelDto>
+                    .Success(updateMediaResult.Result.ToMediaModelDto());
             }
             catch (DbUpdateException ex)
             {
-                // Rollback: delete uploaded files
                 _fileHandlerRepository.DeleteFiles(
                     [
-                    .. uploadResult.Result
-                        .Where(e => e.ContainsKey(MediaSubType.Video))
-                        .Select(e => e[MediaSubType.Video].Videos?.Url ?? ""),
-                    .. uploadResult.Result
-                        .Where(e => e.ContainsKey(MediaSubType.Image))
-                        .Select(e => e[MediaSubType.Image].Photos?.Url ?? "")
+                    .. media.Photos.Select(e => e.Url),
+                    .. media.Videos.Select(e => e.Url)
                     ]);
 
                 return ResultResponse<MediaModelDto>.Failure(
-                    new Error(System.Net.HttpStatusCode.Conflict, ex.InnerException?.Message ?? ex.Message)
+                    new Error(
+                        System.Net.HttpStatusCode.Conflict, 
+                        ex.InnerException?.Message ?? ex.Message)
                 );
             }
 

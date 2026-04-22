@@ -1,8 +1,10 @@
 ﻿using DiaryPortfolio.Application.Common;
+using DiaryPortfolio.Application.DTOs;
 using DiaryPortfolio.Application.IRepository;
 using DiaryPortfolio.Application.IServices;
 using DiaryPortfolio.Domain.Entities;
 using Mediator;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,19 +35,28 @@ namespace DiaryPortfolio.Application.Features.DiaryProfile.Media.Delete
             DeleteMediaRequest request, 
             CancellationToken cancellationToken)
         {
-            var mediaFiles = _mediaHandlerRepository.GetMediaFiles(request.MediaId);
+            var mediaFiles = _mediaHandlerRepository.DeleteMedia(request.Id);
 
-            if (mediaFiles.Count == 0)
+            try
             {
-                return ResultResponse<MediaModel>.Failure(new Error(System.Net.HttpStatusCode.NotFound, "Media Files not found"));
+                await _unitOfWork.SaveChanges(cancellationToken);
+
+                if (mediaFiles != null &&  mediaFiles.Count > 0)
+                {
+                    _fileHandlerRepository.DeleteFiles(mediaFiles);
+                }
+
+                return ResultResponse<MediaModel>.Success(
+                    new MediaModel { Id = new Guid(request.Id) }
+                );
             }
-
-            _fileHandlerRepository.DeleteFiles(mediaFiles);
-            await _unitOfWork.SaveChanges(cancellationToken);
-
-            return ResultResponse<MediaModel>.Success(
-                new MediaModel { Id = new Guid(request.MediaId) }
-            );
+            catch (DbUpdateException ex) {
+                return ResultResponse<MediaModel>.Failure(
+                    new Error(
+                        System.Net.HttpStatusCode.Conflict,
+                        ex.InnerException?.Message ?? ex.Message)
+                );
+            }
 
         }
     }

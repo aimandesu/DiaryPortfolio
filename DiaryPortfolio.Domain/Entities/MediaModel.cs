@@ -1,8 +1,10 @@
 using DiaryPortfolio.Domain.Enum;
+using DiaryPortfolio.Domain.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace DiaryPortfolio.Domain.Entities;
 
-public class MediaModel
+public class MediaModel : IUserOwner, IUserOwnerQuery
 {
     public Guid Id { get; set; } =  Guid.NewGuid();
     public string Title { get; set; } = string.Empty;
@@ -35,4 +37,10 @@ public class MediaModel
     public SelectionModel? SelectionMediaStatusModel { get; set; }
     public SelectionModel? SelectionMediaTypeModel { get; set; }
 
+    public Guid OwnerId => SpaceModel?.DiaryProfile?.UserId ?? Guid.Empty;
+
+    public static IQueryable<object> WithOwnerIncludes(DbContext context)
+        => context.Set<MediaModel>()
+            .Include(m => m.SpaceModel)
+                .ThenInclude(s => s!.DiaryProfile);
 }

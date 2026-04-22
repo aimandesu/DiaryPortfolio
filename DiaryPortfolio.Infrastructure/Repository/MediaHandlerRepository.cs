@@ -32,28 +32,34 @@ namespace DiaryPortfolio.Infrastructure.Repository
             _selectionHelper = selectionHelper;
         }
 
-        public List<string> GetMediaFiles(string mediaId) 
+        public List<string> DeleteMedia(string mediaId) 
         {
             var userId = _userService.UserId!.Value;
+            var filePaths = new List<string>();
 
             var media = (from m in _context.Medias
                          join s in _context.Spaces on m.SpaceId equals s.Id
                          where s.DiaryProfile.UserId == userId && m.Id == new Guid(mediaId)
                          select m
                          )
-                         .Include(m => m.MediaPhotos)
-                         .Include(s => s.MediaVideos)
+                        .Include(m => m.MediaPhotos)
+                            .ThenInclude(mp => mp.Photo)
+                        .Include(m => m.MediaVideos)
+                            .ThenInclude(mp => mp.Video)
+                         .Include(c => c.ConditionModel)
+                         .Include(l => l.LocationModel)
                          .FirstOrDefault();
-            
+
             if (media == null)
             {
                 return [];
             }
 
-            var filePaths = new List<string>();
-
-            filePaths.AddRange(media.MediaPhotos.Select(p => p?.Photo?.Url ?? ""));
-            filePaths.AddRange(media.MediaVideos.Select(v => v?.Video?.Url ?? ""));
+            if (media?.MediaPhotos != null && media?.MediaVideos != null)
+            {
+                filePaths.AddRange(media.MediaPhotos.Select(p => p?.Photo?.Url ?? ""));
+                filePaths.AddRange(media.MediaVideos.Select(v => v?.Video?.Url ?? ""));
+            }
 
             _context.Medias.Remove(media);
 
@@ -70,26 +76,25 @@ namespace DiaryPortfolio.Infrastructure.Repository
         {
             var response = await _context.Medias
                 .Include(m => m.MediaPhotos)
+                    .ThenInclude(mp => mp.Photo)
                 .Include(m => m.MediaVideos)
+                    .ThenInclude(mp => mp.Video)
+                .Include(m => m.LocationModel)
+                .Include(m => m.ConditionModel)
+                .Include(m => m.CollectionModel)
                 .FirstOrDefaultAsync(m => m.Id == mediaId);
 
             return ResultResponse<MediaModel?>.Success(response);
         }
 
         public async Task<ResultResponse<MediaModel>> UpdateMedia(
-            Guid id,
             MediaUpload media,
             List<VideoModel> videos,
-            List<PhotoModel> photos)
+            List<PhotoModel> photos,
+            MediaModel? existingMedia)
         {
             try
             {
-                var existingMedia = await _context.Medias
-                    .Include(m => m.MediaPhotos)
-                    .Include(m => m.MediaVideos)
-                    .Include(m => m.LocationModel)
-                    .Include(m => m.ConditionModel)
-                    .FirstOrDefaultAsync(m => m.Id == id);
 
                 if (existingMedia == null)
                 {
@@ -98,66 +103,116 @@ namespace DiaryPortfolio.Infrastructure.Repository
                     );
                 }
 
-                var spaceIdLookup = _context.Spaces
-                    .Where(e => e.Id == new Guid(media.SpaceId))
-                    .Select(e => e.Id)
-                    .FirstOrDefault();
+                var spaceIdLookup = await _selectionHelper.GetSelectionSpaceId(new Guid(media.SpaceId));
 
                 var statusSelection = await _selectionHelper.GetSelectionIdAsync(media.MediaStatus);
 
-                var typeSelection = await _selectionHelper.GetSelectionIdAsync(media.MediaType);
+                //var typeSelection = await _selectionHelper.GetSelectionIdAsync(media.MediaType);
+                //-> bcs will ganggu the location and doesnt seem logic
 
                 existingMedia.Title = media.Title;
                 existingMedia.Description = media.Description;
                 existingMedia.MediaStatusSelectionId = statusSelection;
-                existingMedia.MediaTypeSelectionId = typeSelection;
+                //SelectionMediaStatusModel =
+                //existingMedia.MediaTypeSelectionId = typeSelection;
+                //SelectionMediaTypeModel = 
                 existingMedia.SpaceId = spaceIdLookup;
-
-                if (existingMedia.LocationModel != null)
+                //can include spacemodel also, but you need to change spaceIdLookup
+                if (media.Location == null)
                 {
-                    existingMedia.LocationModel.AddressLine1 = media.Location?.Name ?? "";
-                    existingMedia.LocationModel.Latitude =  Convert.ToDouble(media.Location?.Latitude);
-                    existingMedia.LocationModel.Longitude = Convert.ToDouble(media.Location?.Longitude);
+                    if (existingMedia.LocationModel != null)
+                    {
+                        _context.Locations.Remove(existingMedia.LocationModel);
+                        existingMedia.LocationModel = null;
+                        existingMedia.LocationId = null;
+                    }
+                }
+                else
+                {
+                    if (existingMedia.LocationModel == null)
+                    {
+                        existingMedia.LocationModel ??= new LocationModel();
+                        _context.Locations.Add(existingMedia.LocationModel);
+                    }
+
+                    existingMedia.LocationModel.AddressLine1 = media.Location.Name ?? "";
+                    existingMedia.LocationModel.Latitude = Convert.ToDouble(media.Location.Latitude);
+                    existingMedia.LocationModel.Longitude = Convert.ToDouble(media.Location.Longitude);
                 }
 
-                if (existingMedia.ConditionModel != null)
+                if (media?.Condition == null)
                 {
-                    existingMedia.ConditionModel.AvailableTime = media.Condition?.AvailableTime ?? DateTime.UtcNow;
-                    existingMedia.ConditionModel.DeletedTime = media.Condition?.DeletedTime;
+                    if (existingMedia.ConditionModel != null)
+                    {
+                        _context.Conditions.Remove(existingMedia.ConditionModel);
+                        existingMedia.ConditionModel = null;
+                    }
+                   
+                }
+                else
+                {
+                    if(existingMedia.ConditionModel == null)
+                    {
+                        existingMedia.ConditionModel ??= new ConditionModel();
+                        _context.Conditions.Add(existingMedia.ConditionModel);
+                    }
+
+                    existingMedia.ConditionModel.AvailableTime = media?.Condition?.AvailableTime ?? DateTime.UtcNow;
+                    existingMedia.ConditionModel.DeletedTime = media?.Condition?.DeletedTime;
                 }
 
                 //Photos
-                var newPhotoUrls = photos.Select(p => p.Url).ToHashSet();
-
-                var photosToDelete = existingMedia.MediaPhotos
-                    .Where(p => !newPhotoUrls.Contains(p?.Photo?.Url ?? ""))
-                    .ToList();
-
-                _context.Photos.RemoveRange(photosToDelete.Select(p => p.Photo).ToList());
-                existingMedia.MediaPhotos.Clear();
-
-                foreach (var photo in photos)
+                if (media?.DeletedPhotoIds != null && media.DeletedPhotoIds.Count > 0)
                 {
-                    //photo.MediaId = existingMedia.Id;
-                    existingMedia.MediaPhotos.Add(new MediaPhotoModel { Photo = photo });
+                    var deletedPhotoIdSet = media.DeletedPhotoIds
+                        .Select(id => Guid.Parse(id))
+                        .ToHashSet();
+
+                    var mediaPhotos = existingMedia.MediaPhotos
+                        .Where(mp => mp.Photo != null && deletedPhotoIdSet.Contains(mp.Photo.Id))
+                        .ToList();
+
+                    foreach (var photo in mediaPhotos)
+                    {
+                        existingMedia.MediaPhotos.Remove(photo);
+                        _context.Photos.Remove(photo.Photo);
+                    }
                 }
+
+                existingMedia.MediaPhotos.AddRange(
+                    photos.Select(photo =>
+                    {
+                        _context.Photos.Add(photo);
+                        return new MediaPhotoModel { Photo = photo };
+                    })
+                );
 
 
                 //Videos
-                var newVideoUrls = videos.Select(v => v.Url).ToHashSet();
-
-                var videosToDelete = existingMedia.MediaVideos
-                    .Where(v => !newVideoUrls.Contains(v?.Video?.Url ?? ""))
-                    .ToList();
-
-                _context.Videos.RemoveRange(videosToDelete.Select(v => v.Video).ToList());
-                existingMedia.MediaVideos.Clear();
-
-                foreach (var video in videos)
+                if (media?.DeletedVideoIds != null && media.DeletedVideoIds.Count > 0)
                 {
-                    //video.MediaId = existingMedia.Id;
-                    existingMedia.MediaVideos.Add(new MediaVideoModel { Video = video });
+                    var deletedVideoIdSet = media.DeletedVideoIds
+                        .Select(id => Guid.Parse(id))
+                        .ToHashSet();
+
+                    var mediaVideos = existingMedia.MediaVideos
+                        .Where(mv => mv.Video != null && deletedVideoIdSet.Contains(mv.Video.Id))
+                        .ToList();
+
+                    foreach (var video in mediaVideos)
+                    {
+                        existingMedia.MediaVideos.Remove(video);
+                        _context.Videos.Remove(video.Video);
+                    }
                 }
+
+                existingMedia.MediaVideos.AddRange(
+                    videos.Select(video =>
+                    {
+                        _context.Videos.Add(video);
+                        return new MediaVideoModel { Video = video };
+                    })
+                );
 
                 return ResultResponse<MediaModel>.Success(existingMedia);
             }
@@ -176,29 +231,35 @@ namespace DiaryPortfolio.Infrastructure.Repository
         {
             try
             {
-                var spaceIdLookup = _context.Spaces
-                    .Where(e => e.Id == new Guid(media.SpaceId))
-                    .Select(e => e.Id)
-                    .FirstOrDefault();
+                var spaceIdLookup = await _selectionHelper.GetSelectionSpaceId(new Guid(media.SpaceId));
 
                 var statusSelection = await _selectionHelper.GetSelectionIdAsync(media.MediaStatus);
 
                 var typeSelection = await _selectionHelper.GetSelectionIdAsync(media.MediaType);
-               
+
+                var location = new LocationModel
+                {
+                    AddressLine1 = media.Location?.Name ?? "",
+                    Latitude = Convert.ToDouble(media.Location?.Latitude),
+                    Longitude = Convert.ToDouble(media.Location?.Longitude)
+                };
+
+
                 var mediaUpload = new MediaModel
                 {
+                    Id = media.Id ?? Guid.NewGuid(),
                     Title = media.Title,
                     Description = media.Description,
                     MediaStatusSelectionId = statusSelection,
+                    //SelectionMediaStatusModel =
                     MediaTypeSelectionId = typeSelection,
+                    //SelectionMediaTypeModel = 
                     CreatedAt = DateTime.UtcNow,
                     SpaceId = spaceIdLookup,
-                    LocationModel = new LocationModel
-                    {
-                        AddressLine1 = media.Location?.Name ?? "",
-                        Latitude =  Convert.ToDouble(media.Location?.Latitude),
-                        Longitude = Convert.ToDouble(media.Location?.Longitude)
-                    },
+                    //can include spacemodel also, but you need to change spaceIdLookup
+                    LocationId = location.Id,
+                    //CollectionId = let collection null dulu
+                    LocationModel = location,
                     ConditionModel = new ConditionModel
                     {
                         AvailableTime = media.Condition?.AvailableTime ?? DateTime.UtcNow,

@@ -4,6 +4,7 @@ using DiaryPortfolio.Application.Features.DiaryProfile.Media.Create;
 using DiaryPortfolio.Application.Features.DiaryProfile.Media.Delete;
 using DiaryPortfolio.Application.Features.DiaryProfile.Media.GetAll;
 using DiaryPortfolio.Application.Features.DiaryProfile.Media.Update;
+using DiaryPortfolio.Application.Helpers;
 using DiaryPortfolio.Application.Helpers.Filter;
 using DiaryPortfolio.Application.Request;
 using DiaryPortfolio.Domain.Entities;
@@ -86,14 +87,7 @@ namespace DiaryPortfolio.Api.Controller
             CancellationToken cancellationToken
         )
         {
-            var mediaUploadRequest = JsonSerializer.Deserialize<MediaUpload>(
-                jsonMediaUploadRequest,
-                new JsonSerializerOptions
-                {
-                    Converters = { new JsonStringEnumConverter() },
-                    PropertyNameCaseInsensitive = true
-                }
-            );
+            var mediaUploadRequest = jsonMediaUploadRequest.DeserializeForm<MediaUpload>();
 
             var mediaUpload = new MediaUpload
             {
@@ -104,11 +98,9 @@ namespace DiaryPortfolio.Api.Controller
                 SpaceId = mediaUploadRequest?.SpaceId ?? "",
                 Location = mediaUploadRequest?.Location,
                 Condition = mediaUploadRequest?.Condition,
-                FileStreams = files.Select(f => new MediaStream
-                {
-                    Stream = f.OpenReadStream(),
-                    FileName = f.FileName
-                }).ToList(),
+                FileStreams = [.. files.ToMediaStreams()],
+                DeletedPhotoIds = mediaUploadRequest?.DeletedPhotoIds ?? [],
+                DeletedVideoIds = mediaUploadRequest?.DeletedVideoIds ?? [],
             };
 
             var request = new UpdateMediaRequest(id, mediaUpload);

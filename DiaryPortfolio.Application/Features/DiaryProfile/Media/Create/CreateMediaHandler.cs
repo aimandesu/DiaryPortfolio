@@ -36,7 +36,7 @@ namespace DiaryPortfolio.Application.Features.DiaryProfile.Media.Create
         }
 
         public async ValueTask<ResultResponse<MediaModelDto>> Handle(
-            CreateMediaRequest request, 
+            CreateMediaRequest request,
             CancellationToken cancellationToken)
         {
             var mediaType = EnumHelper.ParseEnumOrThrow<MediaType>(
@@ -47,9 +47,13 @@ namespace DiaryPortfolio.Application.Features.DiaryProfile.Media.Create
             //   request.MediaUpload.MediaStatus.ToString()
             //);
 
+            var mediaUpload = request.MediaUpload;
+            mediaUpload.Id = Guid.NewGuid();
+
             var uploadResult = await _fileHandlerRepository.DistributeFiles(
                 request.MediaUpload.FileStreams,
-                mediaType
+                mediaType,
+                mediaUpload.Id.ToString()
             );
 
             if (uploadResult.Error != Error.None)
@@ -57,16 +61,12 @@ namespace DiaryPortfolio.Application.Features.DiaryProfile.Media.Create
                 return ResultResponse<MediaModelDto>.Failure(uploadResult.Error);
             }
 
+            var media = uploadResult.Result.ExtractMedia();
+
             var uploadMediaResult = await _mediaHandlerRepository.UploadMedia(
-                mediaUpload: request.MediaUpload,
-                videos: uploadResult.Result
-                    .Where(e => e.ContainsKey(MediaSubType.Video))
-                    .Select(e => e[MediaSubType.Video].Videos)
-                    .ToList()!,
-                photos: uploadResult.Result
-                    .Where(e => e.ContainsKey(MediaSubType.Image))
-                    .Select(e => e[MediaSubType.Image].Photos)
-                    .ToList()!
+                mediaUpload: mediaUpload,
+                videos: media.Videos,
+                photos: media.Photos
             );
 
             try
@@ -79,12 +79,8 @@ namespace DiaryPortfolio.Application.Features.DiaryProfile.Media.Create
                 // Rollback: delete uploaded files
                 _fileHandlerRepository.DeleteFiles(
                     [
-                    .. uploadResult.Result
-                        .Where(e => e.ContainsKey(MediaSubType.Video))
-                        .Select(e => e[MediaSubType.Video].Videos?.Url ?? ""),
-                    .. uploadResult.Result
-                        .Where(e => e.ContainsKey(MediaSubType.Image))
-                        .Select(e => e[MediaSubType.Image].Photos?.Url ?? "")
+                    .. media.Photos.Select(e => e.Url),
+                    .. media.Videos.Select(e => e.Url)
                     ]);
 
                 return ResultResponse<MediaModelDto>.Failure(
