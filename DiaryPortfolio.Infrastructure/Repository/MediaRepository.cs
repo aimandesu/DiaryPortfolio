@@ -93,26 +93,35 @@ namespace DiaryPortfolio.Infrastructure.Repository
             var videos = (await multi.ReadAsync<MediaVideoModel>()).ToList();
             var photos = (await multi.ReadAsync<MediaPhotoModel>()).ToList();
 
+            //var videos = (await multi.ReadAsync<VideoModel>()).ToList();
+            //var photos = (await multi.ReadAsync<PhotoModel>()).ToList();
+
+            //var videoLookup = videos.ToLookup(v => v.Id);
+
             var videoLookup = videos
                 .Where(v => v.Media != null)
                 .GroupBy(v => v.Media!.Id)
                 .ToDictionary(
-                    g => g.Key, 
+                    g => g.Key,
                     g => g.Select(v => v.Video).OfType<VideoModel>().ToList()
                 );
+
+            //var photoLookup = photos.ToLookup(v => v.Id);
 
             var photoLookup = photos
                 .Where(p => p.Media != null)
                 .GroupBy(p => p.Media!.Id)
                 .ToDictionary(
-                    g => g.Key, 
+                    g => g.Key,
                     g => g.Select(p => p.Photo).OfType<PhotoModel>().ToList()
                 );
 
             foreach (var media in data)
             {
-                media.VideoModels = videoLookup.TryGetValue(media.Id, out var v) ? v : [];
+                media.VideoModels =  videoLookup.TryGetValue(media.Id, out var v) ? v : [];
                 media.PhotoModels = photoLookup.TryGetValue(media.Id, out var p) ? p : [];
+                //media.VideoModels = videoLookup[media.Id].ToList();
+                //media.PhotoModels = photoLookup[media.Id].ToList();
             }
 
             return new Pagination<MediaModelDto>

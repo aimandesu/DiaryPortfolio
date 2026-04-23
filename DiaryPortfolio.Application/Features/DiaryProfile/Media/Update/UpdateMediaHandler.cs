@@ -56,22 +56,27 @@ namespace DiaryPortfolio.Application.Features.DiaryProfile.Media.Update
                     .Failure(uploadResult.Error);
             }
 
-            var deletedVideoIdGuids = request.MediaUpload.DeletedVideoIds
-                .Select(id => Guid.Parse(id))
-                .ToHashSet();
+            //var deletedVideoIdGuids = request.MediaUpload.DeletedVideoIds
+            //    .Select(id => Guid.Parse(id))
+            //    .ToHashSet();
 
-            var deletedPhotoIdGuids = request.MediaUpload.DeletedPhotoIds
-                .Select(id => Guid.Parse(id))
-                .ToHashSet();
+            //var deletedPhotoIdGuids = request.MediaUpload.DeletedPhotoIds
+            //    .Select(id => Guid.Parse(id))
+            //    .ToHashSet();
+
+            List<string> deletedIds = [
+                .. request.MediaUpload.DeletedPhotoIds, 
+                .. request.MediaUpload.DeletedVideoIds
+            ];
 
             var deletedPhotos = existingMedia.Result?.MediaPhotos
-                .Where(p => p.Photo != null && deletedPhotoIdGuids
-                    .Contains(p.Photo.Id))
+                .Where(p => p.Photo != null && deletedIds//deletedPhotoIdGuids
+                    .Contains(p.Photo.Id.ToString()))
                 .Select(p => p?.Photo?.Url);
 
             var deletedVideos = existingMedia.Result?.MediaVideos
-                .Where(v => v?.Video != null && deletedVideoIdGuids
-                .Contains(v.Video.Id))
+                .Where(v => v?.Video != null && deletedIds //deletedVideoIdGuids
+                    .Contains(v.Video.Id.ToString()))
                 .Select(v => v?.Video?.Url);
 
             var filesToDelete = deletedPhotos?.Concat(deletedVideos ?? []).ToList();

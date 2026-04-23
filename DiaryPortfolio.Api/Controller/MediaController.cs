@@ -78,7 +78,7 @@ namespace DiaryPortfolio.Api.Controller
             return await _mediator.Send(request, cancellationToken);
         }
 
-        [HttpPost("updateMedia/{id}")]
+        [HttpPost("update/{id}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<ActionResult<ResultResponse<MediaModelDto>>> UpdateMedia(
             [FromRoute] string id,

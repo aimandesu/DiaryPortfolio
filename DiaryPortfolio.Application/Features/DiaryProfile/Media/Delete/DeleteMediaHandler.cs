@@ -35,15 +35,28 @@ namespace DiaryPortfolio.Application.Features.DiaryProfile.Media.Delete
             DeleteMediaRequest request, 
             CancellationToken cancellationToken)
         {
-            var mediaFiles = _mediaHandlerRepository.DeleteMedia(request.Id);
+            var filePaths = new List<string>();
+            var mediaFiles = await _mediaHandlerRepository.DeleteMedia(new Guid(request.Id));
+
+            var media = mediaFiles.Result;
+
+            if (media?.MediaPhotos != null)
+            {
+                filePaths.AddRange(media.MediaPhotos.Select(p => p?.Photo?.Url ?? ""));
+            }
+
+            if (media?.MediaVideos != null)
+            {
+                filePaths.AddRange(media.MediaVideos.Select(v => v?.Video?.Url ?? ""));
+            }
 
             try
             {
                 await _unitOfWork.SaveChanges(cancellationToken);
 
-                if (mediaFiles != null &&  mediaFiles.Count > 0)
+                if (filePaths.Count > 0)
                 {
-                    _fileHandlerRepository.DeleteFiles(mediaFiles);
+                    _fileHandlerRepository.DeleteFiles(filePaths);
                 }
 
                 return ResultResponse<MediaModel>.Success(

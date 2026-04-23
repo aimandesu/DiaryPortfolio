@@ -24,9 +24,9 @@ namespace DiaryPortfolio.Application.IRepository
             MediaModel? existingMedia
         );
         Task<Stream> StreamMediaFile(string mediaUrl);
-        List<string> DeleteMedia(string mediaId);
+        Task<ResultResponse<MediaModel>> DeleteMedia(
+            Guid mediaId);
         Task<ResultResponse<MediaModel?>> GetMediaWithFiles(
-            Guid mediaId
-        );
+            Guid mediaId);
     }
 }

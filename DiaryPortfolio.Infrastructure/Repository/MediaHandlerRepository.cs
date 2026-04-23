@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -32,39 +33,56 @@ namespace DiaryPortfolio.Infrastructure.Repository
             _selectionHelper = selectionHelper;
         }
 
-        public List<string> DeleteMedia(string mediaId) 
+        public async Task<ResultResponse<MediaModel>> DeleteMedia(Guid mediaId) 
         {
-            var userId = _userService.UserId!.Value;
-            var filePaths = new List<string>();
+            //var userId = _userService.UserId!.Value;
+            //var filePaths = new List<string>();
 
-            var media = (from m in _context.Medias
-                         join s in _context.Spaces on m.SpaceId equals s.Id
-                         where s.DiaryProfile.UserId == userId && m.Id == new Guid(mediaId)
-                         select m
-                         )
-                        .Include(m => m.MediaPhotos)
-                            .ThenInclude(mp => mp.Photo)
-                        .Include(m => m.MediaVideos)
-                            .ThenInclude(mp => mp.Video)
-                         .Include(c => c.ConditionModel)
-                         .Include(l => l.LocationModel)
-                         .FirstOrDefault();
+            //var media = (from m in _context.Medias
+            //             join s in _context.Spaces on m.SpaceId equals s.Id
+            //             where s.DiaryProfile.UserId == userId && m.Id == new Guid(mediaId)
+            //             select m
+            //             )
+            //            .Include(m => m.MediaPhotos)
+            //                .ThenInclude(mp => mp.Photo)
+            //            .Include(m => m.MediaVideos)
+            //                .ThenInclude(mp => mp.Video)
+            //             .Include(c => c.ConditionModel)
+            //             .Include(l => l.LocationModel)
+            //             .FirstOrDefault();
+
+            //if (media == null)
+            //{
+            //    return [];
+            //}
+
+            //if (media?.MediaPhotos != null)
+            //{
+            //    filePaths.AddRange(media.MediaPhotos.Select(p => p?.Photo?.Url ?? ""));
+            //}
+
+            //if (media?.MediaVideos != null)
+            //{
+            //    filePaths.AddRange(media.MediaVideos.Select(v => v?.Video?.Url ?? ""));
+            //}
+
+
+            //return filePaths;
+
+            var query = await GetMediaWithFiles(mediaId);
+            var media = query.Result;
 
             if (media == null)
             {
-                return [];
-            }
-
-            if (media?.MediaPhotos != null && media?.MediaVideos != null)
-            {
-                filePaths.AddRange(media.MediaPhotos.Select(p => p?.Photo?.Url ?? ""));
-                filePaths.AddRange(media.MediaVideos.Select(v => v?.Video?.Url ?? ""));
+                return ResultResponse<MediaModel>.Failure(
+                   new Error(
+                       HttpStatusCode.NotFound,
+                       "No media found with the given id"));
             }
 
             _context.Medias.Remove(media);
 
-            return filePaths;
-
+            return ResultResponse<MediaModel>.Success(media);
         }
 
         public Task<Stream> StreamMediaFile(string mediaUrl)
@@ -75,6 +93,7 @@ namespace DiaryPortfolio.Infrastructure.Repository
         public async Task<ResultResponse<MediaModel?>> GetMediaWithFiles(Guid mediaId)
         {
             var response = await _context.Medias
+                .Include(s => s.SpaceModel)
                 .Include(m => m.MediaPhotos)
                     .ThenInclude(mp => mp.Photo)
                 .Include(m => m.MediaVideos)
