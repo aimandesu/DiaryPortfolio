@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -50,6 +51,7 @@ namespace DiaryPortfolio.Infrastructure.Repository
 
                 var project = new ProjectModel
                 {
+                    Id = projectUpload.Id,
                     Title = projectUpload.Title,
                     Description = projectUpload.Description,
                     PortfolioProfileId = _userService.PortfolioProfileId ?? Guid.Empty,
@@ -72,10 +74,125 @@ namespace DiaryPortfolio.Infrastructure.Repository
 
         }
 
-        public Task<ResultResponse<ProjectModel>> DeleteProject(
-            string projectId)
+        public async Task<ResultResponse<ProjectModel>> DeleteProject(
+            Guid projectId)
         {
-            throw new NotImplementedException();
+            var query = await GetProject(projectId);
+            var project = query.Result;
+
+            if (project == null)
+            {
+                return ResultResponse<ProjectModel>.Failure(
+                    new Error(
+                        HttpStatusCode.NotFound,
+                        "No project found with the given id"));
+            }
+
+            _context.Projects.Remove(project);
+
+            return ResultResponse<ProjectModel>.Success(project);
+
+        }
+
+        public async Task<ResultResponse<ProjectModel?>> GetProject(
+            Guid projectId)
+        {
+            var response = await _context.Projects
+                .Include(p => p.ProjectPhotos)
+                    .ThenInclude(p => p.Photo)
+                .Include(p => p.ProjectVideos)
+                    .ThenInclude(v => v.Video)
+                .Include(f => f.ProjectFile)
+                .FirstOrDefaultAsync(m => m.Id == projectId);
+
+            return ResultResponse<ProjectModel?>.Success(response);
+
+        }
+
+        public async Task<ResultResponse<ProjectModel>> UpdateProject(
+            ProjectUpload request,
+            FileModel? file,
+            List<VideoModel> videos,
+            List<PhotoModel> photos,
+            ProjectModel project)
+        {
+            try
+            {
+                if (request.DeletedIds.Any())
+                {
+                    // Handle deleted photos
+                    var photosToRemove = project.ProjectPhotos
+                        .Where(pp => pp.Photo != null && request.DeletedIds.Contains(pp.Photo.Id.ToString()))
+                        .ToList();
+
+                    foreach (var pp in photosToRemove)
+                    {
+                        project.ProjectPhotos.Remove(pp);
+                        _context.Photos.Remove(pp.Photo);
+                    }
+
+                    // Handle deleted videos
+                    var videosToRemove = project.ProjectVideos
+                        .Where(pv => pv.Video != null && request.DeletedIds.Contains(pv.Video.Id.ToString()))
+                        .ToList();
+
+                    foreach (var pv in videosToRemove)
+                    {
+                        project.ProjectVideos.Remove(pv);
+                        _context.Videos.Remove(pv.Video);
+                    }
+
+                    if (project.ProjectFile != null && 
+                        request.DeletedIds.Contains(project.ProjectFile.Id.ToString()))
+                    {
+                        _context.Files.Remove(project.ProjectFile);
+                        project.ProjectFile = null;
+                    }
+                }
+
+                //Start replace
+                project.Title = request.Title;
+                project.Description = request.Description;
+
+                // Add new photos
+                project.ProjectPhotos.AddRange(
+                    photos.Select(photo =>
+                    {
+                        _context.Photos.Add(photo);
+                        return new ProjectPhotoModel { Photo = photo };
+                    })
+                );
+
+                // Add new videos
+                project.ProjectVideos.AddRange(
+                    videos.Select(video =>
+                    {
+                        _context.Videos.Add(video);
+                        return new ProjectVideoModel { Video = video };
+                    })
+                );
+
+                // Handle file — always replace if new one uploaded
+                if (file != null)
+                {
+                    if (project.ProjectFile != null)
+                    {
+                        _context.Files.Remove(project.ProjectFile);
+                    }
+                    
+                    _context.Files.Add(file);
+                    project.ProjectFile = file;
+                }
+
+                return ResultResponse<ProjectModel>.Success(project);
+            }
+
+            catch (Exception ex) {
+                return ResultResponse<ProjectModel>.Failure(
+                   new Error(System.Net.HttpStatusCode.Conflict, ex.Message)
+               );
+            }
+            
         }
     }
 }

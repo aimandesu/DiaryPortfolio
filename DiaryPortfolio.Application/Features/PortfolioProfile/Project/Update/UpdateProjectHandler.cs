@@ -12,20 +12,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
-namespace DiaryPortfolio.Application.Features.PortfolioProfile.Project.Create
+namespace DiaryPortfolio.Application.Features.PortfolioProfile.Project.Update
 {
-    internal class CreateProjectHandler : IRequestHandler<CreateProjectRequest, ResultResponse<ProjectModelDto>>
+    internal class UpdateProjectHandler : IRequestHandler<UpdateProjectRequest, ResultResponse<ProjectModelDto>>
     {
         private readonly IProjectRepository _projectRepository;
         private readonly IFileHandlerRepository _fileHandlerRepository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public CreateProjectHandler(
+        public UpdateProjectHandler(
             IProjectRepository projectRepository,
             IFileHandlerRepository fileHandlerRepository,
             IUnitOfWork unitOfWork)
@@ -36,36 +33,9 @@ namespace DiaryPortfolio.Application.Features.PortfolioProfile.Project.Create
         }
 
         public async ValueTask<ResultResponse<ProjectModelDto>> Handle(
-            CreateProjectRequest request, 
+            UpdateProjectRequest request, 
             CancellationToken cancellationToken)
         {
-            //-------------------------------------------> original implementation
-            //var project = JsonSerializer.Deserialize<ProjectUpload>(
-            //    request.JsonProjectUploadRequest,
-            //    new JsonSerializerOptions
-            //    {
-            //        Converters = { new JsonStringEnumConverter() },
-            //        PropertyNameCaseInsensitive = true
-            //    });
-
-            //var streams = new[]
-            //{
-            //    request.ProjectFileStream != null
-            //        ? new MediaStream
-            //        {
-            //            Stream = request.ProjectFileStream.OpenReadStream(),
-            //            FileName = request.ProjectFileStream.FileName
-            //        }
-            //        : null
-            //}
-            //.Where(x => x is not null)
-            //.Cast<MediaStream>()
-            //.Concat(request.MediaFileStreams.Select(f => new MediaStream
-            //{
-            //    Stream = f.OpenReadStream(),
-            //    FileName = f.FileName
-            //})); --------------------------------------> original implementation
-
             var project = request.JsonProjectUploadRequest.DeserializeForm<ProjectUpload>();
 
             var streams = new[]
@@ -74,12 +44,21 @@ namespace DiaryPortfolio.Application.Features.PortfolioProfile.Project.Create
             }
             .Where(x => x is not null)
             .Cast<MediaStream>()
-            .Concat(request.MediaFileStreams.ToMediaStreams());
+            .Concat(request.MediaFileStreams?.ToMediaStreams() ?? []);
+
+            var existingProject = await _projectRepository.GetProject(
+                new Guid(request.Id));
+
+            if (existingProject.Error != Error.None)
+            {
+                return ResultResponse<ProjectModelDto>.Failure(
+                    existingProject.Error);
+            }    
 
             var uploadResult = await _fileHandlerRepository.DistributeFiles(
                 [.. streams],
                 MediaType.Project,
-                project?.Id.ToString()
+                existingProject.Result?.Id.ToString()
             );
 
             if (uploadResult.Error != Error.None)
@@ -90,16 +69,45 @@ namespace DiaryPortfolio.Application.Features.PortfolioProfile.Project.Create
 
             var media = uploadResult.Result.ExtractMedia();
 
-            var uploadProject = await _projectRepository.CreateProject(
+            //Delete part 
+
+            var deletedIds = project?.DeletedIds ?? [];
+
+            var filesToDelete = new List<string>();
+
+            filesToDelete.AddRange(
+                existingProject.Result?.ProjectPhotos
+                .Where(p => p.Photo != null && deletedIds.Contains(p.Photo.Id.ToString()))
+                .Select(p => p.Photo?.Url ?? "") ?? []
+                //.Where(url => !string.IsNullOrEmpty(url)) ?? []
+                );
+
+            filesToDelete.AddRange(
+                existingProject.Result?.ProjectVideos
+                .Where(pv => pv.Video != null && deletedIds.Contains(pv.Video.Id.ToString()))
+                .Select(pv => pv.Video?.Url ?? "") ?? []
+                //.Where(url => !string.IsNullOrEmpty(url))
+                );
+
+            filesToDelete.Add(existingProject.Result?.ProjectFile?.Url ?? "");
+
+            var uploadProject = await _projectRepository.UpdateProject(
                 projectUpload: project,
                 file: media.Files.FirstOrDefault(),
+                photos: media.Photos,
                 videos: media.Videos,
-                photos: media.Photos
+                project: existingProject.Result
             );
 
             try
             {
                 await _unitOfWork.SaveChanges(cancellationToken);
+
+                if (filesToDelete != null && filesToDelete.Count > 0)
+                {
+                    _fileHandlerRepository.DeleteFiles(filesToDelete);
+                }
+
                 return ResultResponse<ProjectModelDto>.Success(
                     uploadProject.Result.ToProjectModelDto());
             }
@@ -115,10 +123,8 @@ namespace DiaryPortfolio.Application.Features.PortfolioProfile.Project.Create
 
                 return ResultResponse<ProjectModelDto>.Failure(
                     new Error(
-                        System.Net.HttpStatusCode.Conflict, 
-                        ex.InnerException?.Message ?? ex.Message)
-                );
-
+                        System.Net.HttpStatusCode.Conflict,
+                        ex.InnerException?.Message ?? ex.Message));
             }
 
         }

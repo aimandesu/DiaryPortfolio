@@ -1,6 +1,8 @@
 ﻿using DiaryPortfolio.Application.Common;
 using DiaryPortfolio.Application.DTOs;
 using DiaryPortfolio.Application.Features.PortfolioProfile.Project.Create;
+using DiaryPortfolio.Application.Features.PortfolioProfile.Project.Delete;
+using DiaryPortfolio.Application.Features.PortfolioProfile.Project.Update;
 using DiaryPortfolio.Application.Request;
 using Mediator;
 using Microsoft.AspNetCore.Authorization;
@@ -31,6 +33,34 @@ namespace DiaryPortfolio.Api.Controller
             return await _mediator.Send(
                 request, 
                 cancellationToken);
+        }
+
+        [HttpDelete("delete/{id}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<ActionResult<ResultResponse<ProjectModelDto>>> DeleteProject(
+            [FromRoute] DeleteProjectRequest request,
+            CancellationToken cancellationToken)
+        {
+            var response = await _mediator.Send(
+                request,
+                cancellationToken);
+
+            return response;
+
+        }
+
+        [HttpPost("update/{id}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<ActionResult<ResultResponse<ProjectModelDto>>> UpdateProject(
+            [FromRoute] string id,
+            [FromForm] UpdateProjectRequest request,
+            CancellationToken cancellationToken)
+        {
+            var response = await _mediator.Send(
+               request with { Id = id },
+               cancellationToken);
+
+            return response;
         }
 
     }

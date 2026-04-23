@@ -14,5 +14,6 @@ namespace DiaryPortfolio.Application.Request
 
         //public MediaStream? ProjectFileStream { get; set; }
         //public List<MediaStream> MediaFileStreams { get; set; } = [];
+        public List<string> DeletedIds { get; set; } = [];
     }
 }

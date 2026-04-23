@@ -19,8 +19,17 @@ namespace DiaryPortfolio.Application.IRepository
         );
 
         Task<ResultResponse<ProjectModel>> DeleteProject(
-            string projectId);
+            Guid projectId);
 
+        Task<ResultResponse<ProjectModel?>> GetProject(
+            Guid projectId);
+
+        Task<ResultResponse<ProjectModel>> UpdateProject(
+            ProjectUpload projectUpload,
+            FileModel? file,
+            List<VideoModel> videos,
+            List<PhotoModel> photos,
+            ProjectModel project);
 
     }
 }
