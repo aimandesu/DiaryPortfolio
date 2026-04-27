@@ -70,8 +70,12 @@ namespace DiaryPortfolio.Api
                             await context.Response.WriteAsJsonAsync(
                                 ResultResponse<object>.Failure(
                                     new Error(
-                                        System.Net.HttpStatusCode.InternalServerError, 
-                                        exception?.Message ?? "")
+                                        System.Net.HttpStatusCode.InternalServerError,
+                                        exception is null
+                                            ? "An unexpected error occurred"
+                                            : app.Environment.IsDevelopment()
+                                                ? exception.Message
+                                                : "Internal server error")
                                 ));
                             break;
                     }

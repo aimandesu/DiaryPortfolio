@@ -4,6 +4,7 @@ using DiaryPortfolio.Application.IRepository;
 using DiaryPortfolio.Application.Request;
 using DiaryPortfolio.Domain.Entities;
 using DiaryPortfolio.Domain.Enum;
+using Microsoft.AspNetCore.Hosting;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
@@ -17,17 +18,20 @@ namespace DiaryPortfolio.Infrastructure.Repository
     public class FileHandlerRepository : IFileHandlerRepository
     {
         private readonly IFilePathHandlerRepository _filePathHandlerRepository;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
         public FileHandlerRepository(
-            IFilePathHandlerRepository filePathHandlerRepository)
+            IFilePathHandlerRepository filePathHandlerRepository,
+            IWebHostEnvironment webHostEnvironment)
         {
             _filePathHandlerRepository = filePathHandlerRepository;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         public void DeleteFile(string filePath)
         {
             var fullPath = Path.Combine(
-                Directory.GetCurrentDirectory(),
+                _webHostEnvironment.ContentRootPath,
                 filePath.TrimStart('/')
             );
 
@@ -164,7 +168,9 @@ namespace DiaryPortfolio.Infrastructure.Repository
             MediaSubType mediaSubType,
             string fileExtension)
         {
-            using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+            var absolutePath = Path.Combine(_webHostEnvironment.ContentRootPath, filePath);
+
+            using (FileStream fs = new FileStream(absolutePath, FileMode.Open, FileAccess.Read))
             {
                 var metadata = new MediaMetadata
                 {
@@ -184,7 +190,7 @@ namespace DiaryPortfolio.Infrastructure.Repository
                         break;
                     case MediaSubType.Video:
                         var ffProbe = new NReco.VideoInfo.FFProbe();
-                        var videoInfo = ffProbe.GetMediaInfo(filePath);
+                        var videoInfo = ffProbe.GetMediaInfo(absolutePath);
 
                         // Find the video stream (in case there are multiple streams)
                         var videoStream = videoInfo.Streams.FirstOrDefault(s => s.CodecType == "video");
@@ -216,10 +222,12 @@ namespace DiaryPortfolio.Infrastructure.Repository
                 id: id
             );
 
-            Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+            var absolutePath = Path.Combine(_webHostEnvironment.ContentRootPath, path); //writing to server and local
+
+            Directory.CreateDirectory(Path.GetDirectoryName(absolutePath)!);
 
             media.Stream.Position = 0;
-            await using var fs = new FileStream(path, FileMode.Create, FileAccess.Write);
+            await using var fs = new FileStream(absolutePath, FileMode.Create, FileAccess.Write);
             await media.Stream.CopyToAsync(fs);
 
             return path;

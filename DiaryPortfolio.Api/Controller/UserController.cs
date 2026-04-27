@@ -2,9 +2,7 @@
 using DiaryPortfolio.Application.DTOs;
 using DiaryPortfolio.Application.Features.Reporting.Experience;
 using DiaryPortfolio.Application.Features.Reporting.Resume;
-using DiaryPortfolio.Application.Features.User.Authentication;
-using DiaryPortfolio.Application.Features.User.Authentication.Login;
-using DiaryPortfolio.Application.Features.User.Authentication.SignUp;
+
 using DiaryPortfolio.Application.Features.User.Get;
 using DiaryPortfolio.Application.Features.User.Profile.Update;
 using DiaryPortfolio.Application.Request;
@@ -24,7 +22,6 @@ namespace DiaryPortfolio.Api.Controller
     {
 
         private readonly IMediator _mediator;
-        private readonly SignInManager<UserModel> _signInManager;
 
         public UserController(
             IMediator mediator,
@@ -32,38 +29,8 @@ namespace DiaryPortfolio.Api.Controller
         )
         {
             _mediator = mediator;
-            _signInManager = signInManager;
         }
 
-        [HttpPost("signUp")]
-        public async Task<ActionResult<ResultResponse<AuthenticationResponse>>> SignUp(
-            [FromBody] SignUpRequest query,
-            CancellationToken cancellationToken
-        )
-        {
-            var request = new SignUpRequest(
-                query.Email,
-                query.Username,
-                query.Password,
-                query.PasswordConfirmation
-            );
-
-            return await _mediator.Send(request, cancellationToken);
-
-        }
-
-        [HttpPost("login")]
-        public async Task<ActionResult<ResultResponse<AuthenticationResponse>>> Login(
-            [FromBody] LoginRequest query,
-            CancellationToken cancellationToken
-        )
-        {
-            var request = new LoginRequest(
-                query.EmailOrUsername,
-                query.Password
-            );
-            return await _mediator.Send(request, cancellationToken);
-        }
 
         [HttpGet("{username}/diary")]
         public async Task<ActionResult<ResultResponse<UserModelDto>>> GetUserDiary(

@@ -20,7 +20,7 @@ public static class ServiceExtensions
         services.AddDbContext<ApplicationDbContext>(
             options => options
                 .UseSqlServer(connectionString)
-                .LogTo(Console.WriteLine, LogLevel.Information)
+                //.LogTo(Console.WriteLine, LogLevel.Information) -> only in development mode
                 //.EnableSensitiveDataLogging()
             );
         services.AddScoped<IUserRepository, UserRepository>();

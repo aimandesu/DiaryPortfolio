@@ -18,6 +18,7 @@ builder.Services.ConfigureApplication();
 builder.Services.ConfigureJWTPolicy(builder.Configuration);
 builder.Services.ConfigureIdentityPolicy();
 builder.Services.ConfigureCorsPolicy(builder.Configuration);
+builder.Services.ConfigureDataProtection();
 
 
 builder.Services.AddControllers()
@@ -37,9 +38,21 @@ await browserFetcher.DownloadAsync();
 
 
 var app = builder.Build();
-app.ConfigureExceptionHandler();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+    //app.ConfigureExceptionHandler();
+}
+else
+{
+    app.ConfigureExceptionHandler();
+}
+
+app.UseHsts();
 app.ConfigureMedia();
 //app.EnsureSeed();
+app.UseDefaultFiles();
 app.UseStaticFiles();
 app.UseCors("CorsPolicy");
 app.UseAuthentication(); 

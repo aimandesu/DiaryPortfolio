@@ -116,6 +116,10 @@ namespace DiaryPortfolio.Infrastructure.Repository
             {
                 query = query
                     .Include(u => u.PortfolioProfile)
+                        .ThenInclude(p => p.ProfilePhoto)
+                    .Include(u => u.PortfolioProfile)
+                        .ThenInclude(p => p.Resume)
+                        .ThenInclude(f => f.ResumeFile)
                     .Include(u => u.DiaryProfile);
             }
 

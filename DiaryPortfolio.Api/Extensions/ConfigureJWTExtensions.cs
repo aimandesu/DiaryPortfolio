@@ -20,7 +20,7 @@ namespace DiaryPortfolio.Api.Extensions
                     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
                 })
-                .AddCookie()
+                //.AddCookie() -> might not needed because we use JWT Session type token
                 .AddJwtBearer(options =>
                 {
                     options.TokenValidationParameters = new TokenValidationParameters

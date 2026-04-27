@@ -58,6 +58,11 @@ namespace DiaryPortfolio.Application.Helpers.Authentication
 
         }
 
+        public async Task Logout()
+        {
+            await _signInManager.SignOutAsync();
+        }
+
         public async Task<UserModel?> SignUp(UserModel user, string password)
         {
             var result = await _userManager.CreateAsync(user, password);

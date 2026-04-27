@@ -63,7 +63,9 @@ namespace DiaryPortfolio.Application.Features.User.Profile.Update
             //url
             var filesToDelete = new[]
             {
-                existingPortfolioProfile?.PortfolioProfile?.Resume?.ResumeFile?.Url,
+                request.ProfileUpload?.ResumeFileStream is not null
+                    ? existingPortfolioProfile?.PortfolioProfile?.Resume?.ResumeFile?.Url
+                    : null,
                 existingPortfolioProfile?.PortfolioProfile?.ProfilePhoto?.Url
             }
             .Where(x => !string.IsNullOrEmpty(x))
@@ -91,22 +93,28 @@ namespace DiaryPortfolio.Application.Features.User.Profile.Update
 
             var media = uploadResult.Result.ExtractMedia();
 
-            var uploadProfileResult = await _portfolioProfileRepository.UploadProfile(
-                userModel: existingPortfolioProfile,
-                profileUpload: request.ProfileUpload,
-                profilePhoto: media.Photos.FirstOrDefault(),
-                resumeFile: media.Files.FirstOrDefault()
-            );
+           
 
             try
             {
+                var uploadProfileResult = await _portfolioProfileRepository.UploadProfile(
+                    userModel: existingPortfolioProfile,
+                    profileUpload: request.ProfileUpload,
+                    profilePhoto: media.Photos.FirstOrDefault(),
+                    resumeFile: media.Files.FirstOrDefault()
+                );
                 //await _unitOfWork.SaveChanges(cancellationToken);
                 //await _userManager.UpdateAsync(uploadProfileResult.Result);
 
                 if (filesToDelete != null && filesToDelete.Count > 0)
                 {
                     _fileHandlerRepository.DeleteFiles(filesToDelete);
-                } 
+                }
+
+                if (uploadProfileResult.Error != Error.None)
+                {
+                    return ResultResponse<UserModelDto>.Failure(uploadProfileResult.Error);
+                }
 
                 return ResultResponse<UserModelDto>.Success(
                     uploadProfileResult.Result.ToPortfolioProfileDto()); 

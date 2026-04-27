@@ -137,7 +137,7 @@ namespace DiaryPortfolio.Infrastructure.Repository
                     new SqlParameter("@Address", profileUpload.Address),
 
                     new SqlParameter("@AddressLine1", profileUpload.Location?.AddressLine1 ?? ""),
-                    new SqlParameter("@AddressLine2", profileUpload.Location?.AddressLine1 ?? ""),
+                    new SqlParameter("@AddressLine2", profileUpload.Location?.AddressLine2 ?? ""),
                     new SqlParameter("@Latitude", (object?)profileUpload.Location?.Latitude ?? ""),
                     new SqlParameter("@Longitude", (object?)profileUpload.Location?.Longitude ?? ""),
 

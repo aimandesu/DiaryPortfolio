@@ -13,5 +13,6 @@ namespace DiaryPortfolio.Application.IRepository
         // Authentication Process
         Task<UserModel?> SignUp(UserModel user, string password);
         Task<ResultResponse<UserModel>> Login(string EmailOrUsername, string password);
+        Task Logout();
     }
 }

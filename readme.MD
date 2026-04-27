@@ -10,3 +10,6 @@ dotnet sln add "DiaryPortfolio.Api/DiaryPortfolio.Api.csproj"
 dotnet sln add "DiaryPortfolio.Application/DiaryPortfolio.Application.csproj"
 dotnet sln add "DiaryPortfolio.Domain/DiaryPortfolio.Domain.csproj"
 dotnet sln add "DiaryPortfolio.Infrastructure/DiaryPortfolio.Infrastructure.csproj"
+
+TIPS
+https://learn.microsoft.com/en-us/aspnet/core/security/authentication/identity-configuration?view=aspnetcore-9.0#lockout
