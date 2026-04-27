@@ -12,7 +12,9 @@ public class ApplicationDbContextFactory : IDesignTimeDbContextFactory<Applicati
 
         var config = new ConfigurationBuilder()
             .SetBasePath(basePath)
-            .AddJsonFile("appsettings.Development.json", optional: false)
+            .AddJsonFile("appsettings.json", optional: false)                    // base
+            .AddJsonFile("appsettings.Development.json", optional: true)         // dev override
+            .AddEnvironmentVariables()
             .Build();
 
         var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();

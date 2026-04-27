@@ -24,7 +24,7 @@ namespace DiaryPortfolio.Application.Mapper
                 FileId = educationModel?.FileId,
                 EducationFile = educationModel?.EducationFile,
                 SelectionId = educationModel?.SelectionId ?? Guid.Empty,
-                EducationTier = educationModel?.EducationTier,
+                Selection = educationModel?.Selection,
             };
         }
     }

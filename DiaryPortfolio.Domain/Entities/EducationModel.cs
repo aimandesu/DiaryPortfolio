@@ -23,7 +23,7 @@ namespace DiaryPortfolio.Domain.Entities
         public Guid? FileId { get; set; }
         public FileModel? EducationFile { get; set; }
         public Guid SelectionId { get; set; }
-        public SelectionModel? EducationTier { get; set; }
+        public SelectionModel? Selection { get; set; }
 
         public Guid OwnerId => PortfolioProfile?.UserId ?? Guid.Empty;
     }

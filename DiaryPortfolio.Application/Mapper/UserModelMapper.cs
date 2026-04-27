@@ -24,6 +24,7 @@ namespace DiaryPortfolio.Application.Mapper
                 Location = userModel?.PortfolioProfile?.Location,
                 Resume = userModel?.PortfolioProfile?.Resume?.ToResumeModelDto(),
                 ProfilePhoto = userModel?.PortfolioProfile?.ProfilePhoto,
+                EmailConfirmed = userModel?.EmailConfirmed ?? false,
             };
         }
 
@@ -34,6 +35,7 @@ namespace DiaryPortfolio.Application.Mapper
                 Name = userModel?.PortfolioProfile?.Name ?? "",
                 Email = userModel?.Email ?? "",
                 UserName = userModel?.UserName ?? "",
+                EmailConfirmed = userModel?.EmailConfirmed ?? false,
             };
         }
 

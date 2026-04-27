@@ -20,6 +20,6 @@ namespace DiaryPortfolio.Application.DTOs
         public Guid? FileId { get; set; }
         public FileModel? EducationFile { get; set; }
         public Guid SelectionId { get; set; }
-        public SelectionModel? EducationTier { get; set; }
+        public SelectionModel? Selection { get; set; }
     }
 }

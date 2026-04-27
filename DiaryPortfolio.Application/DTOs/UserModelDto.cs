@@ -19,5 +19,6 @@ namespace DiaryPortfolio.Application.DTOs
         public LocationModel? Location { get; set; }
         public ResumeModelDto? Resume { get; set; }
         public PhotoModel? ProfilePhoto { get; set; }
+        public bool EmailConfirmed { get; set; } = false;
     }
 }

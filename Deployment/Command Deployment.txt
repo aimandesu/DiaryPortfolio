@@ -1,0 +1,18 @@
+-------------------------------------------------------Deployment first time-------------------------------------------------------
+
+dotnet ef migrations script --idempotent --output migration_preview.sql --project DiaryPortfolio.Infrastructure --startup-project DiaryPortfolio.Api
+
+dotnet ef migrations script --idempotent
+
+-------------------------------------------------------Migrations to latest-------------------------------------------------------
+
+example on prod:
+MigrationId ProductVersion 20260422050125_updateResumeToIncludePortfolioProfile2 9.0.10 -> our last migration
+
+example on local:
+20260422044326_updateResumeToIncludePortfolioProfile 9.0.10 
+20260422050125_updateResumeToIncludePortfolioProfile2 9.0.10 
+20260427072655_updateEducationNamingConvention 9.0.10 -> our target here
+
+then do:
+dotnet ef migrations script 20260422050125_updateResumeToIncludePortfolioProfile2 20260427072655_updateEducationNamingConvention -o migration.sql
