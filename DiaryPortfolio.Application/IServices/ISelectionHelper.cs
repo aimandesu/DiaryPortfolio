@@ -1,4 +1,5 @@
 ﻿using DiaryPortfolio.Application.Common;
+using DiaryPortfolio.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace DiaryPortfolio.Application.IServices
             CancellationToken cancellationToken = default)
             where TEnum : Enum;
 
-        Task<SelectionResult?> GetSelectionResultAsync<TEnum>(
+        Task<SelectionModel?> GetSelectionResultAsync<TEnum>(
             TEnum enumValue, 
             CancellationToken cancellationToken = default)
             where TEnum : Enum;

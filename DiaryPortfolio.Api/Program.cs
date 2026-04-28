@@ -1,6 +1,7 @@
 using DiaryPortfolio.Api;
 using DiaryPortfolio.Api.Environment;
 using DiaryPortfolio.Api.Extensions;
+using DiaryPortfolio.Api.Middleware;
 using DiaryPortfolio.Application;
 using DiaryPortfolio.Application.Features.User.Chat.Create;
 using DiaryPortfolio.Domain.Entities;
@@ -13,12 +14,17 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//services
 builder.Services.ConfigureInfrastructure(builder.Configuration);
 builder.Services.ConfigureApplication();
 builder.Services.ConfigureJWTPolicy(builder.Configuration);
 builder.Services.ConfigureIdentityPolicy();
 builder.Services.ConfigureCorsPolicy(builder.Configuration);
 builder.Services.ConfigureDataProtection();
+builder.Services.AddTransient<RequestLoggingMiddleware>();
+
+//host
+builder.Host.ConfigureSerilog();
 
 
 builder.Services.AddControllers()
@@ -49,6 +55,7 @@ else
     app.ConfigureExceptionHandler();
 }
 
+app.UseMiddleware<RequestLoggingMiddleware>();
 app.UseHsts();
 app.ConfigureMedia();
 //app.EnsureSeed();

@@ -1,5 +1,6 @@
 ﻿using DiaryPortfolio.Application.Common;
 using DiaryPortfolio.Application.IServices;
+using DiaryPortfolio.Domain.Entities;
 using DiaryPortfolio.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -34,18 +35,16 @@ namespace DiaryPortfolio.Infrastructure.Services
             return id;
         }
 
-        public async Task<SelectionResult?> GetSelectionResultAsync<TEnum>(
+        public async Task<SelectionModel?> GetSelectionResultAsync<TEnum>(
             TEnum enumValue, 
             CancellationToken cancellationToken = default) where TEnum : Enum
         {
             var enumString = enumValue.ToString();
 
-            var result = await _context.Selections
+            return await _context.Selections
+                .Include(t => t.Type)
                 .Where(t => t.Selection == enumString)
-                .Select(t => new SelectionResult(t.Id, t.TypeId)) 
                 .FirstOrDefaultAsync(cancellationToken);
-
-            return result;
         }
 
         public async Task<Guid> GetSelectionSpaceId(

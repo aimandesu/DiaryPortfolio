@@ -24,17 +24,18 @@ namespace DiaryPortfolio.Application.Helpers.Logger
             MessageHandlerDelegate<TRequest, TResponse> next,
             CancellationToken cancellationToken)
         {
+            var requestName = typeof(TRequest).Name;
+            _logger.LogInformation("Handling {RequestName}", requestName);
+
             try
             {
-                return await next(request, cancellationToken);
+                var response = await next(request, cancellationToken);
+                _logger.LogInformation("Handled {RequestName}", requestName);
+                return response;
             }
             catch (Exception ex)
             {
-                _logger.LogError(
-                    ex,
-                    "Error handling {RequestName}",
-                    typeof(TRequest).Name
-                );
+                _logger.LogError(ex, "Error handling {RequestName}", requestName);
                 throw;
             }
         }
