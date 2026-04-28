@@ -1,4 +1,5 @@
-﻿using DiaryPortfolio.Application.IRepository;
+﻿using DiaryPortfolio.Application.Common;
+using DiaryPortfolio.Application.IRepository;
 using DiaryPortfolio.Application.IServices;
 using DiaryPortfolio.Domain.Entities;
 using DiaryPortfolio.Infrastructure.Data;
@@ -45,14 +46,14 @@ namespace DiaryPortfolio.Infrastructure.Repository
         //    return await base.Create(entity);
         //}
 
-        public override async Task<List<ExperienceModel>> GetAll(Guid? id)
-        {
-            var entity = await _context.Experiences
-                .Where(e => e.PortfolioProfile.UserId == id).ToListAsync();
+        //public override async Task<List<ExperienceModel>> GetAll(Guid? id)
+        //{
+        //    var entity = await _context.Experiences
+        //        .Where(e => e.PortfolioProfile.UserId == id).ToListAsync();
 
-            return entity;
+        //    return entity;
 
-        }
+        //}
 
         public override async Task<ExperienceModel?> Delete(Guid id)
         {
@@ -94,5 +95,26 @@ namespace DiaryPortfolio.Infrastructure.Repository
 
         }
 
+        public async Task<ResultResponse<List<ExperienceModel>>> GetAllExperience(string userName)
+        {
+            try
+            {
+                var query = await _context.Experiences
+                    .Include(l => l.Location)
+                    .Where(u => u.PortfolioProfile.User.UserName == userName)
+                    .ToListAsync();
+
+                return ResultResponse<List<ExperienceModel>>.Success(query);
+
+            }
+            catch (Exception ex) {
+                return ResultResponse<List<ExperienceModel>>.Failure(
+                    new Error(
+                        System.Net.HttpStatusCode.BadRequest, 
+                        ex.Message)
+                    );
+            }
+
+        }
     }
 }

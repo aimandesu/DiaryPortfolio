@@ -30,10 +30,10 @@ namespace DiaryPortfolio.Application.Features.PortfolioProfile.Experience.GetAll
             try
             {
                 var response = await _experienceRepository
-                    .GetAll(new Guid(request.UserId));
+                    .GetAllExperience(request.Username);
 
                 return ResultResponse<List<ExperienceModelDto>>.Success(
-                    response.Select(
+                    response.Result.Select(
                         e => e.ToExperienceModelDto()).ToList());
 
             }

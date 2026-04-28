@@ -59,7 +59,7 @@ namespace DiaryPortfolio.Application.Features.PortfolioProfile.Education.Create
                 file: uploadResult.Result
                     .Where(e => e.ContainsKey(MediaSubType.File))
                     .Select(e => e[MediaSubType.File].Files)
-                    .ToList().First()
+                    .ToList().FirstOrDefault()
             );
 
             try

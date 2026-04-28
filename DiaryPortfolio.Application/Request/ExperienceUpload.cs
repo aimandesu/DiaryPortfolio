@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DiaryPortfolio.Domain.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,8 +15,6 @@ namespace DiaryPortfolio.Application.Request
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         //Location
-        public string Name { get; set; } = string.Empty;
-        public double Latitude { get; set; }
-        public double Longitude { get; set; }
+        public LocationModel? Location{ get; set; }
     }
 }

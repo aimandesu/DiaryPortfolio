@@ -18,5 +18,9 @@ namespace DiaryPortfolio.Application.IRepository
 
         Task<ResultResponse<EducationModel>> DeleteEducation(
             string educationId);
+
+        Task<ResultResponse<List<EducationModel>>> GetAllEducation(
+            string userName);
+
     }
 }

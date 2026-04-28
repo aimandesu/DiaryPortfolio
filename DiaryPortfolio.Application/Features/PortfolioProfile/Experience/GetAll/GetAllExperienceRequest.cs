@@ -5,5 +5,5 @@ using Mediator;
 namespace DiaryPortfolio.Application.Features.PortfolioProfile.Experience.GetAll
 {
     public sealed record class GetAllExperienceRequest(
-        string UserId) : IRequest<ResultResponse<List<ExperienceModelDto>>>;
+        string Username) : IRequest<ResultResponse<List<ExperienceModelDto>>>;
 }

@@ -25,13 +25,13 @@ namespace DiaryPortfolio.Api.Controller
             _mediator = mediator;
         }
 
-        [HttpGet("getAll/{userId}")]
+        [HttpGet("getAll/{username}")]
         public async Task<ActionResult<ResultResponse<List<ExperienceModelDto>>>> GetAllExperiences(
-            [FromRoute] string userId,
+            [FromRoute] string username,
             CancellationToken cancellationToken
         )
         {
-            var response = new GetAllExperienceRequest(userId);
+            var response = new GetAllExperienceRequest(username);
             return await _mediator.Send(response, cancellationToken);
         }
 

@@ -1,4 +1,5 @@
-﻿using DiaryPortfolio.Domain.Entities;
+﻿using DiaryPortfolio.Application.Common;
+using DiaryPortfolio.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,5 +10,7 @@ namespace DiaryPortfolio.Application.IRepository
 {
     public interface IExperienceRepository : IBaseRepository<ExperienceModel>
     {
+        Task<ResultResponse<List<ExperienceModel>>> GetAllExperience(
+            string username);
     }
 }

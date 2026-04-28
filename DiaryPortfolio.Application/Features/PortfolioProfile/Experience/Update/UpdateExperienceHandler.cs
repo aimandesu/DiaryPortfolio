@@ -33,12 +33,12 @@ namespace DiaryPortfolio.Application.Features.PortfolioProfile.Experience.Update
         {
             try
             {
-                var location = new LocationModel
-                {
-                    AddressLine1 = request.ExperienceUpload.Name,
-                    Latitude = request.ExperienceUpload.Latitude,
-                    Longitude = request.ExperienceUpload.Longitude
-                };
+                //var location = new LocationModel
+                //{
+                //    AddressLine1 = request.ExperienceUpload.Name,
+                //    Latitude = request.ExperienceUpload.Latitude,
+                //    Longitude = request.ExperienceUpload.Longitude
+                //};
 
                 var entity = new ExperienceModel
                 {
@@ -48,7 +48,7 @@ namespace DiaryPortfolio.Application.Features.PortfolioProfile.Experience.Update
                     Description = request.ExperienceUpload.Description,
                     StartDate = request.ExperienceUpload.StartDate,
                     EndDate = request.ExperienceUpload.EndDate,
-                    Location = location,
+                    Location = request.ExperienceUpload.Location,
                 };
 
                 var response = await _experienceRepository.Update(entity);

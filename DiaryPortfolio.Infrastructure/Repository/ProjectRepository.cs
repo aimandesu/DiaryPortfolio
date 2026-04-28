@@ -46,7 +46,7 @@ namespace DiaryPortfolio.Infrastructure.Repository
                 var projectFile = new FileModel
                 {
                     Url = file?.Url ?? "",
-                    SelectionId = selectionResult?.SelectionId ?? Guid.Empty
+                    SelectionId = selectionResult?.Id ?? Guid.Empty
                 };
 
                 var project = new ProjectModel

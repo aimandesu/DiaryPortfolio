@@ -2,6 +2,8 @@
 using DiaryPortfolio.Application.DTOs;
 using DiaryPortfolio.Application.Features.PortfolioProfile.Education.Create;
 using DiaryPortfolio.Application.Features.PortfolioProfile.Education.Delete;
+using DiaryPortfolio.Application.Features.PortfolioProfile.Education.GetAll;
+using DiaryPortfolio.Application.Helpers.Filter;
 using DiaryPortfolio.Application.Request;
 using Mediator;
 using Microsoft.AspNetCore.Authorization;
@@ -69,6 +71,16 @@ namespace DiaryPortfolio.Api.Controller
 
             var request = new CreateEducationRequest(educationUpload);
 
+            return await _mediator.Send(request, cancellationToken);
+        }
+
+        [HttpGet("getAll")]
+        public async Task<ActionResult<ResultResponse<List<EducationModelDto>>>> GetAllEducation(
+            [FromQuery] QuerySearchObject query,
+            [FromQuery] string username,
+            CancellationToken cancellationToken)
+        {
+            var request = new GetAllEducationRequest(username); //later we will implment query object maybe
             return await _mediator.Send(request, cancellationToken);
         }
 

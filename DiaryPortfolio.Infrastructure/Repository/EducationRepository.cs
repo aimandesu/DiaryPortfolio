@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -43,7 +44,7 @@ namespace DiaryPortfolio.Infrastructure.Repository
                 var educationFile = new FileModel
                 {
                     Url = file?.Url ?? "",
-                    SelectionId = selectionResult?.SelectionId ?? Guid.Empty
+                    SelectionId = selectionResult?.Id ?? Guid.Empty
                 };
 
                 var location = new LocationModel
@@ -64,12 +65,7 @@ namespace DiaryPortfolio.Infrastructure.Repository
                     Location = location,
                     FileId = educationFile?.Id,
                     EducationFile = educationFile,
-                    SelectionId = selectionResult?.SelectionId ?? Guid.Empty,
-                    EducationTier = new SelectionModel
-                    {
-                        Selection = educationUpload.Education.ToString(),
-                        TypeId = selectionResult?.TypeId ?? Guid.Empty,
-                    }
+                    SelectionId = selectionResult?.Id ?? Guid.Empty,
                 };
 
                 _context.Educations.Add(education);
@@ -126,6 +122,29 @@ namespace DiaryPortfolio.Infrastructure.Repository
             _context.Educations.Remove(education);
 
             return ResultResponse<EducationModel>.Success(response);
+
+        }
+
+        public async Task<ResultResponse<List<EducationModel>>> GetAllEducation(
+            string userName)
+        {
+            try
+            {
+                var query = await _context.Educations
+                    .Include(l => l.Location)
+                    .Include(e => e.EducationFile)
+                    .Where(u => u.PortfolioProfile.User.UserName == userName)
+                    .ToListAsync();
+
+                return ResultResponse<List<EducationModel>>.Success(query);
+            }
+            catch (Exception ex) {
+                return ResultResponse<List<EducationModel>>.Failure(
+                    new Error(
+                        HttpStatusCode.UnprocessableContent, 
+                        ex.Message)
+                    );
+            }
 
         }
     }
