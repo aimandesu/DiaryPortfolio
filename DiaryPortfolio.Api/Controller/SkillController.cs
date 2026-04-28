@@ -2,6 +2,7 @@
 using DiaryPortfolio.Application.DTOs;
 using DiaryPortfolio.Application.Features.PortfolioProfile.Skill.Create;
 using DiaryPortfolio.Application.Features.PortfolioProfile.Skill.Delete;
+using DiaryPortfolio.Application.Features.PortfolioProfile.Skill.GetAll;
 using DiaryPortfolio.Domain.Entities;
 using Mediator;
 using Microsoft.AspNetCore.Authorization;
@@ -45,6 +46,15 @@ namespace DiaryPortfolio.Api.Controller
                 cancellationToken);
 
             return response;
+        }
+
+        [HttpGet("getAll/{username}")]
+        public async Task<ActionResult<ResultResponse<List<SkillModelDto>>>> GetAllSkill(
+            [FromRoute] string username,
+            CancellationToken cancellationToken)
+        {
+            var response = new GetAllSkillRequest(username);
+            return await _mediator.Send(response, cancellationToken);
         }
 
     }

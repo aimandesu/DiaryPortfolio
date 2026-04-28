@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace DiaryPortfolio.Application.Features.PortfolioProfile.Skill.Create
-{
+{  
     public sealed record class CreateSkillRequest(
         string SkillName,
         string Description,

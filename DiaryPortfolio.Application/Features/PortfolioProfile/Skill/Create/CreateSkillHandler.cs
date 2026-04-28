@@ -40,7 +40,7 @@ namespace DiaryPortfolio.Application.Features.PortfolioProfile.Skill.Create
            
             try
             {
-                var skillSelection = await _selectionHelper.GetSelectionIdAsync(
+                var skillSelection = await _selectionHelper.GetSelectionResultAsync(
                     request.SkillLevel,
                     cancellationToken
                 );
@@ -49,7 +49,8 @@ namespace DiaryPortfolio.Application.Features.PortfolioProfile.Skill.Create
                 {
                     Name = request.SkillName,
                     Description = request.Description,
-                    SelectionId = skillSelection,
+                    SelectionId = skillSelection?.Id ?? Guid.Empty,
+                    Selection = skillSelection,
                     PortfolioProfileId = _userService.PortfolioProfileId ?? Guid.Empty,
                 };
 
