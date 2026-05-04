@@ -97,17 +97,38 @@ namespace DiaryPortfolio.Infrastructure.Repository
         public async Task<ResultResponse<ProjectModel?>> GetProject(
             Guid projectId)
         {
-            var response = await _context.Projects
-                .Include(p => p.ProjectPhotos)
-                    .ThenInclude(p => p.Photo)
-                .Include(p => p.ProjectVideos)
-                    .ThenInclude(v => v.Video)
-                .Include(f => f.ProjectFile)
-                .FirstOrDefaultAsync(m => m.Id == projectId);
+            try
+            {
+                var response = await GetProjectQuery()
+                    .FirstOrDefaultAsync(m => m.Id == projectId);
 
-            return ResultResponse<ProjectModel?>.Success(response);
-
+                return ResultResponse<ProjectModel?>.Success(response);
+            }
+            catch (Exception ex)
+            {
+                return ResultResponse<ProjectModel?>.Failure(
+                    new Error(HttpStatusCode.BadRequest, ex.Message));
+            }
         }
+
+        public async Task<ResultResponse<List<ProjectModel>>> GetAllProject(string username)
+        {
+            try
+            {
+                var result = await GetProjectQuery()
+                    .Where(p => p.PortfolioProfile!.User.UserName == username)
+                    .ToListAsync();
+
+                return ResultResponse<List<ProjectModel>>.Success(result);
+            }
+            catch (Exception ex)
+            {
+                return ResultResponse<List<ProjectModel>>.Failure(
+                    new Error(HttpStatusCode.BadRequest, ex.Message));
+            }
+        }
+
+
 
         public async Task<ResultResponse<ProjectModel>> UpdateProject(
             ProjectUpload request,
@@ -194,5 +215,18 @@ namespace DiaryPortfolio.Infrastructure.Repository
             }
             
         }
+
+        private IQueryable<ProjectModel> GetProjectQuery()
+        {
+            return _context.Projects
+                .Include(p => p.ProjectPhotos)
+                    .ThenInclude(p => p.Photo)
+                .Include(p => p.ProjectVideos)
+                    .ThenInclude(v => v.Video)
+                .Include(f => f.ProjectFile)
+                .Include(p => p.PortfolioProfile)
+                    .ThenInclude(pp => pp.User);
+        }
+
     }
 }

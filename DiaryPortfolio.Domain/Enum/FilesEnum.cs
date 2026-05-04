@@ -4,6 +4,7 @@ public enum FilesEnum
 {
     Resume,
     Education,
-    Project
+    Project,
+    Chat
 }
 

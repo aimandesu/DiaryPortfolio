@@ -6,13 +6,14 @@ public enum MediaType //related with how files path created
     Short,
     Education,
     Project,
+    Chat,
 
     //modules
     PortfolioProfile,
     DiaryProfile,
 }
 
-public enum MediaStatus
+public enum MediaStatus //only for media in DiaryProfile
 {
     Public,
     Private,
@@ -23,6 +24,5 @@ public enum MediaSubType //related with how files path created
     Video,
     Image,
     Audio,
-    Text,
     File,
 }

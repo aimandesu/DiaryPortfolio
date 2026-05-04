@@ -2,7 +2,9 @@
 using DiaryPortfolio.Application.DTOs;
 using DiaryPortfolio.Application.Features.PortfolioProfile.Project.Create;
 using DiaryPortfolio.Application.Features.PortfolioProfile.Project.Delete;
+using DiaryPortfolio.Application.Features.PortfolioProfile.Project.GetAll;
 using DiaryPortfolio.Application.Features.PortfolioProfile.Project.Update;
+using DiaryPortfolio.Application.Helpers.Filter;
 using DiaryPortfolio.Application.Request;
 using Mediator;
 using Microsoft.AspNetCore.Authorization;
@@ -61,6 +63,16 @@ namespace DiaryPortfolio.Api.Controller
                cancellationToken);
 
             return response;
+        }
+
+        [HttpGet("getAll")]
+        public async Task<ActionResult<ResultResponse<List<ProjectModelDto>>>> GetAllProject(
+            [FromQuery] QuerySearchObject query,
+            [FromQuery] string username,
+            CancellationToken cancellationToken)
+        {
+            var request = new GetAllProjectRequest(username);
+            return await _mediator.Send(request, cancellationToken);
         }
 
     }

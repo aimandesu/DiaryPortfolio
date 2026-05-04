@@ -4,6 +4,7 @@ using DiaryPortfolio.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DiaryPortfolio.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260427103321_updateExperiencelocationNullable")]
+    partial class updateExperiencelocationNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -465,9 +468,6 @@ namespace DiaryPortfolio.Infrastructure.Migrations
                     b.Property<Guid?>("ProjectFileId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("ProjectTypeId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -477,8 +477,6 @@ namespace DiaryPortfolio.Infrastructure.Migrations
                     b.HasIndex("PortfolioProfileId");
 
                     b.HasIndex("ProjectFileId");
-
-                    b.HasIndex("ProjectTypeId");
 
                     b.ToTable("Projects");
                 });
@@ -496,30 +494,6 @@ namespace DiaryPortfolio.Infrastructure.Migrations
                     b.HasIndex("PhotoModelId");
 
                     b.ToTable("ProjectPhotoModel");
-                });
-
-            modelBuilder.Entity("DiaryPortfolio.Domain.Entities.ProjectTypeModel", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("PortfolioProfileId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PortfolioProfileId");
-
-                    b.ToTable("ProjectTypeModel");
                 });
 
             modelBuilder.Entity("DiaryPortfolio.Domain.Entities.ProjectVideoModel", b =>
@@ -1154,15 +1128,9 @@ namespace DiaryPortfolio.Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("ProjectFileId");
 
-                    b.HasOne("DiaryPortfolio.Domain.Entities.ProjectTypeModel", "ProjectType")
-                        .WithMany("Projects")
-                        .HasForeignKey("ProjectTypeId");
-
                     b.Navigation("PortfolioProfile");
 
                     b.Navigation("ProjectFile");
-
-                    b.Navigation("ProjectType");
                 });
 
             modelBuilder.Entity("DiaryPortfolio.Domain.Entities.ProjectPhotoModel", b =>
@@ -1182,17 +1150,6 @@ namespace DiaryPortfolio.Infrastructure.Migrations
                     b.Navigation("Photo");
 
                     b.Navigation("Project");
-                });
-
-            modelBuilder.Entity("DiaryPortfolio.Domain.Entities.ProjectTypeModel", b =>
-                {
-                    b.HasOne("DiaryPortfolio.Domain.Entities.PortfolioProfileModel", "PortfolioProfile")
-                        .WithMany()
-                        .HasForeignKey("PortfolioProfileId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("PortfolioProfile");
                 });
 
             modelBuilder.Entity("DiaryPortfolio.Domain.Entities.ProjectVideoModel", b =>
@@ -1370,11 +1327,6 @@ namespace DiaryPortfolio.Infrastructure.Migrations
                     b.Navigation("ProjectPhotos");
 
                     b.Navigation("ProjectVideos");
-                });
-
-            modelBuilder.Entity("DiaryPortfolio.Domain.Entities.ProjectTypeModel", b =>
-                {
-                    b.Navigation("Projects");
                 });
 
             modelBuilder.Entity("DiaryPortfolio.Domain.Entities.SpaceModel", b =>

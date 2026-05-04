@@ -56,16 +56,22 @@ else
 }
 
 app.UseMiddleware<RequestLoggingMiddleware>();
-app.UseHsts();
 app.ConfigureMedia();
 //app.EnsureSeed();
+app.UseHsts();
+app.UseHttpsRedirection();
+
 app.UseDefaultFiles();
 app.UseStaticFiles();
+
 app.UseCors("CorsPolicy");
+
 app.UseAuthentication(); 
 app.UseAuthorization();
+
 app.MapIdentityApi<UserModel>();
-app.UseHttpsRedirection();
+
 app.MapControllers();
 app.MapHub<ChatHub>("/chatHub");
+app.MapFallbackToFile("portfolio-management/index.html");
 app.Run();

@@ -31,5 +31,8 @@ namespace DiaryPortfolio.Application.IRepository
             List<PhotoModel> photos,
             ProjectModel project);
 
+        Task<ResultResponse<List<ProjectModel>>> GetAllProject(
+            string username);
+
     }
 }
