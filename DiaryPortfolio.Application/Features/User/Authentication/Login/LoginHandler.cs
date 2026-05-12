@@ -54,7 +54,7 @@ namespace DiaryPortfolio.Application.Features.User.Authentication.Login
             return ResultResponse<AuthenticationResponse>.Success(
                 new AuthenticationResponse
                 {
-                    User = loginResult.Result?.ToPortfolioProfileDto(),
+                    User = user.ToPortfolioProfileDto(),
                     JWTAccessToken = token.JWTAccessToken,
                     RefreshToken = token.RefreshToken,
                     ExpiresAt = token.ExpiresAt
