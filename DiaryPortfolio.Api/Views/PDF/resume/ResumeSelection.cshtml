@@ -1,0 +1,84 @@
+@model DiaryPortfolio.Application.DTOs.Reporting.ResumeSelectionViewModel
+
+<!DOCTYPE html>
+@* <html lang="en"> *@
+@* <head> *@
+@*     $1$ <link rel="stylesheet" href="/css/output.css"/> #1# *@
+@*     <title>Resume Selector</title> *@
+@* </head> *@
+@* <body> *@
+<!-- Gallery Grid Wrapper -->
+<div class="flex flex-wrap gap-8 justify-start p-10 ">
+    @foreach (var t in Model.Templates)
+    {
+        <!-- Card Container -->
+        <div class="w-[300px] flex flex-col bg-white rounded-2xl overflow-hidden shadow-[0_8px_28px_rgba(0,0,0,0.12)] cursor-pointer"
+             onclick="openModal('@t.Url')">
+
+            <!-- Template Preview Container -->
+            <div class="w-[300px] h-[424px] overflow-hidden relative bg-white pointer-events-none shrink-0">
+                <div class="w-[794px] scale-[0.378] origin-top-left absolute top-0 left-0">
+                    @await Html.PartialAsync($"~/Views/PDF/Templates/{t.Url}.cshtml", Model.ResumeData)
+                </div>
+            </div>
+
+            <!-- Title -->
+            <div class="text-[16px] font-semibold p-3.5 grow">@t.Name</div>
+
+            <!-- Action Button -->
+            <button onclick="event.stopPropagation(); useTemplate('@t.Url')"
+                    class="mx-3.5 mb-3.5 w-[calc(100%-28px)] p-3 border-none rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors cursor-pointer shrink-0">
+                Use This
+            </button>
+        </div>
+    }
+</div>
+@* </body> *@
+@* </html> *@
+
+
+
+<!-- Modal Backdrop -->
+<div id="modal" class="hidden fixed inset-0 bg-black/60 z-[1000] justify-center align-middle items-center">
+    <div class="bg-white rounded-xl w-[90vw] h-[90vh] flex flex-col overflow-hidden">
+        <button onclick="closeModal()"
+                class="self-end m-2.5 bg-red-500 hover:bg-red-600 text-white border-none py-2 px-4 rounded-md cursor-pointer shrink-0 transition-colors">
+            ✕ Close
+        </button>
+        <div id="modalContent" class="flex-1 overflow-auto flex justify-center p-5"></div>
+    </div>
+</div>
+
+@foreach (var t in Model.Templates)
+{
+    <template id="template-@t.Url">
+        <div class="w-[794px] shrink-0">
+            @await Html.PartialAsync($"~/Views/PDF/Templates/{t.Url}.cshtml", Model.ResumeData)
+        </div>
+    </template>
+}
+
+<script>
+    function openModal(key) {
+        const tpl = document.getElementById(`template-${key}`);
+        const content = document.getElementById('modalContent');
+        content.innerHTML = '';
+        content.appendChild(tpl.content.cloneNode(true));
+        
+        // Remove 'hidden' and add 'flex' to show the modal
+        const modal = document.getElementById('modal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    function closeModal() {
+        const modal = document.getElementById('modal');
+        modal.classList.remove('flex');
+        modal.classList.add('hidden');
+        document.getElementById('modalContent').innerHTML = '';
+    }
+
+    function useTemplate(key) {
+        window.parent.postMessage({ type: 'TEMPLATE_SELECTED', templateKey: key }, '*');
+    }
+</script>

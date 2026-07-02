@@ -1,4 +1,6 @@
-﻿@using DiaryPortfolio.Application.DTOs.Reporting
+﻿@using DiaryPortfolio.Application.DTOs
+@using DiaryPortfolio.Application.DTOs.Reporting
+@using DiaryPortfolio.Domain.Entities
 @model ResumeReportDto
 
 @{
@@ -33,33 +35,31 @@
 </head>
 <body>
     <div class="resume-container">
-    @if (Model?.User != null)
-    {
         <header class="flex flex-row justify-between">
             <div class="flex flex-col">
                 <div class="flex flex-row gap-2 items-center">
-                    <h1 class="text-3xl font-bold">@Model.User.Name</h1>
-                    <p>@Model.User.Title</p>
+                    <h1 class="text-3xl font-bold">@(Model?.User?.Name ?? "Name")</h1>
+                    <p>@(Model?.User?.Title ?? "Title")</p>
                 </div>
                 <div class="grid grid-cols-2 gap-2">
                     <span class="flex items-center gap-2">
                         <i data-lucide="mail"></i>
-                        <p>@Model.User.Email</p>
+                        <p>@(Model?.User?.Email ?? "Email")</p>
                     </span>
                     <span class="flex items-center gap-2">
                         <i data-lucide="user"></i>   
-                        <p>@Model.User.Age years old</p>
+                        <p>@(Model?.User?.Age ?? 0) years old</p>
                     </span>
                     <span class="flex items-center gap-2">
                         <i data-lucide="map-pin"></i>   
-                        <p>@Model.User.Address</p>
+                        <p>@(Model?.User?.Address ?? "Address")</p>
                     </span>
                 </div>
                 <span class="flex items-center gap-2">
                     <i data-lucide="link" class="w-4 h-4"></i>   
-                    <a href="https://aimanafiq.com/portfolio-management/profile/@Model.User.UserName" 
+                    <a href="https://aimanafiqbinesam.runasp.net/portfolio-management/profile/@Model?.User?.UserName" 
                         class="hover:underline">
-                        https://aimanafiq.com/portfolio-management/profile/@Model.User.UserName
+                        https://aimanafiqbinesam.runasp.net/portfolio-management/profile/@Model?.User?.UserName
                     </a>
                 </span>
             </div>
@@ -70,6 +70,10 @@
                         alt="Profile Picture" 
                         class="object-cover w-32 h-32 mx-auto mb-4 border-2 border-gray-300 rounded-full" />
                 }
+                else
+                {
+                    <i class="object-cover w-32 h-32 mx-auto mb-4 border-2 border-gray-300 rounded-full" data-lucide="user"></i>
+                }
             </div>
         </header>
 
@@ -78,12 +82,12 @@
                 <section>
                     <h3 class="" >Profile</h3>
                     <hr class="border-t-4 border-black" />
-                    <p class="mt-2">@Model.User.About</p>
+                    <p class="mt-2">@(Model?.User?.About ?? "About")</p>
                 </section>
                 
                 <section>
                     <h3 class="text-red-300">Details</h3>
-                    <p><strong>Age:</strong> @Model.User.Age</p>
+                    <p><strong>Age:</strong> @(Model?.User?.Age ?? 0)</p>
                 </section>
             </aside>
 
@@ -92,9 +96,20 @@
                     <h3 class="section-title">Professional Experience</h3>
                     <hr class="border-t-4 border-black" />
                     
-                    @if (Model.Experiencs != null && Model.Experiencs.Any())
-                    {
-                        @foreach (var exp in Model.Experiencs)
+                    
+                        @foreach (var exp in Model?.Experiencs ?? [..Enumerable.Range(0, 3).Select(_ => new ExperienceModelDto
+                                  {
+                                      Company = "Company",
+                                      Role = "Role",
+                                      StartDate = DateTime.Now,
+                                      EndDate = DateTime.Now,
+                                      Location = new LocationModel
+                                      {
+                                          AddressLine1 = "Address Line 1",
+                                          AddressLine2 = "Address Line 2"
+                                      },
+                                      Description = "Description"
+                                  })])
                         {
                             <div class="flex flex-col">
                                 <div class="flex flex-row justify-between">
@@ -107,28 +122,17 @@
                                             @exp.StartDate?.ToString("MMM yyyy") - 
                                             @(exp.EndDate.HasValue ? exp.EndDate.Value.ToString("MMM yyyy") : "Present")
                                         </span>
-                                       @if (exp.Location != null)
-                                        {
-                                            <p class="text-sm">@exp.Location.AddressLine1</p>
-                                        }
+                                        <p class="text-sm">@exp?.Location?.AddressLine1</p>
+                                        <p class="text-sm">@exp?.Location?.AddressLine2</p>
                                     </div>
                                 </div>
-                                <p class="">@exp.Description</p>
+                                <p class="">@exp?.Description</p>
                             </div>
-                        }
                     }
-                    else
-                    {
-                        <p>No work experience listed.</p>
-                    }
+                    
                 </section>
             </main>
         </div>
-    }
-    else
-    {
-        <div class="alert alert-warning">Resume data is unavailable.</div>
-    }
 </div>
 <script src="https://unpkg.com/lucide@1.8.0"></script>
 <script>

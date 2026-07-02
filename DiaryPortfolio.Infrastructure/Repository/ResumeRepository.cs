@@ -70,6 +70,12 @@ namespace DiaryPortfolio.Infrastructure.Repository
             return ResultResponse<ResumeModel>.Success(response);
         }
 
+        public async Task<ResultResponse<List<ResumeTemplateModel>>> GetResumeTemplates()
+        {
+            var response = await _context.ResumeTemplate.ToListAsync();
+            return ResultResponse<List<ResumeTemplateModel>>.Success(response);
+        }
+
         public async Task<byte[]> GenerateResumeReport(string userId)
         {
             var response = await _portfolioProfileRepository.GenerateResume(userId);

@@ -16,5 +16,7 @@ namespace DiaryPortfolio.Application.IRepository
             FileModel? resume);
         Task<ResultResponse<ResumeModel>> DeleteResume(
             string resumeId);
+
+        Task<ResultResponse<List<ResumeTemplateModel>>> GetResumeTemplates();
     }
 }
