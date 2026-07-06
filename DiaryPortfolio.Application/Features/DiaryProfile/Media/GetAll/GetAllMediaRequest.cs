@@ -14,5 +14,5 @@ namespace DiaryPortfolio.Application.Features.DiaryProfile.Media.GetAll
 {
     public sealed record class GetAllMediaRequest(
         QuerySearchObject QuerySearchObject,
-        String Username) : IRequest<ResultResponse<Pagination<MediaModelDto>>>;
+        string Username) : IRequest<ResultResponse<Pagination<MediaModelDto>>>;
 }
