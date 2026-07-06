@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DiaryPortfolio.Api.Controller
 {
-    [Route("view/report")]
+    [Route("view/report")] // -> all of this is just direct testing, not for usage in production
     public class ReportController : Microsoft.AspNetCore.Mvc.Controller
     {
         private readonly IExperienceRepository _experienceRepository;
@@ -26,37 +26,37 @@ namespace DiaryPortfolio.Api.Controller
             CancellationToken cancellationToken)
         {
             var response = await _experienceRepository.GetAll(new Guid(id));
-            return View("~/Views/Pdf/ExperienceReport.cshtml", response);
+            return View("~/Views/Examples/ExperienceReport.cshtml", response);
         }
         
-        [HttpGet("resume/gallery/{id}")]
-        public async Task<IActionResult> Gallery(string id)
+        [HttpGet("resume/gallery/{userId}")]
+        public async Task<IActionResult> Gallery(string userId)
         {
-            var response = await _portfolioProfileRepository.GenerateResume(id);
-
+            var response = await _portfolioProfileRepository.GenerateResume(userId);
+        
             var resume = await _resumeRepository.GetResumeTemplates();
             
             var model = new ResumeSelectionViewModel
             {
-                UserId = id,
+                UserId = userId,
                 ResumeData = response.Result,
                 Templates = resume.Result
             };
-
-            return View("~/Views/PDF/resume/ResumeSelection.cshtml", model);
+        
+            return View("~/Views/Resume/ResumeSelection.cshtml", model);
         }
 
-        [HttpGet("resume/{id}")]
+        [HttpGet("resume/{userId}")]
         public async Task<IActionResult> ReportPreview(
-            string id,
+            string userId,
             [FromQuery] string template = "classic")
         {
-            var response = await _portfolioProfileRepository.GenerateResume(id);
+            var response = await _portfolioProfileRepository.GenerateResume(userId);
 
             var viewName = template switch
             {
-                "modern" => "~/Views/PDF/Templates/_Modern.cshtml",
-                _        => "~/Views/PDF/Templates/_Classic.cshtml"
+                "modern" => "~/Views/Resume/Templates/_Modern.cshtml",
+                _        => "~/Views/Resume/Templates/_Classic.cshtml"
             };
 
             return View(viewName, response.Result);

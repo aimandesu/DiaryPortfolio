@@ -42,6 +42,14 @@ namespace DiaryPortfolio.Infrastructure.Repository
 
                             join portfolio in _context.PortfolioProfile
                                 on user.Id equals portfolio.UserId
+                                
+                            join resume in _context.Resume
+                                on  portfolio.Id equals resume.PortfolioProfileId into resumeGroup
+                            from resume in resumeGroup.DefaultIfEmpty()
+                                
+                            join file in _context.Files
+                                on resume.FileId equals file.Id into fileGroup
+                            from file in fileGroup.DefaultIfEmpty()
 
                             join photos in _context.Photos
                                 on portfolio.ProfilePhotoId equals photos.Id into photoGroup
@@ -69,6 +77,13 @@ namespace DiaryPortfolio.Infrastructure.Repository
                                        Width = photos.Width,
                                        Height = photos.Height,
                                        Size = photos.Size,
+                                   },
+                                   Resume = resume == null ? null : new ResumeModelDto
+                                   {
+                                       Id = resume.Id,
+                                       FileId = resume.FileId,
+                                       ResumeFile = file,
+                                       TemplateId = resume.TemplateId
                                    }
                                },
                                Experiencs = userExperiences.Select(e => new ExperienceModelDto

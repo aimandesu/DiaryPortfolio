@@ -104,15 +104,15 @@ namespace DiaryPortfolio.Api.Controller
 
         }
 
-        [HttpGet("resume/pdf/{id}")]
+        [HttpGet("resume/pdf/{userId}")] //returns the pdf directly, seems like maybe for download? not sure
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> ExportPdf(
-            [FromRoute] string id,
+            [FromRoute] string userId,
             CancellationToken cancellationToken)
         {
 
             var pdfBytes = await _mediator.Send(
-                new CreateResumeReportRequest(id),
+                new CreateResumeReportRequest(userId),
                 cancellationToken
             );
 
