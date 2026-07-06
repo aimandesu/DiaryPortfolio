@@ -72,11 +72,25 @@ namespace DiaryPortfolio.Infrastructure.Repository
 
         public async Task<ResultResponse<List<ResumeTemplateModel>>> GetResumeTemplates()
         {
-            var response = await _context.ResumeTemplate.ToListAsync();
+            var response = await _context.ResumeTemplate
+                .ToListAsync();
+            
             return ResultResponse<List<ResumeTemplateModel>>.Success(response);
         }
 
-        public async Task<byte[]> GenerateResumeReport(string userId)
+        public async Task<ResultResponse<ResumeModel?>> GetResume()
+        {
+            var profile =  await _context.PortfolioProfile
+                .Include(r => r.Resume)
+                .FirstOrDefaultAsync(p => p.UserId == _userService.UserId);
+            var response = profile?.Resume;
+
+            return ResultResponse<ResumeModel?>.Success(response);
+        }
+
+        public async Task<byte[]> GenerateResumeReport(
+            string userId, 
+            string templateId)
         {
             var response = await _portfolioProfileRepository.GenerateResume(userId);
 
@@ -87,7 +101,11 @@ namespace DiaryPortfolio.Infrastructure.Repository
                 photo.Url = await _razorRenderer.RenderFileToBase64ImageAsync(photo.Url);
             }
 
-            var html = await _razorRenderer.RenderViewToStringAsync("Pdf/ResumeReport", response.Result);
+            var selectedResume = await _context.ResumeTemplate
+                .Where(e => e.Id == new Guid(templateId))
+                .FirstOrDefaultAsync();
+            
+            var html = await _razorRenderer.RenderViewToStringAsync($"Resume/Templates/{selectedResume?.Url}", response.Result);
 
             return await _pdfGenerator.GenerateFromHtmlAsync(html);
         }
@@ -96,29 +114,37 @@ namespace DiaryPortfolio.Infrastructure.Repository
             string templateId, FileModel? file)
         {
             var typeSelection = await _selectionHelper.GetSelectionIdAsync(FilesEnum.Resume);
+            
+            var profile =  await _context.PortfolioProfile
+                .Include(r => r.Resume)
+                .FirstOrDefaultAsync(p => p.UserId == _userService.UserId);
+
+            if (profile.Resume != null)
+            {
+                _context.Resume.Remove(profile.Resume);
+            }
 
             var resumeFile = new FileModel
             {
                 Url = file?.Url ?? "",
                 SelectionId = typeSelection,
             };
+            
+            var selectedResume = await _context.ResumeTemplate
+                .Where(e => e.Id == new Guid(templateId))
+                .FirstOrDefaultAsync();
 
             var resume = new ResumeModel
             {
+                PortfolioProfileId = _userService.PortfolioProfileId ?? Guid.Empty,
                 TemplateId = new Guid(templateId),
                 ResumeFile = resumeFile,
-                //ResumeTemplate ->
+                ResumeTemplate = templateId == "" ? null : selectedResume
                 //ni we dont have bcs we need to do
                 //like query with template id well to get this 
             };
 
-
             _context.Resume.Add(resume);
-
-            var profile =  await _context.PortfolioProfile
-                .FirstOrDefaultAsync(p => p.UserId == _userService.UserId);
-
-            //profile.ResumeId = resume.Id;
 
             return ResultResponse<ResumeModel>.Success(resume);
         }

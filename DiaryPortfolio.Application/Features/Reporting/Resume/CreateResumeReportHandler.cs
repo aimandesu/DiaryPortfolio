@@ -24,7 +24,12 @@ namespace DiaryPortfolio.Application.Features.Reporting.Resume
             CreateResumeReportRequest request, 
             CancellationToken cancellationToken)
         {
-            return await _resumeRepository.GenerateResumeReport(request.UserId);
+            var resume = await _resumeRepository.GetResume();
+
+            var template = resume?.Result?.TemplateId;
+            
+            return await _resumeRepository.GenerateResumeReport(
+                request.UserId, template.ToString() ?? "");
         }
     }
 }

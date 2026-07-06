@@ -1,14 +1,14 @@
 @model DiaryPortfolio.Application.DTOs.Reporting.ResumeSelectionViewModel
 
 <!DOCTYPE html>
-@* <html lang="en"> *@
-@* <head> *@
-@*     $1$ <link rel="stylesheet" href="/css/output.css"/> #1# *@
-@*     <title>Resume Selector</title> *@
-@* </head> *@
-@* <body> *@
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="/css/output.css" />
+    <title>Resume Selector</title>
+</head>
+<body class="bg-[hsl(200_5%_11%)]">
 <!-- Gallery Grid Wrapper -->
-<div class="flex flex-wrap gap-8 justify-start p-10 ">
+<div class="flex flex-wrap gap-8 justify-start p-10">
     @foreach (var t in Model.Templates)
     {
         <!-- Card Container -->
@@ -18,7 +18,7 @@
             <!-- Template Preview Container -->
             <div class="w-[300px] h-[424px] overflow-hidden relative bg-white pointer-events-none shrink-0">
                 <div class="w-[794px] scale-[0.378] origin-top-left absolute top-0 left-0">
-                    @await Html.PartialAsync($"~/Views/PDF/Templates/{t.Url}.cshtml", Model.ResumeData)
+                    @await Html.PartialAsync($"~/Views/Resume/Templates/{t.Url}.cshtml", Model.ResumeData)
                 </div>
             </div>
 
@@ -26,15 +26,15 @@
             <div class="text-[16px] font-semibold p-3.5 grow">@t.Name</div>
 
             <!-- Action Button -->
-            <button onclick="event.stopPropagation(); useTemplate('@t.Url')"
+            <button onclick="event.stopPropagation(); useTemplate('@t.Id')"
                     class="mx-3.5 mb-3.5 w-[calc(100%-28px)] p-3 border-none rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors cursor-pointer shrink-0">
                 Use This
             </button>
         </div>
     }
 </div>
-@* </body> *@
-@* </html> *@
+</body>
+</html>
 
 
 
@@ -53,7 +53,7 @@
 {
     <template id="template-@t.Url">
         <div class="w-[794px] shrink-0">
-            @await Html.PartialAsync($"~/Views/PDF/Templates/{t.Url}.cshtml", Model.ResumeData)
+            @await Html.PartialAsync($"~/Views/Resume/Templates/{t.Url}.cshtml", Model.ResumeData)
         </div>
     </template>
 }
