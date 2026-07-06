@@ -1,0 +1,135 @@
+@using DiaryPortfolio.Application.DTOs
+@using DiaryPortfolio.Application.DTOs.Reporting
+@using DiaryPortfolio.Domain.Entities
+@model ResumeReportDto
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <link rel="stylesheet" href="/css/output.css" />
+    <link rel="stylesheet" href="/css/resume-layout.css" />
+</head>
+<body>
+<div class="resume-container grid grid-cols-[280px_1fr]">
+    <!-- Sidebar Element -->
+    <aside class="bg-[#173042] text-white p-9">
+
+        <div>
+            @if (!string.IsNullOrEmpty(Model?.User?.ProfilePhoto?.Url))
+            {
+                <img src="@Model.User.ProfilePhoto.Url"
+                     alt="Profile Picture"
+                     class="object-cover w-32 h-32 mx-auto mb-4 border-2 border-gray-300 rounded-full"/>
+            }
+            else
+            {
+                <i class="object-cover w-32 h-32 mx-auto mb-4 border-2 border-gray-300 rounded-full" data-lucide="user"></i>
+            }
+        </div>
+
+        <h1 class="text-center mt-5 text-[30px] font-bold">@(Model?.User?.Name ?? "Name")</h1>
+
+        <p class="text-center opacity-85 mb-10">
+            @(Model?.User?.Title ?? "Title")
+        </p>
+
+        <!-- Contact Section -->
+        <section class="mb-9">
+            <h2 class="text-[13px] tracking-[3px] mb-2 font-bold">CONTACT</h2>
+            <div class="h-[3px] bg-[#1b3346] mb-4.5"></div>
+            <p class="leading-[1.7] text-[14px]">@(Model?.User?.Email ?? "Email")</p>
+            <p class="leading-[1.7] text-[14px]">@(Model?.User?.Address ?? "Address")</p>
+            <p class="leading-[1.7] text-[14px]">@(Model?.User?.Age ?? 0) years old</p>
+        </section>
+
+        <!-- Profile Section -->
+        <section class="mb-9">
+            <h2 class="text-[13px] tracking-[3px] mb-2 font-bold">PROFILE</h2>
+            <div class="h-[3px] bg-[#1b3346] mb-4.5"></div>
+            <p class="leading-[1.7] text-[14px]">
+                @(Model?.User?.About ?? "About")
+            </p>
+        </section>
+
+    </aside>
+
+    <!-- Main Content Panel -->
+    <main class="p-9">
+        <section class="mb-[42px]">
+            <h2 class="text-[16px] tracking-[2px] mb-2 font-bold text-[#173042]">WORK EXPERIENCE</h2>
+            <div class="h-[3px] bg-[#1b3346]"></div>
+
+            @foreach (var exp in Model?.Experiencs ??
+                      [
+                          ..Enumerable.Range(0, 3).Select(_ => new ExperienceModelDto
+                          {
+                              Company = "Company",
+                              Role = "Role",
+                              StartDate = DateTime.Now,
+                              EndDate = DateTime.Now,
+                              Location = new LocationModel
+                              {
+                                  AddressLine1 = "Address Line 1",
+                                  AddressLine2 = "Address Line 2"
+                              },
+                              Description = "Description"
+                          })
+                      ])
+            {
+                <div class="mb-[30px]">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="text-[18px] font-bold text-gray-900">
+                                @exp.Company
+                            </div>
+                            <div class="text-[#666] mt-1">
+                                @exp.Role
+                            </div>
+                        </div>
+                        <div class="text-[13px] text-[#777]">
+                            @exp.StartDate?.ToString("MMM yyyy") - @(exp.EndDate?.ToString("MMM yyyy") ?? "Present")
+                        </div>
+                    </div>
+
+                    <div class="text-[#999] text-[13px] mt-1.5 mb-3">
+                        @exp?.Location?.AddressLine1
+                    </div>
+                    <div class="text-[#999] text-[13px] mt-1.5 mb-3">
+                        @exp?.Location?.AddressLine2
+                    </div>
+                    <p style="white-space: pre-wrap;">@exp?.Description</p>
+                    @* @if (!string.IsNullOrWhiteSpace(exp?.Description)) *@
+                    @* { *@
+                    @*     <ul class="m-0 pl-5 list-disc"> *@
+                    @*         @foreach (var line in exp.Description.Split('\n')) *@
+                    @*         { *@
+                    @*             if (!string.IsNullOrWhiteSpace(line)) *@
+                    @*             { *@
+                    @*                 <li class="leading-[1.7] mb-1.5 text-gray-700">@line.Trim()</li> *@
+                    @*             } *@
+                    @*         } *@
+                    @*     </ul> *@
+                    @* } *@
+                </div>
+            }
+        </section>
+    </main>
+</div>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+    lucide.createIcons({
+        attrs: {
+            width: 16,
+            height: 16,
+            'stroke-width': 2
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,88 @@
+@using System.Net
+@model DiaryPortfolio.Application.Common.Error
+
+@{
+    ViewData["Title"] = "Error";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Error</title>
+
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f5f5;
+            margin: 40px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,.1);
+        }
+
+        h1 {
+            color: #c62828;
+            margin-top: 0;
+        }
+
+        .status {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+
+        .description {
+            padding: 15px;
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            margin-bottom: 20px;
+        }
+
+        pre {
+            background: #f4f4f4;
+            padding: 15px;
+            overflow-x: auto;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Something went wrong</h1>
+
+    @if (Model.Status.HasValue)
+    {
+        <div class="status">
+            <strong>Status:</strong>
+            @((int)Model.Status.Value) (@Model.Status.Value)
+        </div>
+    }
+
+    <div class="description">
+        @Model.Description
+    </div>
+
+    @if (Model.CustomObject is not null)
+    {
+        <h3>Details</h3>
+
+        <pre>
+@System.Text.Json.JsonSerializer.Serialize(
+    Model.CustomObject,
+    new System.Text.Json.JsonSerializerOptions
+    {
+        WriteIndented = true
+    })
+        </pre>
+    }
+</div>
+
+</body>
+</html>

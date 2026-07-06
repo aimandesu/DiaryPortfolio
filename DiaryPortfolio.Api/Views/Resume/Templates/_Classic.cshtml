@@ -10,31 +10,14 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="/css/output.css" />
-    <style>
-     
-    .resume-container {
-        max-width: 900px;
-        margin: 20px auto;
-        background: #fff;
-        padding: 40px;
-        box-shadow: 0 0 15px rgba(0,0,0,0.1);
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        color: #333;
-    }
-
-    @@media print {
-        .resume-container { box-shadow: none; margin: 0; padding: 0; }
-        body { background: white; }
-    }
-    </style>
-    
+    <link rel="stylesheet" href="/css/resume-layout.css" />
 </head>
 <body>
-    <div class="resume-container">
+    <div class="resume-container p-9">
         <header class="flex flex-row justify-between">
             <div class="flex flex-col">
                 <div class="flex flex-row gap-2 items-center">
@@ -58,7 +41,7 @@
                 <span class="flex items-center gap-2">
                     <i data-lucide="link" class="w-4 h-4"></i>   
                     <a href="https://aimanafiqbinesam.runasp.net/portfolio-management/profile/@Model?.User?.UserName" 
-                        class="hover:underline">
+                        class="hover:underline" target="_blank">
                         https://aimanafiqbinesam.runasp.net/portfolio-management/profile/@Model?.User?.UserName
                     </a>
                 </span>
@@ -126,7 +109,7 @@
                                         <p class="text-sm">@exp?.Location?.AddressLine2</p>
                                     </div>
                                 </div>
-                                <p class="">@exp?.Description</p>
+                                <p style="white-space: pre-wrap;">@exp?.Description</p>
                             </div>
                     }
                     
