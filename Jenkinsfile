@@ -2,7 +2,7 @@ pipeline {
     agent {
         docker {
             image 'dotnet-sdk-node:9.0'
-            args '-u root'
+            args '-u root -v /var/jenkins_home/.nuget/packages:/root/.nuget/packages'
         }
     }
 
