@@ -45,30 +45,59 @@ pipeline {
             }
         }
 
-        stage('Deploy via FTP') {
+        // stage('Deploy via FTP') {
+        //     steps {
+        //         ftpPublisher alwaysPublishFromMaster: false, continueOnError: false, failOnError: true, masterNodeName: '', paramPublish: [parameterName: ""], publishers: [
+        //             [
+        //                 configName: 'site64986.siteasp.net', 
+        //                 transfers: [
+        //                     [
+        //                         asciiMode: false,
+        //                         cleanRemote: false,
+        //                         excludes: '',
+        //                         flatten: false,
+        //                         makeEmptyDirs: false,
+        //                         noDefaultExcludes: false,
+        //                         patternSeparator: '[, ]+',
+        //                         remoteDirectory: 'wwwroot',
+        //                         remoteDirectorySDF: false,
+        //                         removePrefix: 'publish/', 
+        //                         sourceFiles: 'publish/**/*' 
+        //                     ]
+        //                 ],
+        //                 useWorkspaceInPromotion: false,
+        //                 verbose: true
+        //             ]
+        //         ]
+        //     }
+        // }
+
+        stage('Deploy via SFTP SSH') {
             steps {
-                ftpPublisher alwaysPublishFromMaster: false, continueOnError: false, failOnError: true, masterNodeName: '', paramPublish: [parameterName: ""], publishers: [
-                    [
-                        configName: 'site64986.siteasp.net', 
-                        transfers: [
-                            [
-                                asciiMode: false,
-                                cleanRemote: false,
-                                excludes: '',
-                                flatten: false,
-                                makeEmptyDirs: false,
-                                noDefaultExcludes: false,
-                                patternSeparator: '[, ]+',
-                                remoteDirectory: 'wwwroot',
-                                remoteDirectorySDF: false,
-                                removePrefix: 'publish/', 
-                                sourceFiles: 'publish/**/*' 
-                            ]
-                        ],
-                        useWorkspaceInPromotion: false,
-                        verbose: true
-                    ]
-                ]
+                sshPublisher(publishers: [
+                    sshPublisherDesc(configName: 'site64986.siteasp.net', 
+                    transfers: [
+                        sshTransfer(
+                            cleanRemote: false, 
+                            excludes: '',
+                            flattenFiles: false, 
+                            execCommand: '', 
+                            execTimeout: 120000, 
+                            flatten: false, 
+                            makeEmptyDirs: false, 
+                            noDefaultExcludes: false, 
+                            patternSeparator: '[, ]+', 
+                            remoteDirectory: 'wwwroot', 
+                            remoteDirectorySDF: false, 
+                            removePrefix: 'publish/', 
+                            sourceFiles: 'publish/**/*'
+                        )
+                    ], 
+                    usePromotionTimestamp: false, 
+                    useWorkspaceInPromotion: false, 
+                    verbose: true
+                    )
+                ])
             }
         }
 
