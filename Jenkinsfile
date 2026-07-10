@@ -6,12 +6,6 @@ pipeline {
         }
     }
 
-    environment {
-        IIS_SERVER    = 'site64986.siteasp.net' 
-        IIS_PORT      = '8172' 
-        IIS_SITE_NAME = 'site64986' 
-    }
-
     stages {
 
         stage('Checkout') {
@@ -51,45 +45,30 @@ pipeline {
             }
         }
 
-        // stage('Deploy via FTP') {
-        //     steps {
-        //         ftpPublisher alwaysPublishFromMaster: false, continueOnError: false, failOnError: true, masterNodeName: '', paramPublish: [parameterName: ""], publishers: [
-        //             [
-        //                 configName: 'site64986.siteasp.net', 
-        //                 transfers: [
-        //                     [
-        //                         asciiMode: false,
-        //                         cleanRemote: false,
-        //                         excludes: '',
-        //                         flatten: false,
-        //                         makeEmptyDirs: false,
-        //                         noDefaultExcludes: false,
-        //                         patternSeparator: '[, ]+',
-        //                         remoteDirectory: 'wwwroot',
-        //                         remoteDirectorySDF: false,
-        //                         removePrefix: 'publish/', 
-        //                         sourceFiles: 'publish/**/*' 
-        //                     ]
-        //                 ],
-        //                 useWorkspaceInPromotion: false,
-        //                 verbose: true
-        //             ]
-        //         ]
-        //     }
-        // }
-
-        stage('Deploy via Web Deploy') {
-            environment {
-                IIS_CREDS = credentials('iis-deploy-user') 
-            }
+        stage('Deploy via FTP') {
             steps {
-                sh '''
-                msdeploy \
-                  -verb:sync \
-                  -source:contentPath="publish" \
-                  -dest:contentPath="${IIS_SITE_NAME}",computerName="https://${IIS_SERVER}:${IIS_PORT}/msdeploy.axd?site=${IIS_SITE_NAME}",username="${IIS_CREDS_USR}",password="${IIS_CREDS_PSW}",authType="Basic" \
-                  -allowUntrusted
-                '''
+                ftpPublisher alwaysPublishFromMaster: false, continueOnError: false, failOnError: true, masterNodeName: '', paramPublish: [parameterName: ""], publishers: [
+                    [
+                        configName: 'site64986.siteasp.net', 
+                        transfers: [
+                            [
+                                asciiMode: false,
+                                cleanRemote: false,
+                                excludes: '',
+                                flatten: false,
+                                makeEmptyDirs: false,
+                                noDefaultExcludes: false,
+                                patternSeparator: '[, ]+',
+                                remoteDirectory: 'wwwroot',
+                                remoteDirectorySDF: false,
+                                removePrefix: 'publish/', 
+                                sourceFiles: 'publish/**/*' 
+                            ]
+                        ],
+                        useWorkspaceInPromotion: false,
+                        verbose: true
+                    ]
+                ]
             }
         }
 
