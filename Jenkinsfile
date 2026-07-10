@@ -1,7 +1,7 @@
 pipeline {
     agent {
         docker {
-            image 'mcr.microsoft.com/dotnet/sdk:9.0'
+            image 'dotnet-sdk-node:9.0'
             args '-u root'
         }
     }
@@ -22,7 +22,9 @@ pipeline {
 
         stage('Install Node Packages') {
             steps {
-                sh 'npm ci'
+                dir('DiaryPortfolio.Api') {
+                    sh 'npm ci'
+                }
             }
         }
 
