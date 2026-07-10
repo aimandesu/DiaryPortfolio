@@ -38,7 +38,7 @@ pipeline {
             steps {
                 sh '''
                 dotnet publish \
-                DiaryPortfolio.API/DiaryPortfolio.API.csproj \
+                DiaryPortfolio.Api/DiaryPortfolio.Api.csproj \
                 -c Release \
                 -o publish
                 '''
