@@ -20,6 +20,12 @@ pipeline {
             }
         }
 
+        stage('Install Node Packages') {
+            steps {
+                sh 'npm ci'
+            }
+        }
+
         stage('Build') {
             steps {
                 sh 'dotnet build DiaryPortfolio.sln --configuration Release --no-restore'
