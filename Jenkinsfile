@@ -6,6 +6,12 @@ pipeline {
         }
     }
 
+    environment {
+        IIS_SERVER    = 'site64986.siteasp.net' 
+        IIS_PORT      = '8172' 
+        IIS_SITE_NAME = 'site64986' 
+    }
+
     stages {
 
         stage('Checkout') {
