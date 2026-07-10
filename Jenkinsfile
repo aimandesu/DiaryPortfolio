@@ -39,7 +39,7 @@ pipeline {
 
         stage('Deploy via FTP') {
             steps {
-                ftpPublisher alwaysPublishFromMaster: false, continueOnError: false, failOnError: true, publishers: [
+                ftpPublisher alwaysPublishFromMaster: false, continueOnError: false, failOnError: true, masterNodeName: '', paramPublish: [parameterName: ""], publishers: [
                     [
                         configName: 'site64986.siteasp.net', 
                         transfers: [
