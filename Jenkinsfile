@@ -36,5 +36,33 @@ pipeline {
                 '''
             }
         }
+
+        stage('Deploy via FTP') {
+            steps {
+                ftpPublisher alwaysPublishFromMaster: false, continueOnError: false, failOnError: true, publishers: [
+                    [
+                        configName: 'site64986.siteasp.net', 
+                        transfers: [
+                            [
+                                asciiMode: false,
+                                cleanRemote: false,
+                                excludes: '',
+                                flatten: false,
+                                makeEmptyDirs: false,
+                                noDefaultExcludes: false,
+                                patternSeparator: '[, ]+',
+                                remoteDirectory: 'wwwroot',
+                                remoteDirectorySDF: false,
+                                removePrefix: 'publish/', 
+                                sourceFiles: 'publish/**/*' 
+                            ]
+                        ],
+                        useWorkspaceInPromotion: false,
+                        verbose: true
+                    ]
+                ]
+            }
+        }
+
     }
 }
