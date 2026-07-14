@@ -11,10 +11,12 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using Dapper;
 
 namespace DiaryPortfolio.Infrastructure.Repository
 {
@@ -131,40 +133,60 @@ namespace DiaryPortfolio.Infrastructure.Repository
                         new Error(HttpStatusCode.NotFound, "User not found")
                     );
 
-                await _context.Database.ExecuteSqlRawAsync(
-                    "EXEC sp_UpsertPortfolioProfile " +
-                    "   @UserId, @UserName, @NormalizedUserName, @Email, @NormalizedEmail, " +
-                    "   @Name, @Age, @Title, @About, @Address, " +
-                    "   @AddressLine1, @AddressLine2, @Latitude, @Longitude, " +
-                    "   @PhotoUrl, @PhotoMime, @PhotoWidth, @PhotoHeight, @PhotoSize, " +
-                    "   @FileUrl, @FileDescription",
+       
+                var parameters = new DynamicParameters();
+                parameters.Add("@UserId", user.Id, DbType.Guid);
+                parameters.Add("@UserName", profileUpload.UserName, DbType.String);
+                parameters.Add("@NormalizedUserName", profileUpload.UserName.ToUpperInvariant(), DbType.String);
+                parameters.Add("@Email", profileUpload.Email, DbType.String);
+                parameters.Add("@NormalizedEmail", profileUpload.Email.ToUpperInvariant(), DbType.String);
+                parameters.Add("@Name", profileUpload.Name, DbType.String);
+                parameters.Add("@Age", profileUpload.Age, DbType.Int32); // Dapper handles null cleanly
+                parameters.Add("@Title", profileUpload.Title, DbType.String);
+                parameters.Add("@About", profileUpload.About, DbType.String);
+                parameters.Add("@Address", profileUpload.Address, DbType.String);
+                parameters.Add("@AddressLine1", profileUpload.Location?.AddressLine1 ?? "", DbType.String);
+                parameters.Add("@AddressLine2", profileUpload.Location?.AddressLine2 ?? "", DbType.String);
+                parameters.Add("@Latitude", profileUpload.Location?.Latitude.ToString() ?? "", DbType.String);
+                parameters.Add("@Longitude", profileUpload.Location?.Longitude.ToString() ?? "", DbType.String);
+                parameters.Add("@PhotoUrl", profilePhoto?.Url, DbType.String);
+                parameters.Add("@PhotoMime", profilePhoto?.Mime, DbType.String);
+                parameters.Add("@PhotoWidth", profilePhoto?.Width, DbType.Double);
+                parameters.Add("@PhotoHeight", profilePhoto?.Height, DbType.Double);
+                parameters.Add("@PhotoSize", profilePhoto?.Size, DbType.Double);
+                parameters.Add("@FileUrl", resumeFile?.Url, DbType.String);
+                parameters.Add("@FileDescription", resumeFile?.Description, DbType.String);
 
-                    new SqlParameter("@UserId", user.Id),
-                    new SqlParameter("@UserName", profileUpload.UserName),
-                    new SqlParameter("@NormalizedUserName", profileUpload.UserName.ToUpperInvariant()),
-                    new SqlParameter("@Email", profileUpload.Email),
-                    new SqlParameter("@NormalizedEmail", profileUpload.Email.ToUpperInvariant()),
+                // Extract the underlying database connection from EF Core
+                var connection = _context.Database.GetDbConnection();
 
-                    new SqlParameter("@Name", profileUpload.Name),
-                    new SqlParameter("@Age", (object?)profileUpload.Age ?? DBNull.Value),
-                    new SqlParameter("@Title", profileUpload.Title),
-                    new SqlParameter("@About", profileUpload.About),
-                    new SqlParameter("@Address", profileUpload.Address),
-
-                    new SqlParameter("@AddressLine1", profileUpload.Location?.AddressLine1 ?? ""),
-                    new SqlParameter("@AddressLine2", profileUpload.Location?.AddressLine2 ?? ""),
-                    new SqlParameter("@Latitude", (object?)profileUpload.Location?.Latitude ?? ""),
-                    new SqlParameter("@Longitude", (object?)profileUpload.Location?.Longitude ?? ""),
-
-                    new SqlParameter("@PhotoUrl", (object?)profilePhoto?.Url ?? DBNull.Value),
-                    new SqlParameter("@PhotoMime", (object?)profilePhoto?.Mime ?? DBNull.Value),
-                    new SqlParameter("@PhotoWidth", (object?)profilePhoto?.Width ?? DBNull.Value),
-                    new SqlParameter("@PhotoHeight", (object?)profilePhoto?.Height ?? DBNull.Value),
-                    new SqlParameter("@PhotoSize", (object?)profilePhoto?.Size ?? DBNull.Value),
-
-                    new SqlParameter("@FileUrl", (object?)resumeFile?.Url ?? DBNull.Value),
-                    new SqlParameter("@FileDescription", (object?)resumeFile?.Description ?? DBNull.Value)
+                // Execute and directly map the returned row into the nested property object
+                var updatedProfile = await connection.QueryFirstOrDefaultAsync<PortfolioProfileModel>(
+                    "sp_UpsertPortfolioProfile",
+                    parameters,
+                    commandType: CommandType.StoredProcedure
                 );
+
+                if (updatedProfile == null)
+                {
+                    throw new Exception("Database failed to return the updated portfolio profile.");
+                }
+
+                // Hydrate your incoming user object with the fresh database results
+                user.UserName = profileUpload.UserName;
+                user.NormalizedUserName = profileUpload.UserName.ToUpperInvariant();
+                user.Email = profileUpload.Email;
+                user.NormalizedEmail = profileUpload.Email.ToUpperInvariant();
+                
+                user.PortfolioProfile = updatedProfile;
+                
+                // Retain deep structural relations from your memory inputs if needed
+                user.PortfolioProfile.Location = profileUpload.Location;
+                user.PortfolioProfile.ProfilePhoto = profilePhoto;
+                user.PortfolioProfile.Resume = new ResumeModel
+                {
+                    ResumeFile = resumeFile
+                };
 
                 return ResultResponse<UserModel>.Success(user);
 

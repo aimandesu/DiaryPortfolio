@@ -4,7 +4,7 @@ using DiaryPortfolio.Application.Features.Reporting.Experience;
 using DiaryPortfolio.Application.Features.Reporting.Resume;
 
 using DiaryPortfolio.Application.Features.User.Get;
-using DiaryPortfolio.Application.Features.User.Profile.Update;
+using DiaryPortfolio.Application.Features.User.Portfolio.Update;
 using DiaryPortfolio.Application.Request;
 using DiaryPortfolio.Domain.Entities;
 using DiaryPortfolio.Domain.Enum;
