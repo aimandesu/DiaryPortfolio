@@ -63,7 +63,7 @@ namespace DiaryPortfolio.Infrastructure.Repository
                     PortfolioProfileId = _userService.PortfolioProfileId ?? Guid.Empty,
                     LocationId = location.Id,
                     Location = location,
-                    FileId = educationFile?.Id,
+                    EducationFileId = educationFile?.Id,
                     EducationFile = educationFile,
                     SelectionId = selectionResult?.Id ?? Guid.Empty,
                 };
@@ -105,7 +105,7 @@ namespace DiaryPortfolio.Infrastructure.Repository
                 PortfolioProfileId = _userService.PortfolioProfileId ?? Guid.Empty,
                 LocationId = education?.LocationId ?? Guid.Empty,
                 Location = education?.Location,
-                FileId = education?.FileId,
+                EducationFileId = education?.EducationFileId,
                 EducationFile = education?.EducationFile,
             };
 

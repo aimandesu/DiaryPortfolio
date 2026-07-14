@@ -20,7 +20,7 @@ namespace DiaryPortfolio.Domain.Entities
         public PortfolioProfileModel? PortfolioProfile { get; set; }
         public Guid LocationId { get; set; }
         public LocationModel? Location { get; set; }
-        public Guid? FileId { get; set; }
+        public Guid? EducationFileId { get; set; }
         public FileModel? EducationFile { get; set; }
         public Guid SelectionId { get; set; }
         public SelectionModel? Selection { get; set; }
