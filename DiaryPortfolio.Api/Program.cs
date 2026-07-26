@@ -62,11 +62,11 @@ app.UseHsts();
 app.UseHttpsRedirection();
 
 app.UseDefaultFiles();
-app.UseStaticFiles();
-
 app.UseCors("CorsPolicy");
 
-app.UseAuthentication(); 
+app.UseStaticFiles();
+
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapIdentityApi<UserModel>();
