@@ -49,7 +49,7 @@ namespace DiaryPortfolio.Infrastructure.Repository
 
                 var location = new LocationModel
                 {
-                    AddressLine1 = educationUpload.Location?.Name ?? "",
+                    AddressLine1 = educationUpload.Location?.AddressLine1 ?? "",
                     Latitude = Convert.ToDouble(educationUpload.Location?.Latitude),
                     Longitude = Convert.ToDouble(educationUpload.Location?.Longitude)
                 };

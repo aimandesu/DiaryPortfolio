@@ -20,7 +20,7 @@ namespace DiaryPortfolio.Application.Mapper
                 StartDate = educationModel.StartDate,
                 EndDate = educationModel.EndDate,
                 LocationId = educationModel.LocationId,
-                Location = educationModel?.Location?.ToLocationModelDto(),
+                Location = educationModel?.Location,
                 FileId = educationModel?.EducationFileId,
                 EducationFile = educationModel?.EducationFile,
                 SelectionId = educationModel?.SelectionId ?? Guid.Empty,

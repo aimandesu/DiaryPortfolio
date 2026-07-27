@@ -3,7 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using DiaryPortfolio.Application.DTOs;
 
 namespace DiaryPortfolio.Application.Request
 {
@@ -17,7 +19,11 @@ namespace DiaryPortfolio.Application.Request
         public string About { get; set; } = string.Empty;
         public string Address { get; set; } = string.Empty;
         public LocationModel? Location { get; set; }
+        public ResumeModelDto? Resume { get; set; }
+        public PhotoModel? ProfilePhoto { get; set; }
+        [JsonIgnore]
         public MediaStream? ResumeFileStream { get; set; }
+        [JsonIgnore]
         public MediaStream? ProfileFileSteam { get; set; }
     }
 }

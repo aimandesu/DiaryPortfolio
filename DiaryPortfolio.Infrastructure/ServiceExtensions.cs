@@ -37,6 +37,7 @@ public static class ServiceExtensions
         services.AddScoped<ICustomUrlRepository, CustomUrlRepository>();
         services.AddScoped<IEducationRepository, EducationRepository>();
         services.AddScoped<IProjectRepository, ProjectRepository>();
+        services.AddScoped<IOnboardingRepository, OnboardingRepository>();
         //services.AddScoped<IExperienceRepository, ExperienceRepository>();
 
         //this is for the top one -> the one we do addscoped IExperienceRepository with ExperienceRepository

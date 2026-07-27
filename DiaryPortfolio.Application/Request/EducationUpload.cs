@@ -4,7 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using DiaryPortfolio.Domain.Entities;
 
 namespace DiaryPortfolio.Application.Request
 {
@@ -15,8 +17,9 @@ namespace DiaryPortfolio.Application.Request
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
 
-        required public EducationTierEnum Education { get; set; }
-        public LocationModelDto? Location { get; set; }
+        public required EducationTierEnum Education { get; set; }
+        public LocationModel? Location{ get; set; }
+        [JsonIgnore]
         public MediaStream? FileStream { get; set; }
     }
 }
