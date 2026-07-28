@@ -27,6 +27,8 @@ namespace DiaryPortfolio.Domain.Entities
         public Guid UserId { get; set; }  // PK + FK
         public UserModel User { get; set; } = null!;
 
+        public List<PortfolioSectionModel> PortfolioSections { get; set; } = [];
+
         public Guid OwnerId => User.Id;
     }
 }

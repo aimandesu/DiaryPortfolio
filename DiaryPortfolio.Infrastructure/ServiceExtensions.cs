@@ -37,6 +37,7 @@ public static class ServiceExtensions
         services.AddScoped<ICustomUrlRepository, CustomUrlRepository>();
         services.AddScoped<IEducationRepository, EducationRepository>();
         services.AddScoped<IProjectRepository, ProjectRepository>();
+        services.AddScoped<IPortfolioSectionRepository, PortfolioSectionRepository>();
         services.AddScoped<IOnboardingRepository, OnboardingRepository>();
         //services.AddScoped<IExperienceRepository, ExperienceRepository>();
 
