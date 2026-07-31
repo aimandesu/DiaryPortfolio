@@ -12,7 +12,13 @@ namespace DiaryPortfolio.Application.IRepository
     {
         // Authentication Process
         Task<UserModel?> SignUp(UserModel user, string password);
-        Task<ResultResponse<UserModel>> Login(string EmailOrUsername, string password);
+        Task<ResultResponse<UserModel>> Login(
+            string emailOrUsername, 
+            string password);
         Task Logout();
+        Task<ResultResponse<UserModel?>> FindOrCreateUserGoogle(
+            string email, 
+            string name,
+            string googleUserId);
     }
 }

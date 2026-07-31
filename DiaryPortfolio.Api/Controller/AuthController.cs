@@ -1,25 +1,20 @@
 ﻿using DiaryPortfolio.Application.Common;
 using DiaryPortfolio.Application.Features.User.Authentication;
 using DiaryPortfolio.Application.Features.User.Authentication.SignUp;
+using DiaryPortfolio.Application.Features.User.Authentication.GoogleLogin;
 using DiaryPortfolio.Application.Features.User.Authentication.Login;
 using Mediator;
 using Microsoft.AspNetCore.Mvc;
 using DiaryPortfolio.Application.Features.User.Authentication.Logout;
+using Google.Apis.Auth;
 
 namespace DiaryPortfolio.Api.Controller
 {
     [Route("api/auth")]
     [ApiController]
-    public class AuthController : ControllerBase
+    public class AuthController(
+        IMediator mediator) : ControllerBase
     {
-        private readonly IMediator _mediator;
-
-        public AuthController(
-            IMediator mediator)
-        {
-            _mediator = mediator;
-        }
-
         [HttpPost("signUp")]
         public async Task<ActionResult<ResultResponse<AuthenticationResponse>>> SignUp(
             [FromBody] SignUpRequest query,
@@ -33,7 +28,7 @@ namespace DiaryPortfolio.Api.Controller
                 query.PasswordConfirmation
             );
 
-            return await _mediator.Send(request, cancellationToken);
+            return await mediator.Send(request, cancellationToken);
 
         }
 
@@ -47,7 +42,7 @@ namespace DiaryPortfolio.Api.Controller
                 query.EmailOrUsername,
                 query.Password
             );
-            return await _mediator.Send(request, cancellationToken);
+            return await mediator.Send(request, cancellationToken);
         }
 
         [HttpPost("logout")]
@@ -56,10 +51,20 @@ namespace DiaryPortfolio.Api.Controller
         {
             var request = new LogoutRequest();
 
-            await _mediator.Send(request, cancellationToken);
+            await mediator.Send(request, cancellationToken);
 
             return Ok();
 
+        }
+        
+        [HttpPost("loginWithGoogle")]
+        public async Task<ActionResult<ResultResponse<AuthenticationResponse>>> LoginWithGoogle(
+            [FromBody] GoogleLoginRequest googleLoginRequest,
+            CancellationToken cancellationToken)
+        {
+            return await mediator.Send(
+                googleLoginRequest, 
+                cancellationToken);
         }
     }
 }
