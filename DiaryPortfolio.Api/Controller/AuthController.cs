@@ -6,6 +6,10 @@ using DiaryPortfolio.Application.Features.User.Authentication.Login;
 using Mediator;
 using Microsoft.AspNetCore.Mvc;
 using DiaryPortfolio.Application.Features.User.Authentication.Logout;
+using DiaryPortfolio.Application.Features.User.Authentication.ConfirmEmail;
+using DiaryPortfolio.Application.Features.User.Authentication.ResendConfirmationEmail;
+using DiaryPortfolio.Application.Features.User.Authentication.ForgotPassword;
+using DiaryPortfolio.Application.Features.User.Authentication.ResetPassword;
 using Google.Apis.Auth;
 
 namespace DiaryPortfolio.Api.Controller
@@ -63,8 +67,48 @@ namespace DiaryPortfolio.Api.Controller
             CancellationToken cancellationToken)
         {
             return await mediator.Send(
-                googleLoginRequest, 
+                googleLoginRequest,
                 cancellationToken);
+        }
+
+        [HttpPost("confirmEmail")]
+        public async Task<ActionResult<ResultResponse<bool>>> ConfirmEmail(
+            [FromBody] ConfirmEmailRequest query,
+            CancellationToken cancellationToken)
+        {
+            var request = new ConfirmEmailRequest(query.UserId, query.Token);
+            return await mediator.Send(request, cancellationToken);
+        }
+
+        [HttpPost("resendConfirmationEmail")]
+        public async Task<ActionResult<ResultResponse<bool>>> ResendConfirmationEmail(
+            [FromBody] ResendConfirmationEmailRequest query,
+            CancellationToken cancellationToken)
+        {
+            var request = new ResendConfirmationEmailRequest(query.Email);
+            return await mediator.Send(request, cancellationToken);
+        }
+
+        [HttpPost("forgotPassword")]
+        public async Task<ActionResult<ResultResponse<bool>>> ForgotPassword(
+            [FromBody] ForgotPasswordRequest query,
+            CancellationToken cancellationToken)
+        {
+            var request = new ForgotPasswordRequest(query.Email);
+            return await mediator.Send(request, cancellationToken);
+        }
+
+        [HttpPost("resetPassword")]
+        public async Task<ActionResult<ResultResponse<bool>>> ResetPassword(
+            [FromBody] ResetPasswordRequest query,
+            CancellationToken cancellationToken)
+        {
+            var request = new ResetPasswordRequest(
+                query.UserId,
+                query.Token,
+                query.NewPassword,
+                query.NewPasswordConfirmation);
+            return await mediator.Send(request, cancellationToken);
         }
     }
 }

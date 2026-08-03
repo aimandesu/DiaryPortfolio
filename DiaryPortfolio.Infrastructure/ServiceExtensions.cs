@@ -58,6 +58,10 @@ public static class ServiceExtensions
         services.AddScoped<IPdfGeneratorService, PdfGeneratorService>();
         services.AddScoped<ISelectionHelper, SelectionHelper>();
 
+        //Email
+        services.Configure<SmtpSettings>(configuration.GetSection("Smtp"));
+        services.AddScoped<IEmailSender, SmtpEmailSender>();
+
         //Signal R
         services.AddSignalR(
             options => options.EnableDetailedErrors = true

@@ -103,6 +103,36 @@ namespace DiaryPortfolio.Application.Helpers.Authentication
 
         }
 
+        public async Task<UserModel?> FindByEmailAsync(string email)
+        {
+            return await _userManager.FindByEmailAsync(email);
+        }
+
+        public async Task<UserModel?> FindByIdAsync(Guid userId)
+        {
+            return await _userManager.FindByIdAsync(userId.ToString());
+        }
+
+        public async Task<string> GenerateEmailConfirmationTokenAsync(UserModel user)
+        {
+            return await _userManager.GenerateEmailConfirmationTokenAsync(user);
+        }
+
+        public async Task<IdentityResult> ConfirmEmailAsync(UserModel user, string token)
+        {
+            return await _userManager.ConfirmEmailAsync(user, token);
+        }
+
+        public async Task<string> GeneratePasswordResetTokenAsync(UserModel user)
+        {
+            return await _userManager.GeneratePasswordResetTokenAsync(user);
+        }
+
+        public async Task<IdentityResult> ResetPasswordAsync(UserModel user, string token, string newPassword)
+        {
+            return await _userManager.ResetPasswordAsync(user, token, newPassword);
+        }
+
         private async Task<ResultResponse<UserModel?>> LinkGoogleToExistingUser(
             UserModel user,
             string googleUserId)
