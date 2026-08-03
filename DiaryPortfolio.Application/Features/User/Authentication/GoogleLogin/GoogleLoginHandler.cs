@@ -2,6 +2,7 @@ using DiaryPortfolio.Application.Common;
 using DiaryPortfolio.Application.Features.User.Authentication.Login;
 using DiaryPortfolio.Application.IRepository;
 using DiaryPortfolio.Application.Mapper;
+using DiaryPortfolio.Domain.Enum;
 using Google.Apis.Auth;
 using Mediator;
 using Microsoft.Extensions.Configuration;
@@ -11,6 +12,7 @@ namespace DiaryPortfolio.Application.Features.User.Authentication.GoogleLogin;
 internal class GoogleLoginHandler(
     IAuthenticationRepository  authenticationRepository,
     ITokenRepository tokenRepository,
+    IUserRepository userRepository,
     IConfiguration configuration) : IRequestHandler<GoogleLoginRequest, ResultResponse<AuthenticationResponse>>
 {
     public async ValueTask<ResultResponse<AuthenticationResponse>> Handle(
@@ -44,17 +46,20 @@ internal class GoogleLoginHandler(
                 return ResultResponse<AuthenticationResponse>
                     .Failure(response.Error);
             }
+            
+            var user = await userRepository.GetUserByUserId(
+                response.Result?.Id ?? Guid.Empty, ProfileType.All);
 
             var token = tokenRepository.GenerateToken(
-                Email: response.Result?.Email ?? "",
-                UserId: response.Result?.Id ?? Guid.Empty,
-                PortfolioProfileId: response.Result?.PortfolioProfile?.Id,
-                DiaryProfileId: response.Result?.DiaryProfile?.Id);
-            
+                Email: user?.Email ?? "",
+                UserId: user?.Id ?? Guid.Empty,
+                PortfolioProfileId: user?.PortfolioProfile?.Id,
+                DiaryProfileId: user?.DiaryProfile?.Id);
+
             return ResultResponse<AuthenticationResponse>.Success(
                 new AuthenticationResponse
                 {
-                    User = response.Result?.ToPortfolioProfileDto(),
+                    User = user?.ToPortfolioProfileDto(),
                     JWTAccessToken = token.JWTAccessToken,
                     RefreshToken = token.RefreshToken,
                     ExpiresAt = token.ExpiresAt
