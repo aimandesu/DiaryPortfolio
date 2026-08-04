@@ -84,44 +84,56 @@ namespace DiaryPortfolio.Infrastructure.Repository
         public async Task<ResultResponse<EducationModel>> DeleteEducation(
             string resumeId)
         {
-            var education = await _context.Educations
-                .Include(f => f.EducationFile)
-                .Include(l => l.Location)
-                .FirstOrDefaultAsync(e => e.Id == new Guid(resumeId));
+            try
+            {
+                var education = await _context.Educations
+                    .Include(f => f.EducationFile)
+                    .Include(l => l.Location)
+                    .FirstOrDefaultAsync(e => e.Id == new Guid(resumeId));
 
-            if (education == null) {
+                if (education == null)
+                {
+                    return ResultResponse<EducationModel>.Failure(
+                        new Error(
+                            System.Net.HttpStatusCode.NotFound,
+                            "No Education with the id provided found"));
+                }
+
+                var response = new EducationModel
+                {
+                    Institution = education?.Institution ?? "",
+                    Achievement = education?.Achievement ?? "",
+                    StartDate = education?.StartDate,
+                    EndDate = education?.EndDate,
+                    PortfolioProfileId = _userService.PortfolioProfileId ?? Guid.Empty,
+                    LocationId = education?.LocationId ?? Guid.Empty,
+                    Location = education?.Location,
+                    EducationFileId = education?.EducationFileId,
+                    EducationFile = education?.EducationFile,
+                };
+
+                if (education?.Location != null)
+                {
+                    _context.Locations.Remove(education.Location);
+                }
+
+                if (education?.EducationFile != null)
+                {
+                    _context.Files.Remove(education?.EducationFile);
+                }
+
+                _context.Educations.Remove(education);
+
+                return ResultResponse<EducationModel>.Success(response);
+            }
+            catch (Exception ex)
+            {
                 return ResultResponse<EducationModel>.Failure(
                     new Error(
-                        System.Net.HttpStatusCode.NotFound,
-                        "No Education with the id provided found"));
+                        HttpStatusCode.BadRequest,
+                        ex.Message)
+                    );
             }
-
-            var response = new EducationModel
-            {
-                Institution = education?.Institution ?? "",
-                Achievement = education?.Achievement ?? "",
-                StartDate = education?.StartDate,
-                EndDate = education?.EndDate,
-                PortfolioProfileId = _userService.PortfolioProfileId ?? Guid.Empty,
-                LocationId = education?.LocationId ?? Guid.Empty,
-                Location = education?.Location,
-                EducationFileId = education?.EducationFileId,
-                EducationFile = education?.EducationFile,
-            };
-
-            if (education?.Location != null)
-            {
-                _context.Locations.Remove(education.Location);
-            }
-
-            if (education?.EducationFile != null)
-            {
-                _context.Files.Remove(education?.EducationFile);
-            }
-
-            _context.Educations.Remove(education);
-
-            return ResultResponse<EducationModel>.Success(response);
 
         }
 

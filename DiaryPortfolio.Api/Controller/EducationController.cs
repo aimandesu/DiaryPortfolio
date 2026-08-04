@@ -62,7 +62,7 @@ namespace DiaryPortfolio.Api.Controller
 
             if (educationFile != null)
             {
-                educationUpload.FileStream = new MediaStream
+                educationUpload.EducationFile = new MediaStream
                 {
                     Stream = educationFile.OpenReadStream(),
                     FileName = educationFile.FileName

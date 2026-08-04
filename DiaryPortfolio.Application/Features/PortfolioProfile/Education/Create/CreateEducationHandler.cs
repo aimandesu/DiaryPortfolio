@@ -39,9 +39,9 @@ namespace DiaryPortfolio.Application.Features.PortfolioProfile.Education.Create
         {
             var streams = new List<MediaStream>();
 
-            if (request?.EducationUpload?.FileStream is not null)
+            if (request?.EducationUpload?.EducationFile is not null)
             {
-                streams.Add(request.EducationUpload.FileStream);
+                streams.Add(request.EducationUpload.EducationFile);
             }    
 
             var uploadResult = await _fileHandlerRepository.DistributeFiles(

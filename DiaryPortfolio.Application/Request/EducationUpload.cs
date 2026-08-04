@@ -20,7 +20,7 @@ namespace DiaryPortfolio.Application.Request
         public required EducationTierEnum Education { get; set; }
         public LocationModel? Location{ get; set; }
         [JsonIgnore]
-        public MediaStream? FileStream { get; set; }
+        public MediaStream? EducationFile { get; set; }
     }
 }
     
