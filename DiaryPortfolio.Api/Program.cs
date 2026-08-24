@@ -20,7 +20,7 @@ builder.Services.ConfigureApplication();
 builder.Services.ConfigureJWTPolicy(builder.Configuration);
 builder.Services.ConfigureIdentityPolicy();
 builder.Services.ConfigureCorsPolicy(builder.Configuration);
-builder.Services.ConfigureDataProtection();
+builder.Services.ConfigureDataProtection(builder.Environment);
 builder.Services.AddTransient<RequestLoggingMiddleware>();
 
 //host
