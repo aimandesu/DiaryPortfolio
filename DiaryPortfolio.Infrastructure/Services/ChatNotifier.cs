@@ -25,22 +25,27 @@ namespace DiaryPortfolio.Infrastructure.Services
             await _hubContext.Clients.All.SendAsync("ReceiveMessage", broadcastModel);
         }
 
-        public async Task BroadcastMessageGroup(BroadcastModel broadcastModel)
+        public async Task SendMessageToConversation(BroadcastModel broadcastModel)
         {
-            if (!string.IsNullOrEmpty(broadcastModel.GroupId))
+            if (!string.IsNullOrEmpty(broadcastModel.ConversationId))
             {
                 // GROUP MESSAGE: Everyone in this room will see this
-                await _hubContext.Clients.Group(broadcastModel.GroupId)
+                await _hubContext.Clients.Group(broadcastModel.ConversationId)
                     .SendAsync("ReceiveMessage", broadcastModel);
             }
         }
 
-        public async Task BroadcastMessagePrivate(BroadcastModel broadcastModel)
+        public async Task SendUserNotification(BroadcastModel broadcastModel)
         {
             if (!string.IsNullOrEmpty(broadcastModel.UserId))
             {
-                // PRIVATE MESSAGE: Only TargetUserId will see this
-                await _hubContext.Clients.User(broadcastModel.UserId)
+                /* 
+                 * This is actually for like user event, say like 
+                 * 1. "You have a new message"
+                 * 2. "User X added you"
+                 * 3. "Your account was logged in from new device"
+                 */
+                await _hubContext.Clients.User(broadcastModel.UserId) 
                     .SendAsync("ReceiveMessage", broadcastModel);
             }
         }

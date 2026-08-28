@@ -66,7 +66,11 @@ public static class ServiceExtensions
         services.AddSignalR(
             options => options.EnableDetailedErrors = true
         );
-
+        //chat
         services.AddScoped<IChatNotifier, ChatNotifier>();
+        services.AddScoped<IChatGroupService, ChatGroupService>();
+
+        services.AddScoped<IConversationRepository, ConversationRepository>();
+        services.AddScoped<IChatMessageRepository, ChatMessageRepository>();
     }
 }

@@ -1,8 +1,14 @@
 ﻿using DiaryPortfolio.Application.Features.User.Chat.Create;
 using DiaryPortfolio.Application.Features.User.Chat.Delete;
+using DiaryPortfolio.Application.Features.User.ChatGroup.Join;
+using DiaryPortfolio.Application.IServices;
+using DiaryPortfolio.Application.Request;
+using DiaryPortfolio.Infrastructure.Services;
 using Mediator;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace DiaryPortfolio.Infrastructure.Hubs
 {
@@ -21,19 +27,37 @@ namespace DiaryPortfolio.Infrastructure.Hubs
             _mediator = mediator;
         }
 
-        public async Task JoinRoom(string roomName)
-        {
-            await Groups.AddToGroupAsync(Context.ConnectionId, roomName);
-            await Clients.Group(roomName).SendAsync(
-                "ReceiveMessage", "System", $"{Context?.User?.Identity?.Name} joined {roomName}");
-        }
-
-        public async Task SendMessage(CreateChatRequest request)
+        public async Task JoinConversation(string conversationId)
         {
             await _mediator.Send(
+               request: new JoinChatGroupRequest
+               (
+                   ConnectionId: Context.ConnectionId,
+                   ConversationId: conversationId
+               ),
+               CancellationToken.None
+            );
+        }
+
+        public async Task<string> SendMessage(string jsonMessageUploadRequest)
+        {
+
+            var messageUploadRequest = JsonSerializer.Deserialize<MessageUpload>(
+                jsonMessageUploadRequest,
+                new JsonSerializerOptions
+                {
+                    Converters = { new JsonStringEnumConverter() },
+                    PropertyNameCaseInsensitive = true
+                });
+
+            var request = new CreateChatRequest(messageUploadRequest);
+
+            var result = await _mediator.Send(
                 request,
                 CancellationToken.None
             );
+
+            return result.Result?.ToString() ?? "";
         }
 
         public async Task DeleteMessage(DeleteChatRequest request)

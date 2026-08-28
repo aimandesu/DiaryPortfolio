@@ -32,6 +32,8 @@
   <ItemGroup>
     <Folder Include="Features\DiaryProfile\Media\Get\" />
     <Folder Include="Features\DiaryProfile\Space\Update\" />
+    <Folder Include="Features\PortfolioProfile\ProjectType\Delete\" />
+    <Folder Include="Features\PortfolioProfile\ProjectType\Update\" />
     <Folder Include="Features\User\Diary\" />
   </ItemGroup>
 	

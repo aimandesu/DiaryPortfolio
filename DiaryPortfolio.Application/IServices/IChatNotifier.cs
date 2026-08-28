@@ -10,8 +10,8 @@ namespace DiaryPortfolio.Application.IServices
     public interface IChatNotifier
     {
         Task BroadcastMessageAll(BroadcastModel broadcastModel);
-        Task BroadcastMessagePrivate(BroadcastModel broadcastModel);
-        Task BroadcastMessageGroup(BroadcastModel broadcastModel);
+        Task SendUserNotification(BroadcastModel broadcastModel);
+        Task SendMessageToConversation(BroadcastModel broadcastModel);
         Task DeleteMessage(BroadcastModel broadcastModel);
     }
 }

@@ -13,8 +13,9 @@ namespace DiaryPortfolio.Domain.Entities.Chat
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         //FK + Navigation
-        public Guid UserId { get; set; }
+        required public Guid UserId { get; set; }
         public UserModel? UserModel { get; set; }
         public ConversationInfoModel? ConversationInfo { get; set; }
+        public ConversationParticipantModel? ConversationParticipant { get; set; }
     }
 }

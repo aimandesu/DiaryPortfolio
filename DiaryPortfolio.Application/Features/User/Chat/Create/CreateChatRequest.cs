@@ -1,4 +1,5 @@
 ﻿using DiaryPortfolio.Application.Common;
+using DiaryPortfolio.Application.Request;
 using DiaryPortfolio.Domain.Entities;
 using Mediator;
 using System;
@@ -10,6 +11,6 @@ using System.Threading.Tasks;
 namespace DiaryPortfolio.Application.Features.User.Chat.Create
 {
     public sealed record class CreateChatRequest(
-       BroadcastModel BroadcastModel
-    ) : IRequest<ResultResponse<object>>;
+       MessageUpload MessageUpload
+    ) : IRequest<ResultResponse<string>>;
 }
