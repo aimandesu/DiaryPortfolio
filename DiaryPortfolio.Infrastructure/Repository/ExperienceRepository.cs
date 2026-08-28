@@ -95,13 +95,15 @@ namespace DiaryPortfolio.Infrastructure.Repository
 
         }
 
-        public async Task<ResultResponse<List<ExperienceModel>>> GetAllExperience(string userName)
+        public async Task<ResultResponse<List<ExperienceModel>>> GetAllExperience(
+            string userName)
         {
             try
             {
                 var query = await _context.Experiences
                     .Include(l => l.Location)
                     .Where(u => u.PortfolioProfile.User.UserName == userName)
+                    .OrderBy(u => u.StartDate)
                     .ToListAsync();
 
                 return ResultResponse<List<ExperienceModel>>.Success(query);

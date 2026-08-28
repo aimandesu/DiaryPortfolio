@@ -345,9 +345,6 @@ namespace DiaryPortfolio.Infrastructure.Migrations
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("FileId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("Institution")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -625,6 +622,38 @@ namespace DiaryPortfolio.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("PortfolioProfile", (string)null);
+                });
+
+            modelBuilder.Entity("DiaryPortfolio.Domain.Entities.PortfolioSectionModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("H")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("PortfolioProfileId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("SectionType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("W")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("X")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Y")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PortfolioProfileId");
+
+                    b.ToTable("PortfolioSections");
                 });
 
             modelBuilder.Entity("DiaryPortfolio.Domain.Entities.PostalCodeModel", b =>
@@ -1477,6 +1506,17 @@ namespace DiaryPortfolio.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("DiaryPortfolio.Domain.Entities.PortfolioSectionModel", b =>
+                {
+                    b.HasOne("DiaryPortfolio.Domain.Entities.PortfolioProfileModel", "PortfolioProfile")
+                        .WithMany("PortfolioSections")
+                        .HasForeignKey("PortfolioProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PortfolioProfile");
+                });
+
             modelBuilder.Entity("DiaryPortfolio.Domain.Entities.PostalCodeModel", b =>
                 {
                     b.HasOne("DiaryPortfolio.Domain.Entities.CityModel", "City")
@@ -1717,6 +1757,8 @@ namespace DiaryPortfolio.Infrastructure.Migrations
 
             modelBuilder.Entity("DiaryPortfolio.Domain.Entities.PortfolioProfileModel", b =>
                 {
+                    b.Navigation("PortfolioSections");
+
                     b.Navigation("Resume");
                 });
 

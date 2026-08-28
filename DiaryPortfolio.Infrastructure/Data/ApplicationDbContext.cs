@@ -40,6 +40,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<EducationModel> Educations { get; set; }
     public DbSet<ProjectModel> Projects { get; set; }
     public DbSet<ProjectTypeModel> ProjectTypes { get; set; }
+    public DbSet<PortfolioSectionModel> PortfolioSections { get; set; }
 
     //Locations
     public DbSet<PostalCodeModel> PostalCodes { get; set; }

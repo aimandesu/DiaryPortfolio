@@ -32,7 +32,7 @@ namespace DiaryPortfolio.Application.Features.User.Authentication.Login
             CancellationToken cancellationToken)
         {
             var loginResult = await _authenticationRepository.Login(  
-                EmailOrUsername: request.EmailOrUsername,
+                emailOrUsername: request.EmailOrUsername,
                 password: request.Password
             );
 
@@ -41,7 +41,7 @@ namespace DiaryPortfolio.Application.Features.User.Authentication.Login
                 return ResultResponse<AuthenticationResponse>.Failure(loginResult.Error);
             }
 
-            var user = await _userRepository.GetUserByUserId(
+            var user = await _userRepository.GetUserByUserId( //WHY WE NEED TO FIND WHO THIS IS? WHY NOT USE loginResult
                 loginResult.Result.Id, Domain.Enum.ProfileType.All);
 
             var token = _tokenRepository.GenerateToken(

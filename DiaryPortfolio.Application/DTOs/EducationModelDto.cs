@@ -16,7 +16,7 @@ namespace DiaryPortfolio.Application.DTOs
         public DateTime? EndDate { get; set; }
 
         public Guid LocationId { get; set; }
-        public LocationModelDto? Location { get; set; }
+        public LocationModel? Location { get; set; }
         public Guid? FileId { get; set; }
         public FileModel? EducationFile { get; set; }
         public Guid SelectionId { get; set; }

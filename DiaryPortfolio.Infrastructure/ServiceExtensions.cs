@@ -37,6 +37,8 @@ public static class ServiceExtensions
         services.AddScoped<ICustomUrlRepository, CustomUrlRepository>();
         services.AddScoped<IEducationRepository, EducationRepository>();
         services.AddScoped<IProjectRepository, ProjectRepository>();
+        services.AddScoped<IPortfolioSectionRepository, PortfolioSectionRepository>();
+        services.AddScoped<IOnboardingRepository, OnboardingRepository>();
         //services.AddScoped<IExperienceRepository, ExperienceRepository>();
 
         //this is for the top one -> the one we do addscoped IExperienceRepository with ExperienceRepository
@@ -55,6 +57,10 @@ public static class ServiceExtensions
         services.AddScoped<IRazorViewRenderer, RazorViewRenderer>();
         services.AddScoped<IPdfGeneratorService, PdfGeneratorService>();
         services.AddScoped<ISelectionHelper, SelectionHelper>();
+
+        //Email
+        services.Configure<SmtpSettings>(configuration.GetSection("Smtp"));
+        services.AddScoped<IEmailSender, SmtpEmailSender>();
 
         //Signal R
         services.AddSignalR(

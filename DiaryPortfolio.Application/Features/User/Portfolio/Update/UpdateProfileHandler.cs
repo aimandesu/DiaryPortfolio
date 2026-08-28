@@ -1,23 +1,15 @@
 ﻿using DiaryPortfolio.Application.Common;
-using DiaryPortfolio.Application.Common.Helpers;
 using DiaryPortfolio.Application.DTOs;
 using DiaryPortfolio.Application.Helpers;
 using DiaryPortfolio.Application.IRepository;
 using DiaryPortfolio.Application.IServices;
 using DiaryPortfolio.Application.Mapper;
 using DiaryPortfolio.Application.Request;
-using DiaryPortfolio.Domain.Entities;
 using DiaryPortfolio.Domain.Enum;
 using Mediator;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace DiaryPortfolio.Application.Features.User.Profile.Update
+
+namespace DiaryPortfolio.Application.Features.User.Portfolio.Update
 {
     internal class UpdateProfileHandler : IRequestHandler<UpdateProfileRequest, ResultResponse<UserModelDto>>
     {

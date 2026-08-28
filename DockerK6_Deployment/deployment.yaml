@@ -1,0 +1,28 @@
+# deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-aspnet-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: my-aspnet-api
+  template:
+    metadata:
+      labels:
+        app: my-aspnet-api
+    spec:
+      containers:
+        - name: my-aspnet-api
+          image: my-aspnet-api:v1
+          imagePullPolicy: Never   # important! use local image, don't pull from registry
+          ports:
+            - containerPort: 8080
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: "Development"
+            - name: ASPNETCORE_URLS
+              value: "http://+:8080"
+            - name: ConnectionStrings__DefaultConnection
+              value: "Server=host.minikube.internal,1433;Database=diary_portfolio;User Id=sa;Password=DockerSQL2022_;Encrypt=True;TrustServerCertificate=True;"

@@ -10,11 +10,14 @@ namespace DiaryPortfolio.Application.IRepository
 {
     public interface IResumeRepository
     {
-        Task<byte[]> GenerateResumeReport(string userId);
+        Task<byte[]> GenerateResumeReport(string userId, string templateId);
         Task<ResultResponse<ResumeModel>> UploadResume(
             string templateId,
             FileModel? resume);
         Task<ResultResponse<ResumeModel>> DeleteResume(
             string resumeId);
+
+        Task<ResultResponse<List<ResumeTemplateModel>>> GetResumeTemplates();
+        Task<ResultResponse<ResumeModel?>> GetResume();
     }
 }

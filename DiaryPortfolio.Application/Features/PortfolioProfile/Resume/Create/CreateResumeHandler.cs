@@ -37,8 +37,9 @@ namespace DiaryPortfolio.Application.Features.PortfolioProfile.Resume.Create
             CreateResumeRequest request, 
             CancellationToken cancellationToken)
         {
-            var pdfBytes = await _resumeRepository.GenerateResumeReport(_userService
-                .UserId.ToString() ?? "");
+            var pdfBytes = await _resumeRepository.GenerateResumeReport(
+                _userService.UserId.ToString() ?? "",
+                request.TemplateId);
 
             var stream = new MemoryStream(pdfBytes);
 
@@ -57,6 +58,8 @@ namespace DiaryPortfolio.Application.Features.PortfolioProfile.Resume.Create
             {
                 return ResultResponse<ResumeModel>.Failure(uploadResult.Error);
             }
+            
+            var existingResume = await _resumeRepository.GetResume();
 
             var uploadResumeResult = await _resumeRepository.UploadResume(
                 templateId: request.TemplateId,
@@ -69,6 +72,10 @@ namespace DiaryPortfolio.Application.Features.PortfolioProfile.Resume.Create
             try
             {
                 await _unitOfWork.SaveChanges(cancellationToken);
+                
+                _fileHandlerRepository.DeleteFile(
+                    existingResume?.Result?.ResumeFile?.Url ?? "");
+                
                 return ResultResponse<ResumeModel>.Success(uploadResumeResult.Result);
             }
             catch (Exception ex) 
